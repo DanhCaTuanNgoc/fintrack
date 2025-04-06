@@ -82,29 +82,29 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             ],
           ),
           // Thêm indicators để hiển thị vị trí trang
-          Positioned(
-            bottom: 20.0,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                3,
-                (index) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                  width: 8.0,
-                  height: 8.0,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color:
-                        _currentPage == index
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey.withOpacity(0.5),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // Positioned(
+          //   bottom: 20.0,
+          //   left: 0,
+          //   right: 0,
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: List.generate(
+          //       3,
+          //       (index) => Container(
+          //         margin: const EdgeInsets.symmetric(horizontal: 4.0),
+          //         width: 8.0,
+          //         height: 8.0,
+          //         decoration: BoxDecoration(
+          //           shape: BoxShape.circle,
+          //           color:
+          //               _currentPage == index
+          //                   ? Theme.of(context).primaryColor
+          //                   : Colors.grey.withOpacity(0.5),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -206,21 +206,40 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      child: SlidePageContent(
+      padding: const EdgeInsets.only(top: 350, left: 20, right: 20, bottom: 50),
+      child: Column(
         children: [
-          const Text(
-            'Chào mừng!',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          // SlidePageContent chỉ chứa các widget cần hiệu ứng
+          SlidePageContent(
+            children: [
+              const Text(
+                'Chào mừng đến với Fintrack',
+                style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Khám phá ứng dụng của chúng tôi',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 40),
+            ],
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'Khám phá ứng dụng của chúng tôi',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16),
+
+          const Spacer(), // đẩy nút xuống dưới
+          // Nút ở dưới cùng
+          SizedBox(
+            width: double.infinity, // Chiều rộng tối đa
+            child: ElevatedButton(
+              onPressed: onNext,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                ), // Tăng chiều cao nếu cần// tuỳ chỉnh màu
+              ),
+              child: const Text('Tiếp tục'),
+            ),
           ),
-          const SizedBox(height: 40),
-          ElevatedButton(onPressed: onNext, child: const Text('Tiếp tục')),
         ],
       ),
     );
