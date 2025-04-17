@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'Books.dart';
-import 'Wallet.dart';
-import 'Charts.dart';
-import 'More.dart';
+import 'HomePage.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -58,7 +55,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     PageRouteBuilder(
                       pageBuilder:
                           (context, animation, secondaryAnimation) =>
-                              const MyHomePage(),
+                              const HomePage(),
                       transitionsBuilder: (
                         context,
                         animation,
@@ -311,7 +308,7 @@ class GetStartedPage extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Tất cả đã sẵn sàng.\nHãy bắt đầu trải nghiệm!',
+            'Chào mừng đến với Fintrack.\nHãy bắt đầu trải nghiệm!',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16),
           ),
@@ -333,57 +330,6 @@ class GetStartedPage extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _screens = [
-    const Books(),
-    const Wallet(),
-    const Charts(),
-    const More(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: _screens[_selectedIndex],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Books'),
-          BottomNavigationBarItem(icon: Icon(Icons.wallet), label: 'Wallet'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_rounded),
-            label: 'Chart',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'More'),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        showUnselectedLabels: true,
-        unselectedItemColor: Colors.grey,
-        selectedItemColor: Colors.deepPurple,
       ),
     );
   }

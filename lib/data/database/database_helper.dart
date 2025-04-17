@@ -17,17 +17,13 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _createDB,
-    );
+    return await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
   Future<void> _createDB(Database db, int version) async {
     // Bảng User
     await db.execute('''
-      CREATE TABLE users (
+      CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
@@ -37,7 +33,7 @@ class DatabaseHelper {
 
     // Bảng Books (Ví/Sổ chi tiêu)
     await db.execute('''
-      CREATE TABLE books (
+      CREATE TABLE IF NOT EXISTS books (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         description TEXT,
@@ -50,7 +46,7 @@ class DatabaseHelper {
 
     // Bảng Categories
     await db.execute('''
-      CREATE TABLE categories (
+      CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         icon TEXT,
@@ -63,7 +59,7 @@ class DatabaseHelper {
 
     // Bảng Transactions
     await db.execute('''
-      CREATE TABLE transactions (
+      CREATE TABLE IF NOT EXISTS transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         amount REAL NOT NULL,
         note TEXT,
@@ -119,21 +115,13 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> getBooksByUser(int userId) async {
     final db = await database;
-    return await db.query(
-      'books',
-      where: 'user_id = ?',
-      whereArgs: [userId],
-    );
+    return await db.query('books', where: 'user_id = ?', whereArgs: [userId]);
   }
 
   // CRUD operations cho Categories
   Future<List<Map<String, dynamic>>> getCategoriesByType(String type) async {
     final db = await database;
-    return await db.query(
-      'categories',
-      where: 'type = ?',
-      whereArgs: [type],
-    );
+    return await db.query('categories', where: 'type = ?', whereArgs: [type]);
   }
 
   // CRUD operations cho Transactions
