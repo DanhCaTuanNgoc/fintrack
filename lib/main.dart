@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fintrack/data/database/database_helper.dart';
 import 'package:logging/logging.dart';
-import 'ui/Welcome.dart';
+import 'ui/welcome.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
