@@ -1,7 +1,10 @@
+import 'package:fintrack/ui/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fintrack/data/database/database_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 import 'ui/welcome.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,11 +17,16 @@ void main() async {
   await DatabaseHelper.instance.database;
   await DatabaseHelper.instance.showAllTables();
 
-  runApp(const MyApp());
+  //Checkin
+  final prefs = await SharedPreferences.getInstance();
+  final bool hasVisited = await prefs.getBool('hasVisited') ?? false;
+
+  runApp(MyApp(hasVisited: hasVisited));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool hasVisited;
+  const MyApp({super.key, required this.hasVisited});
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +36,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        textTheme: GoogleFonts.robotoTextTheme(),
       ),
-      home: const WelcomeScreen(),
+      home: hasVisited ? HomePage() : WelcomeScreen(),
     );
   }
 }

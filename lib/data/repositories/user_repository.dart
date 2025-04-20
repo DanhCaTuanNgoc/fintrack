@@ -1,7 +1,6 @@
 import '../models/user.dart';
 import '../database/database_helper.dart';
 
-
 class UserRepository {
   final DatabaseHelper _databaseHelper;
 
@@ -15,11 +14,7 @@ class UserRepository {
 
   Future<User?> getUserById(int id) async {
     final db = await _databaseHelper.database;
-    final maps = await db.query(
-      'users',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    final maps = await db.query('users', where: 'id = ?', whereArgs: [id]);
 
     if (maps.isEmpty) return null;
     return User.fromMap(maps.first);

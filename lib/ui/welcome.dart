@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../data/models/book.dart';
+import '../data/database/database_helper.dart';
+import '../data/repositories/book_repository.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -48,6 +53,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 onNext: () => _changePage(2),
                 onBack: () => _changePage(0),
               ),
+              CreateBookPage(
+                onNext: () => _changePage(3),
+                onBack: () => _changePage(1),
+              ),
+              CreateWalletPage(
+                onNext: () => _changePage(4),
+                onBack: () => _changePage(2),
+              ),
               GetStartedPage(
                 onGetStarted: () {
                   Navigator.pushReplacement(
@@ -74,7 +87,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     ),
                   );
                 },
-                onBack: () => _changePage(1),
+                onBack: () => _changePage(3),
               ),
             ],
           ),
@@ -146,23 +159,19 @@ class _SlidePageContentState extends State<SlidePageContent>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
 
     _slideAnimations = List.generate(
       widget.children.length,
       (index) => Tween<Offset>(
-        begin: const Offset(1.0, 0.0),
+        begin: const Offset(0.0, 0.2),
         end: Offset.zero,
       ).animate(
         CurvedAnimation(
           parent: _controller,
-          curve: Interval(
-            index * 0.2, // begin time
-            min(1.0, 0.6 + index * 0.2), // end time, không vượt quá 1.0
-            curve: Curves.easeOutCubic,
-          ),
+          curve: Interval(0.0, 1.0, curve: Curves.easeOut),
         ),
       ),
     );
@@ -188,7 +197,10 @@ class _SlidePageContentState extends State<SlidePageContent>
         widget.children.length,
         (index) => SlideTransition(
           position: _slideAnimations[index],
-          child: widget.children[index],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: widget.children[index],
+          ),
         ),
       ),
     );
@@ -330,6 +342,255 @@ class GetStartedPage extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class CreateBookPage extends StatefulWidget {
+  final VoidCallback onNext;
+  final VoidCallback onBack;
+
+  const CreateBookPage({super.key, required this.onNext, required this.onBack});
+
+  @override
+  State<CreateBookPage> createState() => _CreateBookPageState();
+}
+
+class _CreateBookPageState extends State<CreateBookPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _bookNameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
+  late final BookRepository _bookRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    _bookRepository = BookRepository(_dbHelper);
+  }
+
+  @override
+  void dispose() {
+    _bookNameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Form(
+        key: _formKey,
+        child: SlidePageContent(
+          children: [
+            const Text(
+              'Tạo sổ chi tiêu',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _bookNameController,
+              decoration: InputDecoration(
+                labelText: 'Tên sổ chi tiêu',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                prefixIcon: const Icon(Icons.book),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng nhập tên sổ chi tiêu';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: widget.onBack,
+                  child: const Text('Quay lại'),
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        // Skip creating book
+                        widget.onNext();
+                      },
+                      child: const Text('Bỏ qua'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          try {
+                            final book = Book(
+                              name: _bookNameController.text,
+                              balance: 0.0,
+                              userId: 1, // TODO: Get current user ID
+                            );
+
+                            await _bookRepository.createBook(book);
+                            widget.onNext();
+                          } catch (e) {
+                            // TODO: Show error message
+                            print('Error creating book: $e');
+                          }
+                        }
+                      },
+                      child: const Text('Tiếp tục'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CreateWalletPage extends StatefulWidget {
+  final VoidCallback onNext;
+  final VoidCallback onBack;
+
+  const CreateWalletPage({
+    super.key,
+    required this.onNext,
+    required this.onBack,
+  });
+
+  @override
+  State<CreateWalletPage> createState() => _CreateWalletPageState();
+}
+
+class _CreateWalletPageState extends State<CreateWalletPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _accountNameController = TextEditingController();
+  final _balanceController = TextEditingController();
+  String _selectedCurrency = 'VND';
+
+  @override
+  void dispose() {
+    _accountNameController.dispose();
+    _balanceController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: SlidePageContent(
+            children: [
+              const Text(
+                'Tạo ví',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _accountNameController,
+                decoration: InputDecoration(
+                  labelText: 'Tên tài khoản',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  prefixIcon: const Icon(Icons.person),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Vui lòng nhập tên tài khoản';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _balanceController,
+                decoration: InputDecoration(
+                  labelText: 'Số dư ban đầu',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  prefixIcon: const Icon(Icons.attach_money),
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Vui lòng nhập số dư';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Vui lòng nhập số hợp lệ';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedCurrency,
+                decoration: InputDecoration(
+                  labelText: 'Loại tiền tệ',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  prefixIcon: const Icon(Icons.currency_exchange),
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'VND',
+                    child: Text('VND - Việt Nam Đồng'),
+                  ),
+                  DropdownMenuItem(value: 'USD', child: Text('USD - Đô la Mỹ')),
+                  DropdownMenuItem(value: 'EUR', child: Text('EUR - Euro')),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCurrency = value!;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: widget.onBack,
+                    child: const Text('Quay lại'),
+                  ),
+                  Row(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          // Skip creating wallet
+                          widget.onNext();
+                        },
+                        child: const Text('Bỏ qua'),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // TODO: Save wallet information
+                            widget.onNext();
+                          }
+                        },
+                        child: const Text('Tiếp tục'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

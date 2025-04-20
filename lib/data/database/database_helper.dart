@@ -37,7 +37,6 @@ class DatabaseHelper {
       CREATE TABLE IF NOT EXISTS books (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        description TEXT,
         balance REAL DEFAULT 0,
         user_id INTEGER,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -145,7 +144,7 @@ class DatabaseHelper {
   Future<void> showAllTables() async {
     final db = await database;
     final logger = Logger('DatabaseHelper');
-    
+
     logger.info('\n=== DATABASE TABLES ===\n');
 
     // Hiển thị bảng Users
@@ -175,18 +174,18 @@ class DatabaseHelper {
     }
 
     // Hiển thị bảng Categories
-    logger.info('\n🏷 CATEGORIES TABLE:');
-    logger.info('----------------');
-    final categories = await db.query('categories');
-    for (var category in categories) {
-      logger.info('ID: ${category['id']}');
-      logger.info('Name: ${category['name']}');
-      logger.info('Icon: ${category['icon']}');
-      logger.info('Color: ${category['color']}');
-      logger.info('Type: ${category['type']}');
-      logger.info('User ID: ${category['user_id']}');
-      logger.info('----------------');
-    }
+    // logger.info('\n🏷 CATEGORIES TABLE:');
+    // logger.info('----------------');
+    // final categories = await db.query('categories');
+    // for (var category in categories) {
+    //   logger.info('ID: ${category['id']}');
+    //   logger.info('Name: ${category['name']}');
+    //   logger.info('Icon: ${category['icon']}');
+    //   logger.info('Color: ${category['color']}');
+    //   logger.info('Type: ${category['type']}');
+    //   logger.info('User ID: ${category['user_id']}');
+    //   logger.info('----------------');
+    // }
 
     // Hiển thị bảng Transactions
     logger.info('\n💰 TRANSACTIONS TABLE:');
@@ -205,5 +204,20 @@ class DatabaseHelper {
     }
 
     logger.info('\n=== END OF DATABASE ===\n');
+  }
+
+  Future<List<Map<String, dynamic>>> getBooks() async {
+    final db = await database;
+    return await db.query('books', orderBy: 'name ASC');
+  }
+
+  Future<List<Map<String, dynamic>>> getWallets() async {
+    final db = await database;
+    return await db.query('wallets', orderBy: 'name ASC');
+  }
+
+  Future<int> insertWallet(Map<String, dynamic> row) async {
+    final db = await database;
+    return await db.insert('wallets', row);
   }
 }
