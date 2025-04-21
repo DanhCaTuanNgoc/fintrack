@@ -22,7 +22,7 @@ class _BooksState extends State<Books> {
   List<Map<String, dynamic>> _expenseCategories = [];
   List<Map<String, dynamic>> _incomeCategories = [];
   bool _isExpense = true;
-  bool _hasBooks = false;
+  bool? _hasBooks;
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class _BooksState extends State<Books> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_hasBooks) {
+    if (_hasBooks == false) {
       return Scaffold(
         backgroundColor: const Color(0xFFF8F9FA),
         appBar: AppBar(
@@ -558,7 +558,6 @@ class _BooksState extends State<Books> {
   void _showCreateBookModal(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
     final _bookNameController = TextEditingController();
-    final _descriptionController = TextEditingController();
 
     showModalBottomSheet(
       context: context,

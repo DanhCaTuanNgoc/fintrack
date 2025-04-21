@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        fontFamily: 'Roboto',
         textTheme: GoogleFonts.robotoTextTheme(),
       ),
       home: hasVisited ? HomePage() : WelcomeScreen(),

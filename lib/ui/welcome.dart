@@ -37,85 +37,97 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          PageView(
-            controller: _pageController,
-            physics: const ClampingScrollPhysics(),
-            onPageChanged: (int page) {
-              setState(() {
-                _currentPage = page;
-              });
-            },
-            children: [
-              WelcomePage(onNext: () => _changePage(1)),
-              TermsPage(
-                onNext: () => _changePage(2),
-                onBack: () => _changePage(0),
-              ),
-              CreateBookPage(
-                onNext: () => _changePage(3),
-                onBack: () => _changePage(1),
-              ),
-              CreateWalletPage(
-                onNext: () => _changePage(4),
-                onBack: () => _changePage(2),
-              ),
-              GetStartedPage(
-                onGetStarted: () {
-                  Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder:
-                          (context, animation, secondaryAnimation) =>
-                              const HomePage(),
-                      transitionsBuilder: (
-                        context,
-                        animation,
-                        secondaryAnimation,
-                        child,
-                      ) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(1.0, 0.0),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      transitionDuration: const Duration(milliseconds: 500),
-                    ),
-                  );
-                },
-                onBack: () => _changePage(3),
-              ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.white, // Màu trắng
+              Colors.white, // Màu trắng
             ],
           ),
-          // Thêm indicators để hiển thị vị trí trang
-          // Positioned(
-          //   bottom: 20.0,
-          //   left: 0,
-          //   right: 0,
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: List.generate(
-          //       3,
-          //       (index) => Container(
-          //         margin: const EdgeInsets.symmetric(horizontal: 4.0),
-          //         width: 8.0,
-          //         height: 8.0,
-          //         decoration: BoxDecoration(
-          //           shape: BoxShape.circle,
-          //           color:
-          //               _currentPage == index
-          //                   ? Theme.of(context).primaryColor
-          //                   : Colors.grey.withOpacity(0.5),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-        ],
+        ),
+        child: Stack(
+          children: [
+            PageView(
+              controller: _pageController,
+              physics: const ClampingScrollPhysics(),
+              onPageChanged: (int page) {
+                setState(() {
+                  _currentPage = page;
+                });
+              },
+              children: [
+                WelcomePage(onNext: () => _changePage(1)),
+                TermsPage(
+                  onNext: () => _changePage(2),
+                  onBack: () => _changePage(0),
+                ),
+                CreateBookPage(
+                  onNext: () => _changePage(3),
+                  onBack: () => _changePage(1),
+                ),
+                CreateWalletPage(
+                  onNext: () => _changePage(4),
+                  onBack: () => _changePage(2),
+                ),
+                GetStartedPage(
+                  onGetStarted: () {
+                    Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder:
+                            (context, animation, secondaryAnimation) =>
+                                const HomePage(),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(1.0, 0.0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                        transitionDuration: const Duration(milliseconds: 500),
+                      ),
+                    );
+                  },
+                  onBack: () => _changePage(3),
+                ),
+              ],
+            ),
+            // Thêm indicators để hiển thị vị trí trang
+            // Positioned(
+            //   bottom: 20.0,
+            //   left: 0,
+            //   right: 0,
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: List.generate(
+            //       3,
+            //       (index) => Container(
+            //         margin: const EdgeInsets.symmetric(horizontal: 4.0),
+            //         width: 8.0,
+            //         height: 8.0,
+            //         decoration: BoxDecoration(
+            //           shape: BoxShape.circle,
+            //           color:
+            //               _currentPage == index
+            //                   ? Theme.of(context).primaryColor
+            //                   : Colors.grey.withOpacity(0.5),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+          ],
+        ),
       ),
     );
   }
@@ -218,35 +230,43 @@ class WelcomePage extends StatelessWidget {
       padding: const EdgeInsets.only(top: 350, left: 20, right: 20, bottom: 50),
       child: Column(
         children: [
-          // SlidePageContent chỉ chứa các widget cần hiệu ứng
           SlidePageContent(
             children: [
               const Text(
-                'Chào mừng đến với Fintrack',
-                style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+                'Fintrack xin chào!',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 5),
               const Text(
-                'Khám phá ứng dụng của chúng tôi',
+                'Cùng bạn xây dựng thói quen chi tiêu hợp lý mỗi ngày.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 18, color: Colors.black87),
               ),
               const SizedBox(height: 40),
             ],
           ),
-
-          const Spacer(), // đẩy nút xuống dưới
-          // Nút ở dưới cùng
+          const Spacer(),
           SizedBox(
-            width: double.infinity, // Chiều rộng tối đa
+            width: double.infinity,
             child: ElevatedButton(
               onPressed: onNext,
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                ), // Tăng chiều cao nếu cần// tuỳ chỉnh màu
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 0,
               ),
-              child: const Text('Tiếp tục'),
+              child: const Text(
+                'Tiếp tục',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
@@ -265,32 +285,83 @@ class TermsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: SlidePageContent(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            'Điều khoản sử dụng',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          const Expanded(
-            child: SingleChildScrollView(
-              child: Text(
-                'Điều khoản và điều kiện sử dụng...\n'
-                '1. Quyền và trách nhiệm\n'
-                '2. Bảo mật thông tin\n'
-                '3. Quy định sử dụng\n',
+          Expanded(
+            child: Center(
+              child: SlidePageContent(
+                children: [
+                  Text(
+                    'Điều khoản sử dụng',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        'Điều khoản và điều kiện sử dụng...\n'
+                        '1. Quyền và trách nhiệm\n'
+                        '2. Bảo mật thông tin\n'
+                        '3. Quy định sử dụng\n',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge?.copyWith(color: Colors.black87),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton(onPressed: onBack, child: const Text('Quay lại')),
-              ElevatedButton(
-                onPressed: onNext,
-                child: const Text('Tôi đồng ý'),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: onBack,
+                  style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    'Quay lại',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: onNext,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Tôi đồng ý',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -312,34 +383,69 @@ class GetStartedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: SlidePageContent(
+      child: Column(
         children: [
-          const Text(
-            'Bắt đầu!',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Chào mừng đến với Fintrack.\nHãy bắt đầu trải nghiệm!',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 40),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton(onPressed: onBack, child: const Text('Quay lại')),
-              ElevatedButton(
-                onPressed: onGetStarted,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 15,
+          Expanded(
+            child: SlidePageContent(
+              children: [
+                Text(
+                  'Hãy bắt đầu!',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                child: const Text('Hãy bắt đầu'),
-              ),
-            ],
+                const SizedBox(height: 20),
+                Text(
+                  'Chúc bạn có những trải nghiệm vui vẻ và tiện ích.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: onBack,
+                  style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    'Quay lại',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: onGetStarted,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 15,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Bắt đầu',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -383,70 +489,134 @@ class _CreateBookPageState extends State<CreateBookPage> {
       padding: const EdgeInsets.all(20),
       child: Form(
         key: _formKey,
-        child: SlidePageContent(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Tạo sổ chi tiêu',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: _bookNameController,
-              decoration: InputDecoration(
-                labelText: 'Tên sổ chi tiêu',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                prefixIcon: const Icon(Icons.book),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập tên sổ chi tiêu';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: widget.onBack,
-                  child: const Text('Quay lại'),
-                ),
-                Row(
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        // Skip creating book
-                        widget.onNext();
-                      },
-                      child: const Text('Bỏ qua'),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          try {
-                            final book = Book(
-                              name: _bookNameController.text,
-                              balance: 0.0,
-                              userId: 1, // TODO: Get current user ID
-                            );
-
-                            await _bookRepository.createBook(book);
-                            widget.onNext();
-                          } catch (e) {
-                            // TODO: Show error message
-                            print('Error creating book: $e');
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: SlidePageContent(
+                    children: [
+                      Text(
+                        'Tạo sổ chi tiêu',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.headlineMedium?.copyWith(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _bookNameController,
+                        style: const TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: 'Tên sổ chi tiêu',
+                          labelStyle: const TextStyle(color: Colors.black54),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black54),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.book,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Vui lòng nhập tên sổ chi tiêu';
                           }
-                        }
-                      },
-                      child: const Text('Tiếp tục'),
-                    ),
-                  ],
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: widget.onBack,
+                    style: TextButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Text(
+                      'Quay lại',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          widget.onNext();
+                        },
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: Text(
+                          'Bỏ qua',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: Colors.black54),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              final book = Book(
+                                name: _bookNameController.text,
+                                balance: 0.0,
+                                userId: 1,
+                              );
+
+                              await _bookRepository.createBook(book);
+                              widget.onNext();
+                            } catch (e) {
+                              print('Error creating book: $e');
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Tiếp tục',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -488,108 +658,205 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
       padding: const EdgeInsets.all(20),
       child: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          child: SlidePageContent(
-            children: [
-              const Text(
-                'Tạo ví',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _accountNameController,
-                decoration: InputDecoration(
-                  labelText: 'Tên tài khoản',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: SlidePageContent(
+                    children: [
+                      Text(
+                        'Tạo ví',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.headlineMedium?.copyWith(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _accountNameController,
+                        style: const TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: 'Tên tài khoản',
+                          labelStyle: const TextStyle(color: Colors.black54),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black54),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.person,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Vui lòng nhập tên tài khoản';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _balanceController,
+                        style: const TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: 'Số dư ban đầu',
+                          labelStyle: const TextStyle(color: Colors.black54),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black54),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.attach_money,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Vui lòng nhập số dư';
+                          }
+                          if (double.tryParse(value) == null) {
+                            return 'Vui lòng nhập số hợp lệ';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: _selectedCurrency,
+                        style: const TextStyle(color: Colors.black),
+                        dropdownColor: Colors.white,
+                        decoration: InputDecoration(
+                          labelText: 'Loại tiền tệ',
+                          labelStyle: const TextStyle(color: Colors.black54),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black54),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.currency_exchange,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'VND',
+                            child: Text('VND - Việt Nam Đồng'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'USD',
+                            child: Text('USD - Đô la Mỹ'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'EUR',
+                            child: Text('EUR - Euro'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedCurrency = value!;
+                          });
+                        },
+                      ),
+                    ],
                   ),
-                  prefixIcon: const Icon(Icons.person),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Vui lòng nhập tên tài khoản';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _balanceController,
-                decoration: InputDecoration(
-                  labelText: 'Số dư ban đầu',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: const Icon(Icons.attach_money),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Vui lòng nhập số dư';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Vui lòng nhập số hợp lệ';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedCurrency,
-                decoration: InputDecoration(
-                  labelText: 'Loại tiền tệ',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: const Icon(Icons.currency_exchange),
-                ),
-                items: const [
-                  DropdownMenuItem(
-                    value: 'VND',
-                    child: Text('VND - Việt Nam Đồng'),
-                  ),
-                  DropdownMenuItem(value: 'USD', child: Text('USD - Đô la Mỹ')),
-                  DropdownMenuItem(value: 'EUR', child: Text('EUR - Euro')),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCurrency = value!;
-                  });
-                },
-              ),
-              const SizedBox(height: 20),
-              Row(
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
                     onPressed: widget.onBack,
-                    child: const Text('Quay lại'),
+                    style: TextButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Text(
+                      'Quay lại',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                    ),
                   ),
                   Row(
                     children: [
                       TextButton(
                         onPressed: () {
-                          // Skip creating wallet
                           widget.onNext();
                         },
-                        child: const Text('Bỏ qua'),
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: Text(
+                          'Bỏ qua',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: Colors.black54),
+                        ),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            // TODO: Save wallet information
                             widget.onNext();
                           }
                         },
-                        child: const Text('Tiếp tục'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Tiếp tục',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
