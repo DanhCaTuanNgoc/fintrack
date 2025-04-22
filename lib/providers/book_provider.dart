@@ -39,17 +39,17 @@ class BooksNotifier extends StateNotifier<AsyncValue<List<Book>>> {
       final repository = ref.read(bookRepositoryProvider);
       final book = Book(name: name, balance: 0.0, userId: 1);
       await repository.createBook(book);
-      await loadBooks(); 
+      await loadBooks();
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
   }
 
-  Future<void> deleteBook(int id) async {
+  Future<void> deleteAllBooks() async {
     try {
       final repository = ref.read(bookRepositoryProvider);
-      await repository.deleteBook(id);
-      await loadBooks(); 
+      await repository.deleteAllBooks();
+      await loadBooks();
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

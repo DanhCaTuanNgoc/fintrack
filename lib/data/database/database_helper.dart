@@ -26,8 +26,8 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
+        name TEXT,
+        email TEXT UNIQUE,
         premium INTEGER DEFAULT 0
       )
     ''');
@@ -50,9 +50,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         icon TEXT,
-        color TEXT,
         type TEXT CHECK(type IN ('income', 'expense')),
-        user_id INTEGER,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
       )
     ''');
@@ -96,7 +94,6 @@ class DatabaseHelper {
     }
   }
 
-  // CRUD operations cho User
   Future<int> insertUser(Map<String, dynamic> user) async {
     final db = await database;
     return await db.insert('users', user);
@@ -174,18 +171,16 @@ class DatabaseHelper {
     }
 
     // Hiển thị bảng Categories
-    // logger.info('\n🏷 CATEGORIES TABLE:');
-    // logger.info('----------------');
-    // final categories = await db.query('categories');
-    // for (var category in categories) {
-    //   logger.info('ID: ${category['id']}');
-    //   logger.info('Name: ${category['name']}');
-    //   logger.info('Icon: ${category['icon']}');
-    //   logger.info('Color: ${category['color']}');
-    //   logger.info('Type: ${category['type']}');
-    //   logger.info('User ID: ${category['user_id']}');
-    //   logger.info('----------------');
-    // }
+    logger.info('\n🏷 CATEGORIES TABLE:');
+    logger.info('----------------');
+    final categories = await db.query('categories');
+    for (var category in categories) {
+      logger.info('ID: ${category['id']}');
+      logger.info('Name: ${category['name']}');
+      logger.info('Icon: ${category['icon']}');
+      logger.info('Type: ${category['type']}');
+      logger.info('----------------');
+    }
 
     // Hiển thị bảng Transactions
     logger.info('\n💰 TRANSACTIONS TABLE:');

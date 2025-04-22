@@ -1,30 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../providers/book_provider.dart';
 
-class More extends StatefulWidget {
+class More extends ConsumerStatefulWidget {
   const More({super.key});
 
   @override
-  State<More> createState() => _MoreState();
+  _MoreState createState() => _MoreState();
 }
 
-class _MoreState extends State<More> {
+class _MoreState extends ConsumerState<More> {
+  Future<void> removeData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Logger.root.info('\x1B[32mSuccessfully cleared SharedPreferences\x1B[0m');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_forever, color: Color(0xFF2D3142)),
+            onPressed: () async {
+              await removeData();
+              await ref.read(booksProvider.notifier).deleteAllBooks();
+            },
+          ),
+        ],
+      ),
       body: const Center(child: Text('More Content')),
     );
   }
-}
-
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(title: const Text('More'));
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

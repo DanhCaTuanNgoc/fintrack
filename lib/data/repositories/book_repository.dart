@@ -54,4 +54,10 @@ class BookRepository {
     final count = await db.delete('books', where: 'id = ?', whereArgs: [id]);
     return count > 0;
   }
+
+  Future<bool> deleteAllBooks() async {
+    final db = await _databaseHelper.database;
+    final count = await db.delete('books');
+    return count > 0;
+  }
 }

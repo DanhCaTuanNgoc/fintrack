@@ -1,7 +1,9 @@
+import 'package:fintrack/providers/transaction_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 import '../data/database/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/number_pad.dart';
@@ -67,15 +69,42 @@ class _BooksState extends ConsumerState<Books>
     });
   }
 
-  Future<void> removeHasVisited() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    Logger.root.info('\x1B[32mSuccessfully cleared SharedPreferences\x1B[0m');
-  }
-
   @override
   Widget build(BuildContext context) {
     final books = ref.watch(booksProvider);
+    final transactions = ref.watch(transactionsProvider);
+
+    final totalAmount = transactions.when(
+      data:
+          (transactionsList) => transactionsList.fold(
+            0.0,
+            (sum, transaction) => sum + transaction.amount,
+          ),
+      loading: () => 0.0,
+      error: (_, __) => 0.0,
+    );
+
+    final totalIncome = transactions.when(
+      data:
+          (transactionsList) => transactionsList.fold(
+            0.0,
+            (sum, transaction) =>
+                transaction.type == 'income' ? sum + transaction.amount : sum,
+          ),
+      loading: () => 0.0,
+      error: (_, __) => 0.0,
+    );
+
+    final totalExpense = transactions.when(
+      data:
+          (transactionsList) => transactionsList.fold(
+            0.0,
+            (sum, transaction) =>
+                transaction.type == 'expense' ? sum + transaction.amount : sum,
+          ),
+      loading: () => 0.0,
+      error: (_, __) => 0.0,
+    );
 
     return books.when(
       loading:
@@ -99,12 +128,6 @@ class _BooksState extends ConsumerState<Books>
               ),
               backgroundColor: Colors.white,
               elevation: 0,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: removeHasVisited,
-                ),
-              ],
             ),
             body: Center(
               child: Column(
@@ -199,7 +222,7 @@ class _BooksState extends ConsumerState<Books>
                 books.first.name,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: 22,
                   color: Color(0xFF2D3142),
                 ),
               ),
@@ -238,12 +261,6 @@ class _BooksState extends ConsumerState<Books>
                 ),
               ],
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.more_vert, color: Color(0xFF2D3142)),
-                onPressed: removeHasVisited,
-              ),
-            ],
           ),
           body: TabBarView(
             controller: _tabController,
@@ -277,14 +294,14 @@ class _BooksState extends ConsumerState<Books>
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
-                              'Tổng số dư',
+                              'Toàn bộ',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white70,
                               ),
                             ),
                             Text(
-                              '5,000,000 đ',
+                              '${totalExpense.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}đ',
                               style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
@@ -299,12 +316,12 @@ class _BooksState extends ConsumerState<Books>
                           children: [
                             _buildStatItem(
                               'Thu nhập',
-                              '3,000,000 đ',
+                              '${totalIncome.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}đ',
                               Colors.white,
                             ),
                             _buildStatItem(
                               'Chi tiêu',
-                              '1,500,000 đ',
+                              '${totalExpense.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}đ',
                               Colors.white,
                             ),
                           ],
@@ -314,12 +331,33 @@ class _BooksState extends ConsumerState<Books>
                   ),
                   // Danh sách các đầu mục chi tiêu
                   Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return _buildExpenseItem();
-                      },
+                    child: transactions.when(
+                      loading:
+                          () =>
+                              const Center(child: CircularProgressIndicator()),
+                      error:
+                          (error, stack) =>
+                              Center(child: Text('Error: $error')),
+                      data:
+                          (transactionsList) => ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: transactionsList.length,
+                            itemBuilder: (context, index) {
+                              final transaction = transactionsList[index];
+                              return _buildExpenseItem(
+                                title: transaction.note,
+                                amount:
+                                    '${transaction.amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}đ',
+                                time:
+                                    transaction.date != null
+                                        ? DateFormat(
+                                          'HH:mm dd/MM/yyyy',
+                                        ).format(transaction.date!)
+                                        : '',
+                                type: transaction.type,
+                              );
+                            },
+                          ),
                     ),
                   ),
                 ],
@@ -400,7 +438,7 @@ class _BooksState extends ConsumerState<Books>
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              _showAddExpenseModal(context);
+              _showAddExpenseModal(context, books.first); // Pass current book
             },
             backgroundColor: const Color(0xFF6C63FF),
             elevation: 4,
@@ -438,7 +476,12 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  Widget _buildExpenseItem({String? title, String? amount, String? time}) {
+  Widget _buildExpenseItem({
+    String? title,
+    String? amount,
+    String? time,
+    String? type,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -466,7 +509,10 @@ class _BooksState extends ConsumerState<Books>
               ),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.shopping_cart, color: Colors.white),
+            child: Icon(
+              type == 'income' ? Icons.savings : Icons.shopping_cart,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -490,11 +536,14 @@ class _BooksState extends ConsumerState<Books>
             ),
           ),
           Text(
-            amount ?? '- 500,000 đ',
-            style: const TextStyle(
+            (type == 'income' ? '+ ' : '- ') + (amount ?? '500,000 đ'),
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Color(0xFFEF476F),
+              color:
+                  type == 'income'
+                      ? const Color(0xFF4CAF50)
+                      : const Color(0xFFEF476F),
             ),
           ),
         ],
@@ -502,7 +551,8 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  void _showAddExpenseModal(BuildContext context) {
+  void _showAddExpenseModal(BuildContext context, Book currentBook) {
+    // Update parameter
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -661,10 +711,36 @@ class _BooksState extends ConsumerState<Books>
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (_amount.isNotEmpty &&
                                   _selectedCategory != null) {
-                                // TODO: Save transaction
+                                final transactionNotifier = ref.read(
+                                  transactionsProvider.notifier,
+                                );
+
+                                // Get category ID from selected category name
+                                final selectedCategoryData =
+                                    _isExpense
+                                        ? _expenseCategories.firstWhere(
+                                          (cat) =>
+                                              cat['name'] == _selectedCategory,
+                                        )
+                                        : _incomeCategories.firstWhere(
+                                          (cat) =>
+                                              cat['name'] == _selectedCategory,
+                                        );
+
+                                await transactionNotifier.createTransaction(
+                                  amount: double.parse(_amount),
+                                  note: _note,
+                                  type: _isExpense ? 'expense' : 'income',
+                                  categoryId: selectedCategoryData['id'],
+                                  bookId:
+                                      currentBook.id ??
+                                      0, // Add null check with default value
+                                  userId: 1,
+                                );
+
                                 Navigator.pop(context);
                               }
                             },
