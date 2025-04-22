@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 import 'ui/welcome.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,16 +31,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Fintrack',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-        fontFamily: 'Roboto',
-        textTheme: GoogleFonts.robotoTextTheme(),
+    return ProviderScope(
+      child: MaterialApp(
+        title: 'Fintrack',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+          textTheme: GoogleFonts.robotoTextTheme(),
+        ),
+        home: hasVisited ? HomePage() : WelcomeScreen(),
       ),
-      home: hasVisited ? HomePage() : WelcomeScreen(),
     );
   }
 }

@@ -205,19 +205,4 @@ class DatabaseHelper {
 
     logger.info('\n=== END OF DATABASE ===\n');
   }
-
-  Future<List<Map<String, dynamic>>> getBooks() async {
-    final db = await database;
-    return await db.query('books', orderBy: 'name ASC');
-  }
-
-  Future<List<Map<String, dynamic>>> getWallets() async {
-    final db = await database;
-    return await db.query('wallets', orderBy: 'name ASC');
-  }
-
-  Future<int> insertWallet(Map<String, dynamic> row) async {
-    final db = await database;
-    return await db.insert('wallets', row);
-  }
 }

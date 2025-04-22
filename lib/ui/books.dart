@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../data/database/database_helper.dart';
@@ -6,15 +7,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'components/number_pad.dart';
 import '../data/models/book.dart';
 import '../data/repositories/book_repository.dart';
+import '../providers/book_provider.dart';
 
-class Books extends StatefulWidget {
+class Books extends ConsumerStatefulWidget {
   const Books({super.key});
 
   @override
-  State<Books> createState() => _BooksState();
+  _BooksState createState() => _BooksState();
 }
 
-class _BooksState extends State<Books> with SingleTickerProviderStateMixin {
+class _BooksState extends ConsumerState<Books>
+    with SingleTickerProviderStateMixin {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   late final BookRepository _bookRepository;
   String _amount = '';
@@ -25,7 +28,6 @@ class _BooksState extends State<Books> with SingleTickerProviderStateMixin {
   bool _isExpense = true;
   bool? _hasBooks;
   late TabController _tabController;
-  String _currentBookName = 'Sổ chi tiêu';
 
   // Calendar state
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -38,10 +40,9 @@ class _BooksState extends State<Books> with SingleTickerProviderStateMixin {
     super.initState();
     _bookRepository = BookRepository(_dbHelper);
     _loadCategories();
-    _checkBooks();
+    // _checkBooks();
     _tabController = TabController(length: 2, vsync: this);
     _selectedDay = _focusedDay;
-    _loadCurrentBook();
   }
 
   @override
@@ -50,12 +51,12 @@ class _BooksState extends State<Books> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> _checkBooks() async {
-    final books = await _dbHelper.getBooks();
-    setState(() {
-      _hasBooks = books.isNotEmpty;
-    });
-  }
+  // Future<void> _checkBooks() async {
+  //   final books = await _dbHelper.getBooks();
+  //   setState(() {
+  //     _hasBooks = books.isNotEmpty;
+  //   });
+  // }
 
   Future<void> _loadCategories() async {
     final expenseCats = await _dbHelper.getCategoriesByType('expense');
@@ -66,16 +67,6 @@ class _BooksState extends State<Books> with SingleTickerProviderStateMixin {
     });
   }
 
-  Future<void> _loadCurrentBook() async {
-    final books = await _dbHelper.getBooks();
-    if (books.isNotEmpty) {
-      setState(() {
-        _currentBookName = books.first['name'] as String;
-        print('Current book: $_currentBookName');
-      });
-    }
-  }
-
   Future<void> removeHasVisited() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -84,312 +75,339 @@ class _BooksState extends State<Books> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (_hasBooks == false) {
-      return Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA),
-        appBar: AppBar(
-          title: const Text(
-            'Sổ chi tiêu',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: Color(0xFF2D3142),
-            ),
-          ),
-          backgroundColor: Colors.white,
-          elevation: 0,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: removeHasVisited,
-            ),
-          ],
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                margin: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    const Icon(Icons.book, size: 64, color: Color(0xFF6C63FF)),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Chưa có sổ chi tiêu nào',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D3142),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Hãy tạo sổ chi tiêu đầu tiên của bạn',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        _showCreateBookModal(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C63FF),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Tạo sổ chi tiêu',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+    final books = ref.watch(booksProvider);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.search, color: Color(0xFF2D3142)),
-          onPressed: () {
-            // TODO: Handle search
-          },
-        ),
-        centerTitle: true,
-        title: TextButton.icon(
-          onPressed: () {
-            // TODO: Handle dropdown menu
-          },
-          icon: Text(
-            _currentBookName,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Color(0xFF2D3142),
-            ),
-          ),
-          label: const Icon(
-            Icons.arrow_drop_down,
-            color: Color(0xFF2D3142),
-          ),
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: const Color(0xFF6C63FF),
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: const Color(0xFF6C63FF),
-          labelStyle: const TextStyle(fontSize: 13),
-          unselectedLabelStyle: const TextStyle(fontSize: 13),
-          tabs: const [
-            Tab(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.receipt, size: 20),
-                  SizedBox(width: 4),
-                  Text('Hóa đơn'),
-                ],
-              ),
-            ),
-            Tab(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.calendar_today, size: 20),
-                  SizedBox(width: 4),
-                  Text('Lịch'),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Color(0xFF2D3142)),
-            onPressed: removeHasVisited,
-          ),
-        ],
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          // Tab Hóa đơn
-          Column(
-            children: [
-              // Header với thông tin tổng quan
-              Container(
-                padding: const EdgeInsets.all(20),
-                margin: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6C63FF), Color(0xFF4A45B1)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF6C63FF).withOpacity(0.3),
-                      spreadRadius: 2,
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
+    return books.when(
+      loading:
+          () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error:
+          (error, stack) =>
+              Scaffold(body: Center(child: Text('Có lỗi xảy ra: $error'))),
+      data: (books) {
+        if (books.isEmpty) {
+          return Scaffold(
+            backgroundColor: const Color(0xFFF8F9FA),
+            appBar: AppBar(
+              title: const Text(
+                'Sổ chi tiêu',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Color(0xFF2D3142),
                 ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Tổng số dư',
-                          style: TextStyle(fontSize: 16, color: Colors.white70),
+              ),
+              backgroundColor: Colors.white,
+              elevation: 0,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: removeHasVisited,
+                ),
+              ],
+            ),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
                         ),
-                        Text(
-                          '5,000,000 đ',
-                          style: const TextStyle(
-                            fontSize: 28,
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.book,
+                          size: 64,
+                          color: Color(0xFF6C63FF),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Chưa có sổ chi tiêu nào',
+                          style: TextStyle(
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Color(0xFF2D3142),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Hãy tạo sổ chi tiêu đầu tiên của bạn',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            _showCreateBookModal(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6C63FF),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 16,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Tạo sổ chi tiêu',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildStatItem('Thu nhập', '3,000,000 đ', Colors.white),
-                        _buildStatItem('Chi tiêu', '1,500,000 đ', Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF8F9FA),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.search, color: Color(0xFF2D3142)),
+              onPressed: () {
+                // TODO: Handle search
+              },
+            ),
+            centerTitle: true,
+            title: TextButton.icon(
+              onPressed: () {
+                // TODO: Handle dropdown menu
+              },
+              icon: Text(
+                books.first.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Color(0xFF2D3142),
+                ),
+              ),
+              label: const Icon(
+                Icons.arrow_drop_down,
+                color: Color(0xFF2D3142),
+              ),
+            ),
+            bottom: TabBar(
+              controller: _tabController,
+              labelColor: const Color(0xFF6C63FF),
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: const Color(0xFF6C63FF),
+              labelStyle: const TextStyle(fontSize: 13),
+              unselectedLabelStyle: const TextStyle(fontSize: 13),
+              tabs: const [
+                Tab(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.receipt, size: 20),
+                      SizedBox(width: 4),
+                      Text('Hóa đơn'),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.calendar_today, size: 20),
+                      SizedBox(width: 4),
+                      Text('Lịch'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.more_vert, color: Color(0xFF2D3142)),
+                onPressed: removeHasVisited,
+              ),
+            ],
+          ),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              // Tab Hóa đơn
+              Column(
+                children: [
+                  // Header với thông tin tổng quan
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF6C63FF), Color(0xFF4A45B1)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF6C63FF).withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
                       ],
                     ),
-                  ],
-                ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Tổng số dư',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white70,
+                              ),
+                            ),
+                            Text(
+                              '5,000,000 đ',
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildStatItem(
+                              'Thu nhập',
+                              '3,000,000 đ',
+                              Colors.white,
+                            ),
+                            _buildStatItem(
+                              'Chi tiêu',
+                              '1,500,000 đ',
+                              Colors.white,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Danh sách các đầu mục chi tiêu
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        return _buildExpenseItem();
+                      },
+                    ),
+                  ),
+                ],
               ),
-              // Danh sách các đầu mục chi tiêu
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return _buildExpenseItem();
-                  },
-                ),
+              // Tab Lịch
+              Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TableCalendar(
+                      firstDay: DateTime.utc(2020, 1, 1),
+                      lastDay: DateTime.utc(2030, 12, 31),
+                      focusedDay: _focusedDay,
+                      selectedDayPredicate: (day) {
+                        return isSameDay(_selectedDay, day);
+                      },
+                      calendarFormat: _calendarFormat,
+                      onFormatChanged: (format) {
+                        setState(() {
+                          _calendarFormat = format;
+                        });
+                      },
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setState(() {
+                          _selectedDay = selectedDay;
+                          _focusedDay = focusedDay;
+                        });
+                      },
+                      calendarStyle: const CalendarStyle(
+                        selectedDecoration: BoxDecoration(
+                          color: Color(0xFF6C63FF),
+                          shape: BoxShape.circle,
+                        ),
+                        todayDecoration: BoxDecoration(
+                          color: Color(0xFF6C63FF),
+                          shape: BoxShape.circle,
+                        ),
+                        markerDecoration: BoxDecoration(
+                          color: Color(0xFF6C63FF),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      headerStyle: const HeaderStyle(
+                        formatButtonVisible: false,
+                        titleCentered: true,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: _events[_selectedDay]?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final event = _events[_selectedDay]![index];
+                        return _buildExpenseItem(
+                          title: event['title'],
+                          amount: event['amount'],
+                          time: event['time'],
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          // Tab Lịch
-          Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: TableCalendar(
-                  firstDay: DateTime.utc(2020, 1, 1),
-                  lastDay: DateTime.utc(2030, 12, 31),
-                  focusedDay: _focusedDay,
-                  selectedDayPredicate: (day) {
-                    return isSameDay(_selectedDay, day);
-                  },
-                  calendarFormat: _calendarFormat,
-                  onFormatChanged: (format) {
-                    setState(() {
-                      _calendarFormat = format;
-                    });
-                  },
-                  onDaySelected: (selectedDay, focusedDay) {
-                    setState(() {
-                      _selectedDay = selectedDay;
-                      _focusedDay = focusedDay;
-                    });
-                  },
-                  calendarStyle: const CalendarStyle(
-                    selectedDecoration: BoxDecoration(
-                      color: Color(0xFF6C63FF),
-                      shape: BoxShape.circle,
-                    ),
-                    todayDecoration: BoxDecoration(
-                      color: Color(0xFF6C63FF),
-                      shape: BoxShape.circle,
-                    ),
-                    markerDecoration: BoxDecoration(
-                      color: Color(0xFF6C63FF),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  headerStyle: const HeaderStyle(
-                    formatButtonVisible: false,
-                    titleCentered: true,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _events[_selectedDay]?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    final event = _events[_selectedDay]![index];
-                    return _buildExpenseItem(
-                      title: event['title'],
-                      amount: event['amount'],
-                      time: event['time'],
-                    );
-                  },
-                ),
-              ),
-            ],
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              _showAddExpenseModal(context);
+            },
+            backgroundColor: const Color(0xFF6C63FF),
+            elevation: 4,
+            child: const Icon(Icons.add, color: Colors.white),
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showAddExpenseModal(context);
-        },
-        backgroundColor: const Color(0xFF6C63FF),
-        elevation: 4,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+        );
+      },
     );
   }
 
@@ -779,10 +797,10 @@ class _BooksState extends State<Books> with SingleTickerProviderStateMixin {
                             balance: 0.0,
                             userId: 1, // TODO: Get current user ID
                           );
-
-                          await _bookRepository.createBook(book);
+                          await ref
+                              .read(booksProvider.notifier)
+                              .createBook(_bookNameController.text);
                           Navigator.pop(context);
-                          _checkBooks();
                         } catch (e) {
                           // TODO: Show error message
                           print('Error creating book: $e');

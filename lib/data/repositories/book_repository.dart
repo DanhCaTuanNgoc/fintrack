@@ -12,6 +12,12 @@ class BookRepository {
     return book.copyWith(id: id);
   }
 
+  Future<List<Book>> getBooks() async {
+    final db = await _databaseHelper.database;
+    final maps = await db.query('books', orderBy: 'name ASC');
+    return maps.map((map) => Book.fromMap(map)).toList();
+  }
+
   Future<Book?> getBookById(int id) async {
     final db = await _databaseHelper.database;
     final maps = await db.query('books', where: 'id = ?', whereArgs: [id]);
