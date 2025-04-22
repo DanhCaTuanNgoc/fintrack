@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:table_calendar/table_calendar.dart';
 import '../data/database/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/number_pad.dart';
@@ -13,7 +14,7 @@ class Books extends StatefulWidget {
   State<Books> createState() => _BooksState();
 }
 
-class _BooksState extends State<Books> {
+class _BooksState extends State<Books> with SingleTickerProviderStateMixin {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   late final BookRepository _bookRepository;
   String _amount = '';
@@ -23,6 +24,14 @@ class _BooksState extends State<Books> {
   List<Map<String, dynamic>> _incomeCategories = [];
   bool _isExpense = true;
   bool? _hasBooks;
+  late TabController _tabController;
+  String _currentBookName = 'Sổ chi tiêu';
+
+  // Calendar state
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+  Map<DateTime, List<Map<String, dynamic>>> _events = {};
 
   @override
   void initState() {
@@ -30,6 +39,15 @@ class _BooksState extends State<Books> {
     _bookRepository = BookRepository(_dbHelper);
     _loadCategories();
     _checkBooks();
+    _tabController = TabController(length: 2, vsync: this);
+    _selectedDay = _focusedDay;
+    _loadCurrentBook();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _checkBooks() async {
@@ -46,6 +64,16 @@ class _BooksState extends State<Books> {
       _expenseCategories = expenseCats;
       _incomeCategories = incomeCats;
     });
+  }
+
+  Future<void> _loadCurrentBook() async {
+    final books = await _dbHelper.getBooks();
+    if (books.isNotEmpty) {
+      setState(() {
+        _currentBookName = books.first['name'] as String;
+        print('Current book: $_currentBookName');
+      });
+    }
   }
 
   Future<void> removeHasVisited() async {
@@ -149,16 +177,62 @@ class _BooksState extends State<Books> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text(
-          'Sổ chi tiêu',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.search, color: Color(0xFF2D3142)),
+          onPressed: () {
+            // TODO: Handle search
+          },
+        ),
+        centerTitle: true,
+        title: TextButton.icon(
+          onPressed: () {
+            // TODO: Handle dropdown menu
+          },
+          icon: Text(
+            _currentBookName,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Color(0xFF2D3142),
+            ),
+          ),
+          label: const Icon(
+            Icons.arrow_drop_down,
             color: Color(0xFF2D3142),
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: const Color(0xFF6C63FF),
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: const Color(0xFF6C63FF),
+          labelStyle: const TextStyle(fontSize: 13),
+          unselectedLabelStyle: const TextStyle(fontSize: 13),
+          tabs: const [
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.receipt, size: 20),
+                  SizedBox(width: 4),
+                  Text('Hóa đơn'),
+                ],
+              ),
+            ),
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.calendar_today, size: 20),
+                  SizedBox(width: 4),
+                  Text('Lịch'),
+                ],
+              ),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.more_vert, color: Color(0xFF2D3142)),
@@ -166,67 +240,145 @@ class _BooksState extends State<Books> {
           ),
         ],
       ),
-      body: Column(
+      body: TabBarView(
+        controller: _tabController,
         children: [
-          // Header với thông tin tổng quan
-          Container(
-            padding: const EdgeInsets.all(20),
-            margin: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6C63FF), Color(0xFF4A45B1)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          // Tab Hóa đơn
+          Column(
+            children: [
+              // Header với thông tin tổng quan
+              Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6C63FF), Color(0xFF4A45B1)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6C63FF).withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Tổng số dư',
+                          style: TextStyle(fontSize: 16, color: Colors.white70),
+                        ),
+                        Text(
+                          '5,000,000 đ',
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildStatItem('Thu nhập', '3,000,000 đ', Colors.white),
+                        _buildStatItem('Chi tiêu', '1,500,000 đ', Colors.white),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF6C63FF).withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
+              // Danh sách các đầu mục chi tiêu
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return _buildExpenseItem();
+                  },
                 ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Tổng số dư',
-                      style: TextStyle(fontSize: 16, color: Colors.white70),
-                    ),
-                    Text(
-                      '5,000,000 đ',
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildStatItem('Thu nhập', '3,000,000 đ', Colors.white),
-                    _buildStatItem('Chi tiêu', '1,500,000 đ', Colors.white),
-                  ],
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          // Danh sách các đầu mục chi tiêu
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return _buildExpenseItem();
-              },
-            ),
+          // Tab Lịch
+          Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TableCalendar(
+                  firstDay: DateTime.utc(2020, 1, 1),
+                  lastDay: DateTime.utc(2030, 12, 31),
+                  focusedDay: _focusedDay,
+                  selectedDayPredicate: (day) {
+                    return isSameDay(_selectedDay, day);
+                  },
+                  calendarFormat: _calendarFormat,
+                  onFormatChanged: (format) {
+                    setState(() {
+                      _calendarFormat = format;
+                    });
+                  },
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
+                    });
+                  },
+                  calendarStyle: const CalendarStyle(
+                    selectedDecoration: BoxDecoration(
+                      color: Color(0xFF6C63FF),
+                      shape: BoxShape.circle,
+                    ),
+                    todayDecoration: BoxDecoration(
+                      color: Color(0xFF6C63FF),
+                      shape: BoxShape.circle,
+                    ),
+                    markerDecoration: BoxDecoration(
+                      color: Color(0xFF6C63FF),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  headerStyle: const HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _events[_selectedDay]?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    final event = _events[_selectedDay]![index];
+                    return _buildExpenseItem(
+                      title: event['title'],
+                      amount: event['amount'],
+                      time: event['time'],
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -268,7 +420,7 @@ class _BooksState extends State<Books> {
     );
   }
 
-  Widget _buildExpenseItem() {
+  Widget _buildExpenseItem({String? title, String? amount, String? time}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -303,9 +455,9 @@ class _BooksState extends State<Books> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Mua sắm',
-                  style: TextStyle(
+                Text(
+                  title ?? 'Mua sắm',
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF2D3142),
@@ -313,14 +465,14 @@ class _BooksState extends State<Books> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Hôm nay, 14:30',
+                  time ?? 'Hôm nay, 14:30',
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
             ),
           ),
           Text(
-            '- 500,000 đ',
+            amount ?? '- 500,000 đ',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
