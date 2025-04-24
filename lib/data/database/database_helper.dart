@@ -121,6 +121,11 @@ class DatabaseHelper {
     return await db.query('categories', where: 'type = ?', whereArgs: [type]);
   }
 
+  Future<List<Map<String, dynamic>>> getCategoriesById(int id) async {
+    final db = await database;
+    return await db.query('categories', where: 'id = ?', whereArgs: [id]);
+  }
+
   // CRUD operations cho Transactions
   Future<int> insertTransaction(Map<String, dynamic> transaction) async {
     final db = await database;
