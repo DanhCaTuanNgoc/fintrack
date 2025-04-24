@@ -50,8 +50,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         icon TEXT,
-        type TEXT CHECK(type IN ('income', 'expense')),
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        type TEXT CHECK(type IN ('income', 'expense'))
       )
     ''');
 
