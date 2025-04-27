@@ -1,0 +1,26 @@
+[33mfa73f25[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mThach-Bao[m[33m)[m Update wallet
+[33mf2b995f[m[33m ([m[1;31morigin/develop[m[33m, [m[1;31morigin/Thach-Bao[m[33m, [m[1;32mdevelop[m[33m)[m Update database_helper.dart
+[33m2319654[m update categories table database
+[33m8d3088a[m feat(transaction) : thêm chi tiết chi tiêu vào số
+[33m766db08[m feat(book) : thêm thư viện quản lý trạng thái Provider sử dụng StateNotifier để quản lý state cho books
+[33m2162218[m chore(book) : điều chỉnh UI thêm Tab xem chi tiêu dạng lịch
+[33m4359ade[m Enhance UI by adding Roboto font, updating welcome screen layout background, and improving button styles. Refactor book and wallet creation forms for better user experience and consistency in design.
+[33mcc4a73a[m thêm file backend cho transaction
+[33mb685773[m Implement book and wallet creation features, update UI components, and integrate shared preferences for first-time user experience. Add new dependencies and refactor existing code for improved functionality.
+[33m53ab5be[m test branch develop
+[33mc0171de[m Delete lib/ui/Welcome.dart
+[33m77dc339[m Delete lib/ui/Wallet.dart
+[33m202f78b[m Delete lib/ui/More.dart
+[33mae29659[m Delete lib/ui/HomePage.dart
+[33m4452b04[m Delete lib/ui/Charts.dart
+[33m9b0a50d[m Delete lib/ui/Books.dart
+[33m33a075b[m Update main.dart
+[33m88f5fa8[m Add files via upload
+[33m5673c71[m khởi tạo database sqflite khi mở app, hiển thị tables ở terminal
+[33m3aca175[m update cấu trúc navigation
+[33m78fe4a1[m Refactor Welcome screen layout: remove page indicators and update content structure for improved UI
+[33m063ef10[m tạo database, repository, model
+[33m8bfdd4d[m Update README.md
+[33m1ad4732[m Resolve merge conflict in README.md
+[33m08b9ede[m Initial commit
+[33m356d032[m Initial commit
