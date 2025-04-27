@@ -44,6 +44,19 @@ class DatabaseHelper {
       )
     ''');
 
+    // Bảng Wallets
+    await db.execute("""
+    CREATE TABLE IF NOT EXISTS wallets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nameBalance TEXT NOT NULL,
+        walletBalance REAL DEFAULT 0,
+        type Text,
+        user_id INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES books (id) ON DELETE CASCADE
+      )
+    """);
+
     // Bảng Categories
     await db.execute('''
       CREATE TABLE IF NOT EXISTS categories (
@@ -112,6 +125,17 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getBooksByUser(int userId) async {
     final db = await database;
     return await db.query('books', where: 'user_id = ?', whereArgs: [userId]);
+  }
+
+  // CRUD operations cho Wallets
+  Future<int> insertWallet(Map<String, dynamic> wallet) async {
+    final db = await database;
+    return await db.insert('wallets', wallet);
+  }
+
+  Future<List<Map<String, dynamic>>> getWalletByUser(int userId) async {
+    final db = await database;
+    return await db.query('wallets', where: 'user_id = ?', whereArgs: [userId]);
   }
 
   // CRUD operations cho Categories
