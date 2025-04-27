@@ -31,11 +31,38 @@ class _BooksState extends ConsumerState<Books>
   bool? _hasBooks;
   late TabController _tabController;
 
+  // State để quản lý trạng thái mở rộng của mỗi ngày
+  final Map<String, bool> _expandedDays = {};
+  final Map<int, bool> _expandedTransactions = {};
+
   // Calendar state
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   Map<DateTime, List<Map<String, dynamic>>> _events = {};
+
+  // Thêm vào phần khai báo state
+  List<Map<String, dynamic>> _categories = [];
+
+  // Thêm vào phần khai báo state
+  final Map<String, IconData> _iconMapping = {
+    '🍔': Icons.restaurant,
+    '🚗': Icons.directions_car,
+    '🛍': Icons.shopping_bag,
+    '🎮': Icons.sports_esports,
+    '📚': Icons.book,
+    '💅': Icons.face,
+    '💰': Icons.attach_money,
+    '🎁': Icons.card_giftcard,
+    '📈': Icons.trending_up,
+  };
+
+  // Thêm vào phần khai báo state
+  bool _isAmountVisible = true;
+
+  IconData _getIconFromEmoji(String emoji) {
+    return _iconMapping[emoji] ?? Icons.category;
+  }
 
   @override
   void initState() {
@@ -63,9 +90,11 @@ class _BooksState extends ConsumerState<Books>
   Future<void> _loadCategories() async {
     final expenseCats = await _dbHelper.getCategoriesByType('expense');
     final incomeCats = await _dbHelper.getCategoriesByType('income');
+    final categories = await _dbHelper.getCategories();
     setState(() {
       _expenseCategories = expenseCats;
       _incomeCategories = incomeCats;
+      _categories = categories;
     });
   }
 
@@ -105,6 +134,10 @@ class _BooksState extends ConsumerState<Books>
       loading: () => 0.0,
       error: (_, __) => 0.0,
     );
+
+    // Tính toán balance (thu nhập - chi tiêu)
+    final balance = totalIncome - totalExpense;
+    final isNegative = balance < 0;
 
     return books.when(
       loading:
@@ -270,61 +303,149 @@ class _BooksState extends ConsumerState<Books>
                 children: [
                   // Header với thông tin tổng quan
                   Container(
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 20,
+                    ),
+                    margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF6C63FF), Color(0xFF4A45B1)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6C63FF).withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
                         ),
                       ],
                     ),
                     child: Column(
                       children: [
+                        // Date range selector và nút ẩn/hiện
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Toàn bộ',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white70,
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.chevron_left,
+                                    color: Colors.grey[600],
+                                    size: 24,
+                                  ),
+                                  onPressed: () {
+                                    // Handle previous date range
+                                  },
+                                ),
+                                Text(
+                                  '20/4/2025 - 26/4/2025',
+                                  style: TextStyle(
+                                    color: Colors.grey[800],
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.chevron_right,
+                                    color: Colors.grey[600],
+                                    size: 24,
+                                  ),
+                                  onPressed: () {
+                                    // Handle next date range
+                                  },
+                                ),
+                              ],
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                _isAmountVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.grey[600],
+                                size: 24,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isAmountVisible = !_isAmountVisible;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        // Stats row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 120,
+                                ),
+                                child: _buildStatItem(
+                                  'Toàn bộ',
+                                  balance.abs().toString(),
+                                  isNegative
+                                      ? const Color(0xFFFF5252)
+                                      : const Color(0xFF4CAF50),
+                                  showNegative: isNegative,
+                                ),
                               ),
                             ),
-                            Text(
-                              '${totalExpense.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}đ',
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 120,
+                                ),
+                                child: _buildStatItem(
+                                  'Thu nhập',
+                                  totalIncome.toString(),
+                                  const Color(0xFF4CAF50),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 120,
+                                ),
+                                child: _buildStatItem(
+                                  'Chi tiêu',
+                                  totalExpense.toString(),
+                                  const Color(0xFFFF5252),
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildStatItem(
-                              'Thu nhập',
-                              '${totalIncome.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}đ',
-                              Colors.white,
-                            ),
-                            _buildStatItem(
-                              'Chi tiêu',
-                              '${totalExpense.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}đ',
-                              Colors.white,
-                            ),
-                          ],
+                        const SizedBox(height: 16),
+                        // Time range selector
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5F5F5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: _buildTimeRangeButton(
+                                  'Hàng tuần',
+                                  isSelected: true,
+                                ),
+                              ),
+                              Expanded(
+                                child: _buildTimeRangeButton('Hàng tháng'),
+                              ),
+                              Expanded(
+                                child: _buildTimeRangeButton('Hàng năm'),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -338,26 +459,45 @@ class _BooksState extends ConsumerState<Books>
                       error:
                           (error, stack) =>
                               Center(child: Text('Error: $error')),
-                      data:
-                          (transactionsList) => ListView.builder(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: transactionsList.length,
-                            itemBuilder: (context, index) {
-                              final transaction = transactionsList[index];
-                              return _buildExpenseItem(
-                                title: transaction.note,
-                                amount:
-                                    '${transaction.amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}đ',
-                                time:
-                                    transaction.date != null
-                                        ? DateFormat(
-                                          'HH:mm dd/MM/yyyy',
-                                        ).format(transaction.date!)
-                                        : '',
-                                type: transaction.type,
-                              );
-                            },
-                          ),
+                      data: (transactionsList) {
+                        // Nhóm giao dịch theo ngày
+                        final groupedTransactions = <String, List<dynamic>>{};
+                        final dailyExpenses = <String, double>{};
+
+                        for (var transaction in transactionsList) {
+                          final dateKey = DateFormat(
+                            'dd/MM/yyyy',
+                          ).format(transaction.date!);
+                          if (!groupedTransactions.containsKey(dateKey)) {
+                            groupedTransactions[dateKey] = [];
+                            dailyExpenses[dateKey] = 0;
+                          }
+                          groupedTransactions[dateKey]!.add(transaction);
+                          if (transaction.type == 'expense') {
+                            dailyExpenses[dateKey] =
+                                (dailyExpenses[dateKey] ?? 0) +
+                                transaction.amount;
+                          }
+                        }
+
+                        return ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: groupedTransactions.length,
+                          itemBuilder: (context, index) {
+                            final dateKey = groupedTransactions.keys.elementAt(
+                              index,
+                            );
+                            final transactions = groupedTransactions[dateKey]!;
+                            final dayExpense = dailyExpenses[dateKey] ?? 0;
+
+                            return _buildExpenseItem(
+                              dateKey: dateKey,
+                              transactions: transactions,
+                              dayExpense: dayExpense,
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -425,9 +565,11 @@ class _BooksState extends ConsumerState<Books>
                       itemBuilder: (context, index) {
                         final event = _events[_selectedDay]![index];
                         return _buildExpenseItem(
-                          title: event['title'],
-                          amount: event['amount'],
-                          time: event['time'],
+                          dateKey: DateFormat(
+                            'HH:mm dd/MM/yyyy',
+                          ).format(event['date']),
+                          transactions: event['transactions'],
+                          dayExpense: event['amount'],
                         );
                       },
                     ),
@@ -449,27 +591,61 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  Widget _buildStatItem(String title, String amount, Color color) {
+  Widget _buildTimeRangeButton(String text, {bool isSelected = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
+        color: isSelected ? const Color(0xFF6C63FF) : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
       ),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: isSelected ? Colors.white : Colors.grey[600],
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatItem(
+    String title,
+    String amount,
+    Color textColor, {
+    bool showNegative = false,
+  }) {
+    final numberFormat = NumberFormat('#,###');
+    final amountValue =
+        double.tryParse(amount.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+
+    return Container(
+      alignment: Alignment.center,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            title,
-            style: TextStyle(fontSize: 14, color: color.withOpacity(0.8)),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            amount,
+            _isAmountVisible
+                ? '${showNegative ? '-' : ''}\$${numberFormat.format(amountValue)}'
+                : '•••••',
             style: TextStyle(
+              color: textColor,
               fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color,
+              fontWeight: FontWeight.w600,
+              height: 1.2,
             ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -477,74 +653,149 @@ class _BooksState extends ConsumerState<Books>
   }
 
   Widget _buildExpenseItem({
-    String? title,
-    String? amount,
-    String? time,
-    String? type,
+    required String dateKey,
+    required List<dynamic> transactions,
+    required double dayExpense,
   }) {
+    final isExpanded = _expandedDays[dateKey] ?? false;
+    final numberFormat = NumberFormat('#,###');
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 10,
+            color: Colors.grey.withOpacity(0.08),
+            spreadRadius: 2,
+            blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6C63FF), Color(0xFF4A45B1)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          // Header ngày
+          InkWell(
+            onTap: () {
+              setState(() {
+                _expandedDays[dateKey] = !isExpanded;
+              });
+            },
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                border:
+                    isExpanded
+                        ? Border(
+                          bottom: BorderSide(
+                            color: Colors.grey.withOpacity(0.1),
+                            width: 1,
+                          ),
+                        )
+                        : null,
               ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              type == 'income' ? Icons.savings : Icons.shopping_cart,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title ?? 'Mua sắm',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3142),
+              child: Row(
+                children: [
+                  AnimatedRotation(
+                    turns: isExpanded ? 0.25 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      Icons.keyboard_arrow_right,
+                      color: Colors.grey[600],
+                      size: 24,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  time ?? 'Hôm nay, 14:30',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Text(
+                    dateKey,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    'Chi tiêu: ${numberFormat.format(dayExpense)}đ',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  ),
+                ],
+              ),
             ),
           ),
-          Text(
-            (type == 'income' ? '+ ' : '- ') + (amount ?? '500,000 đ'),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color:
-                  type == 'income'
-                      ? const Color(0xFF4CAF50)
-                      : const Color(0xFFEF476F),
+          // Danh sách giao dịch
+          AnimatedCrossFade(
+            firstChild: const SizedBox(height: 0),
+            secondChild: Column(
+              children:
+                  transactions.map((transaction) {
+                    // Tìm category tương ứng
+                    final category = _categories.firstWhere(
+                      (cat) => cat['id'] == transaction.categoryId,
+                      orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
+                    );
+
+                    // Chuyển đổi màu từ string sang Color
+                    final colorString = category['color'] ?? '0xFF6C63FF';
+                    final color = Color(int.parse(colorString));
+                    final bgColor = color.withOpacity(0.1);
+
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          // Icon từ category
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: bgColor,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              _getIconFromEmoji(category['icon'] ?? '🏷️'),
+                              color: color,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // Thông tin giao dịch
+                          Expanded(
+                            child: Text(
+                              transaction.note,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          // Số tiền
+                          Text(
+                            '${transaction.type == 'expense' ? '-' : '+'}${numberFormat.format(transaction.amount)}đ',
+                            style: TextStyle(
+                              color:
+                                  transaction.type == 'expense'
+                                      ? Colors.red
+                                      : Colors.green,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
             ),
+            crossFadeState:
+                isExpanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 200),
           ),
         ],
       ),

@@ -50,8 +50,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         icon TEXT,
-        type TEXT CHECK(type IN ('income', 'expense')),
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        type TEXT CHECK(type IN ('income', 'expense'))
       )
     ''');
 
@@ -204,5 +203,10 @@ class DatabaseHelper {
     }
 
     logger.info('\n=== END OF DATABASE ===\n');
+  }
+
+  Future<List<Map<String, dynamic>>> getCategories() async {
+    final db = await database;
+    return await db.query('categories');
   }
 }
