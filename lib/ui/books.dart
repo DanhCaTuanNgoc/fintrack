@@ -617,6 +617,7 @@ class _BooksState extends ConsumerState<Books>
     Color textColor, {
     bool showNegative = false,
   }) {
+    final numberFormat = NumberFormat('#,###');
     final amountValue =
         double.tryParse(amount.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
 
