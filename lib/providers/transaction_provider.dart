@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/database/database_helper.dart';
 import '../data/models/transaction.dart';
 import '../data/repositories/transaction_repository.dart';
+import 'currency_provider.dart';
 
 final databaseHelperProvider = Provider<DatabaseHelper>((ref) {
   return DatabaseHelper.instance;
@@ -12,11 +13,15 @@ final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
   return TransactionRepository(dbHelper);
 });
 
-final transactionsProvider = StateNotifierProvider<TransactionsNotifier, AsyncValue<List<Transaction>>>((ref) {
-  return TransactionsNotifier(ref);
-});
+final transactionsProvider =
+    StateNotifierProvider<TransactionsNotifier, AsyncValue<List<Transaction>>>((
+      ref,
+    ) {
+      return TransactionsNotifier(ref);
+    });
 
-class TransactionsNotifier extends StateNotifier<AsyncValue<List<Transaction>>> {
+class TransactionsNotifier
+    extends StateNotifier<AsyncValue<List<Transaction>>> {
   TransactionsNotifier(this.ref) : super(const AsyncValue.loading()) {
     loadTransactions();
   }
@@ -50,9 +55,39 @@ class TransactionsNotifier extends StateNotifier<AsyncValue<List<Transaction>>> 
         categoryId: categoryId,
         bookId: bookId,
         userId: userId,
+        date: DateTime.now(),
       );
       await repository.createTransaction(transaction);
       await loadTransactions();
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  Future<void> updateAllTransactionCurrencies(
+    CurrencyType oldCurrency,
+    CurrencyType newCurrency,
+  ) async {
+    try {
+      state.whenData((transactions) async {
+        final repository = ref.read(transactionRepositoryProvider);
+
+        // Cập nhật mỗi giao dịch với số tiền đã được chuyển đổi
+        for (final transaction in transactions) {
+          double newAmount = convertCurrency(
+            transaction.amount,
+            oldCurrency,
+            newCurrency,
+          );
+
+          // Cập nhật giao dịch với số tiền mới
+          final updatedTransaction = transaction.copyWith(amount: newAmount);
+          await repository.updateTransaction(updatedTransaction);
+        }
+
+        // Tải lại danh sách giao dịch sau khi cập nhật
+        await loadTransactions();
+      });
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

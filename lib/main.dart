@@ -6,43 +6,58 @@ import 'package:logging/logging.dart';
 import 'ui/welcome.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'providers/currency_provider.dart';
+import 'providers/background_color_provider.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     debugPrint('${record.level.name}: ${record.message}');
   });
 
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
+
   // Khởi tạo database
   await DatabaseHelper.instance.database;
   await DatabaseHelper.instance.showAllTables();
 
-  //Checkin
   final prefs = await SharedPreferences.getInstance();
-  final bool hasVisited = await prefs.getBool('hasVisited') ?? false;
+  final bool hasVisited = prefs.getBool('hasVisited') ?? false;
 
-  runApp(MyApp(hasVisited: hasVisited));
+  // Đảm bảo CurrencyNotifier được khởi tạo từ đầu
+  CurrencyNotifier().setCurrency(CurrencyType.vnd);
+
+  runApp(ProviderScope(child: MyApp(hasVisited: hasVisited)));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   final bool hasVisited;
   const MyApp({super.key, required this.hasVisited});
 
   @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      child: MaterialApp(
-        title: 'Fintrack',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-          fontFamily: 'Roboto',
-          textTheme: GoogleFonts.robotoTextTheme(),
-        ),
-        home: hasVisited ? HomePage() : WelcomeScreen(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Lấy màu nền từ provider
+    final backgroundColor = ref.watch(backgroundColorProvider);
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Fintrack',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        fontFamily: 'Roboto',
+        textTheme: GoogleFonts.robotoTextTheme(),
+        scaffoldBackgroundColor: backgroundColor,
       ),
+      home: hasVisited ? const HomePage() : const WelcomeScreen(),
     );
   }
 }
