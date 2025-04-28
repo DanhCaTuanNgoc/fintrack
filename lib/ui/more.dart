@@ -6,6 +6,11 @@ import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
 import '../providers/transaction_provider.dart';
 
+// Provider lưu trữ màu nền hiện tại
+final backgroundColorProvider = StateProvider<Color>((ref) {
+  return const Color(0xFFF8F9FA); // Màu mặc định
+});
+
 class More extends ConsumerStatefulWidget {
   const More({super.key});
 
@@ -14,6 +19,60 @@ class More extends ConsumerStatefulWidget {
 }
 
 class _MoreState extends ConsumerState<More> {
+  // Danh sách các màu nền có sẵn
+  final List<Color> _backgroundColors = [
+    const Color(0xFFF8F9FA), // Xám nhạt - mặc định
+    const Color(0xFFE3F2FD), // Xanh dương nhạt
+    const Color(0xFFF3E5F5), // Tím nhạt
+    const Color(0xFFFFF8E1), // Vàng nhạt
+    const Color(0xFFE8F5E9), // Xanh lá nhạt
+  ];
+
+  // Tên các màu
+  final List<String> _colorNames = [
+    'Xám nhạt',
+    'Xanh dương nhạt',
+    'Tím nhạt',
+    'Vàng nhạt',
+    'Xanh lá nhạt',
+  ];
+
+  // Chỉ số màu hiện tại
+  int _currentColorIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedColor();
+  }
+
+  // Tải màu nền đã lưu
+  Future<void> _loadSavedColor() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedIndex = prefs.getInt('background_color_index') ?? 0;
+      if (savedIndex < _backgroundColors.length) {
+        setState(() {
+          _currentColorIndex = savedIndex;
+        });
+        ref.read(backgroundColorProvider.notifier).state =
+            _backgroundColors[savedIndex];
+      }
+    } catch (e) {
+      print('Lỗi khi tải màu nền: $e');
+    }
+  }
+
+  // Lưu màu nền đã chọn
+  Future<void> _saveColorIndex(int index) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('background_color_index', index);
+    } catch (e) {
+      print('Lỗi khi lưu màu nền: $e');
+    }
+  }
+
   Future<void> removeData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -25,8 +84,11 @@ class _MoreState extends ConsumerState<More> {
     // Lấy đơn vị tiền tệ hiện tại từ provider
     final currentCurrency = ref.watch(currencyProvider);
 
+    // Lấy màu nền hiện tại
+    final backgroundColor = ref.watch(backgroundColorProvider);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: backgroundColor, // Áp dụng màu nền
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -95,6 +157,15 @@ class _MoreState extends ConsumerState<More> {
             subtitle: currentCurrency.displayName,
             onTap: () {
               _showCurrencyDialog(currentCurrency);
+            },
+          ),
+          _buildDivider(),
+          _buildSettingItem(
+            icon: Icons.color_lens,
+            title: 'Màu nền',
+            subtitle: _colorNames[_currentColorIndex],
+            onTap: () {
+              _showBackgroundColorDialog();
             },
           ),
         ],
@@ -254,6 +325,61 @@ class _MoreState extends ConsumerState<More> {
     );
   }
 
+  void _showBackgroundColorDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: const Text(
+              'Chọn màu nền',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2D3142),
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(_backgroundColors.length, (index) {
+                return _buildDialogOption(
+                  title: _colorNames[index],
+                  isSelected: _currentColorIndex == index,
+                  color: _backgroundColors[index],
+                  onTap: () {
+                    setState(() {
+                      _currentColorIndex = index;
+                    });
+
+                    // Cập nhật màu toàn cục
+                    ref.read(backgroundColorProvider.notifier).state =
+                        _backgroundColors[index];
+
+                    // Lưu màu mới
+                    _saveColorIndex(index);
+
+                    // Đóng dialog
+                    Navigator.pop(context);
+
+                    // Thông báo cho người dùng
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Đã đổi màu nền thành ${_colorNames[index]}',
+                        ),
+                        backgroundColor: _backgroundColors[index],
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ),
+          ),
+    );
+  }
+
   void _updateCurrency(CurrencyType newCurrency) async {
     final oldCurrency = ref.read(currencyProvider);
 
@@ -284,6 +410,7 @@ class _MoreState extends ConsumerState<More> {
     required String title,
     required bool isSelected,
     required VoidCallback onTap,
+    Color? color,
   }) {
     return InkWell(
       onTap: onTap,
@@ -291,6 +418,17 @@ class _MoreState extends ConsumerState<More> {
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
         child: Row(
           children: [
+            if (color != null)
+              Container(
+                width: 24,
+                height: 24,
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+              ),
             Expanded(
               child: Text(
                 title,

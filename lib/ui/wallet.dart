@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../ui/more.dart'; // Import để lấy backgroundColorProvider
 
-class Wallet extends StatefulWidget {
+class Wallet extends ConsumerStatefulWidget {
   const Wallet({super.key});
 
   @override
-  State<Wallet> createState() => _WalletState();
+  ConsumerState<Wallet> createState() => _WalletState();
 }
 
-class _WalletState extends State<Wallet> {
+class _WalletState extends ConsumerState<Wallet> {
   bool _showAmounts = true;
   bool _hasWallets = false;
 
@@ -33,9 +35,12 @@ class _WalletState extends State<Wallet> {
 
   @override
   Widget build(BuildContext context) {
+    // Lấy màu nền từ provider
+    final backgroundColor = ref.watch(backgroundColorProvider);
+
     if (!_hasWallets) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: backgroundColor,
         appBar: AppBar(
           title: const Text(
             'Ví của tôi',
@@ -122,7 +127,7 @@ class _WalletState extends State<Wallet> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         title: const Text(
           'Ví của tôi',

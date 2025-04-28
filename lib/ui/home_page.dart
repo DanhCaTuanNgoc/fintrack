@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'books.dart';
 import 'wallet.dart';
 import 'charts.dart';
 import 'more.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _MyHomePageState();
+  ConsumerState<HomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<HomePage> {
+class _MyHomePageState extends ConsumerState<HomePage> {
   int _selectedIndex = 0;
 
   @override
@@ -45,7 +46,11 @@ class _MyHomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Lấy màu nền từ provider
+    final backgroundColor = ref.watch(backgroundColorProvider);
+
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: _screens[_selectedIndex],
@@ -71,7 +76,7 @@ class _MyHomePageState extends State<HomePage> {
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: true,
         unselectedItemColor: Colors.grey,
-        selectedItemColor: Color(0xFF6C63FF),
+        selectedItemColor: const Color(0xFF6C63FF),
       ),
     );
   }

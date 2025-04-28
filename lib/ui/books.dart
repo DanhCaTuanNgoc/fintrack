@@ -11,6 +11,7 @@ import '../data/models/book.dart';
 import '../data/repositories/book_repository.dart';
 import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
+import '../ui/more.dart'; // Import để lấy backgroundColorProvider
 
 class Books extends ConsumerStatefulWidget {
   const Books({super.key});
@@ -104,6 +105,9 @@ class _BooksState extends ConsumerState<Books>
     final books = ref.watch(booksProvider);
     final transactions = ref.watch(transactionsProvider);
 
+    // Lấy màu nền hiện tại
+    final backgroundColor = ref.watch(backgroundColorProvider);
+
     final totalAmount = transactions.when(
       data:
           (transactionsList) => transactionsList.fold(
@@ -150,7 +154,7 @@ class _BooksState extends ConsumerState<Books>
       data: (books) {
         if (books.isEmpty) {
           return Scaffold(
-            backgroundColor: const Color(0xFFF8F9FA),
+            backgroundColor: backgroundColor,
             appBar: AppBar(
               title: const Text(
                 'Sổ chi tiêu',
@@ -237,7 +241,7 @@ class _BooksState extends ConsumerState<Books>
         }
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8F9FA),
+          backgroundColor: backgroundColor,
           appBar: AppBar(
             backgroundColor: Colors.white,
             elevation: 0,

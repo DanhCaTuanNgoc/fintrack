@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/currency_provider.dart';
 import 'package:flutter/services.dart';
+import 'ui/more.dart'; // import để lấy backgroundColorProvider
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,13 +29,18 @@ void main() async {
   await DatabaseHelper.instance.database;
   await DatabaseHelper.instance.showAllTables();
 
-  final prefs = await SharedPreferences.getInstance();
-  final bool hasVisited = prefs.getBool('hasVisited') ?? false;
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool hasVisited = prefs.getBool('hasVisited') ?? false;
 
-  // Đảm bảo CurrencyNotifier được khởi tạo từ đầu
-  CurrencyNotifier().setCurrency(CurrencyType.vnd);
+  // Initialize currency provider
+  final currencyNotifier = CurrencyNotifier();
 
-  runApp(ProviderScope(child: MyApp(hasVisited: hasVisited)));
+  runApp(
+    ProviderScope(
+      overrides: [currencyProvider.overrideWith((ref) => currencyNotifier)],
+      child: MyApp(hasVisited: hasVisited),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -47,10 +53,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Fintrack',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
         fontFamily: 'Roboto',
         textTheme: GoogleFonts.robotoTextTheme(),
+        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
       ),
       home: hasVisited ? const HomePage() : const WelcomeScreen(),
     );
