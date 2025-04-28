@@ -7,7 +7,6 @@ import 'ui/welcome.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/currency_provider.dart';
-import 'providers/background_color_provider.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
@@ -38,15 +37,12 @@ void main() async {
   runApp(ProviderScope(child: MyApp(hasVisited: hasVisited)));
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatelessWidget {
   final bool hasVisited;
   const MyApp({super.key, required this.hasVisited});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Lấy màu nền từ provider
-    final backgroundColor = ref.watch(backgroundColorProvider);
-
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Fintrack',
@@ -55,7 +51,6 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
         fontFamily: 'Roboto',
         textTheme: GoogleFonts.robotoTextTheme(),
-        scaffoldBackgroundColor: backgroundColor,
       ),
       home: hasVisited ? const HomePage() : const WelcomeScreen(),
     );

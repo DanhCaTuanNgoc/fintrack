@@ -5,7 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
 import '../providers/transaction_provider.dart';
-import '../providers/background_color_provider.dart';
+
+// Tạo provider để lưu màu nền
+final backgroundColorProvider = StateProvider<Color>((ref) {
+  return const Color(0xFFF8F9FA); // Màu mặc định
+});
 
 class More extends ConsumerStatefulWidget {
   const More({super.key});
@@ -15,6 +19,59 @@ class More extends ConsumerStatefulWidget {
 }
 
 class _MoreState extends ConsumerState<More> {
+  // Danh sách các màu nền
+  final List<Color> _backgroundColors = [
+    const Color(0xFFF8F9FA), // Xám nhạt
+    const Color(0xFFE3F2FD), // Xanh dương nhạt
+    const Color(0xFFF3E5F5), // Tím nhạt
+    const Color(0xFFFFF8E1), // Vàng nhạt
+    const Color(0xFFE8F5E9), // Xanh lá nhạt
+  ];
+
+  // Tên các màu
+  final List<String> _colorNames = [
+    'Xám nhạt',
+    'Xanh dương nhạt',
+    'Tím nhạt',
+    'Vàng nhạt',
+    'Xanh lá nhạt',
+  ];
+
+  int _currentColorIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedColor();
+  }
+
+  // Tải màu nền đã lưu
+  Future<void> _loadSavedColor() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedIndex = prefs.getInt('background_color_index') ?? 0;
+      if (savedIndex < _backgroundColors.length) {
+        setState(() {
+          _currentColorIndex = savedIndex;
+        });
+        ref.read(backgroundColorProvider.notifier).state =
+            _backgroundColors[savedIndex];
+      }
+    } catch (e) {
+      print('Lỗi khi tải màu nền: $e');
+    }
+  }
+
+  // Lưu màu nền đã chọn
+  Future<void> _saveColorIndex(int index) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('background_color_index', index);
+    } catch (e) {
+      print('Lỗi khi lưu màu nền: $e');
+    }
+  }
+
   Future<void> removeData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -28,9 +85,6 @@ class _MoreState extends ConsumerState<More> {
 
     // Lấy màu nền hiện tại
     final backgroundColor = ref.watch(backgroundColorProvider);
-
-    // Lấy chỉ số màu hiện tại
-    final colorIndex = ref.watch(backgroundColorIndexProvider);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -57,14 +111,12 @@ class _MoreState extends ConsumerState<More> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [_buildSettingsCard(currentCurrency, colorIndex)],
-        ),
+        child: Column(children: [_buildSettingsCard(currentCurrency)]),
       ),
     );
   }
 
-  Widget _buildSettingsCard(CurrencyType currentCurrency, int colorIndex) {
+  Widget _buildSettingsCard(CurrencyType currentCurrency) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -110,9 +162,9 @@ class _MoreState extends ConsumerState<More> {
           _buildSettingItem(
             icon: Icons.color_lens,
             title: 'Màu nền',
-            subtitle: colorNames[colorIndex],
+            subtitle: _colorNames[_currentColorIndex],
             onTap: () {
-              _showBackgroundColorDialog(colorIndex);
+              _showBackgroundColorDialog();
             },
           ),
         ],
@@ -272,7 +324,7 @@ class _MoreState extends ConsumerState<More> {
     );
   }
 
-  void _showBackgroundColorDialog(int currentIndex) {
+  void _showBackgroundColorDialog() {
     showDialog(
       context: context,
       builder:
@@ -289,18 +341,22 @@ class _MoreState extends ConsumerState<More> {
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
-              children: List.generate(backgroundColors.length, (index) {
+              children: List.generate(_backgroundColors.length, (index) {
                 return _buildDialogOption(
-                  title: colorNames[index],
-                  isSelected: currentIndex == index,
-                  color: backgroundColors[index],
+                  title: _colorNames[index],
+                  isSelected: _currentColorIndex == index,
+                  color: _backgroundColors[index],
                   onTap: () {
-                    // Cập nhật màu nền
-                    ref.read(backgroundColorProvider.notifier).setColor(index);
+                    setState(() {
+                      _currentColorIndex = index;
+                    });
 
-                    // Cập nhật chỉ số màu hiện tại
-                    ref.read(backgroundColorIndexProvider.notifier).state =
-                        index;
+                    // Cập nhật màu toàn cục
+                    ref.read(backgroundColorProvider.notifier).state =
+                        _backgroundColors[index];
+
+                    // Lưu màu mới
+                    _saveColorIndex(index);
 
                     // Đóng dialog
                     Navigator.pop(context);
@@ -309,9 +365,9 @@ class _MoreState extends ConsumerState<More> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          'Đã đổi màu nền thành ${colorNames[index]}',
+                          'Đã đổi màu nền thành ${_colorNames[index]}',
                         ),
-                        backgroundColor: backgroundColors[index],
+                        backgroundColor: _backgroundColors[index],
                         duration: const Duration(seconds: 2),
                       ),
                     );

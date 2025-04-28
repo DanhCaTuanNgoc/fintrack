@@ -53,12 +53,18 @@ class _MyHomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.book_outlined), label: 'Sổ'),
-          BottomNavigationBarItem(icon: Icon(Icons.wallet_outlined), label: 'Ví'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.wallet_outlined),
+            label: 'Ví',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.analytics_outlined),
             label: 'Phân tích',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz_outlined), label: 'Thêm'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.more_horiz_outlined),
+            label: 'Thêm',
+          ),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
