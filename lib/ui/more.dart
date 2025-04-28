@@ -368,7 +368,7 @@ class _MoreState extends ConsumerState<More> {
                         content: Text(
                           'Đã đổi màu nền thành ${_colorNames[index]}',
                         ),
-                        backgroundColor: _backgroundColors[index],
+                        backgroundColor: const Color(0xFF4CAF50),
                         duration: const Duration(seconds: 2),
                       ),
                     );
