@@ -10,6 +10,7 @@ import 'components/number_pad.dart';
 import '../data/models/book.dart';
 import '../data/repositories/book_repository.dart';
 import '../providers/book_provider.dart';
+import '../providers/currency_provider.dart';
 
 class Books extends ConsumerStatefulWidget {
   const Books({super.key});
@@ -616,9 +617,11 @@ class _BooksState extends ConsumerState<Books>
     Color textColor, {
     bool showNegative = false,
   }) {
-    final numberFormat = NumberFormat('#,###');
     final amountValue =
         double.tryParse(amount.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+
+    // Lấy đơn vị tiền tệ hiện tại
+    final currencyType = ref.watch(currencyProvider);
 
     return Container(
       alignment: Alignment.center,
@@ -627,7 +630,7 @@ class _BooksState extends ConsumerState<Books>
         children: [
           Text(
             _isAmountVisible
-                ? '${showNegative ? '-' : ''}\$${numberFormat.format(amountValue)}'
+                ? '${showNegative ? '-' : ''}${formatCurrency(amountValue, currencyType)}'
                 : '•••••',
             style: TextStyle(
               color: textColor,
@@ -719,7 +722,7 @@ class _BooksState extends ConsumerState<Books>
                   ),
                   const Spacer(),
                   Text(
-                    'Chi tiêu: ${numberFormat.format(dayExpense)}đ',
+                    'Chi tiêu: ${formatCurrency(dayExpense, ref.watch(currencyProvider))}',
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],
@@ -776,7 +779,7 @@ class _BooksState extends ConsumerState<Books>
                           ),
                           // Số tiền
                           Text(
-                            '${transaction.type == 'expense' ? '-' : '+'}${numberFormat.format(transaction.amount)}đ',
+                            '${transaction.type == 'expense' ? '-' : '+'}${formatCurrency(transaction.amount, ref.watch(currencyProvider))}',
                             style: TextStyle(
                               color:
                                   transaction.type == 'expense'
@@ -885,7 +888,9 @@ class _BooksState extends ConsumerState<Books>
                           child: Column(
                             children: [
                               Text(
-                                _amount.isEmpty ? '0 đ' : '${_amount} đ',
+                                _amount.isEmpty
+                                    ? '0 ${ref.watch(currencyProvider).symbol}'
+                                    : '$_amount ${ref.watch(currencyProvider).symbol}',
                                 style: const TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,

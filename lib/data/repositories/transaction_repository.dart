@@ -41,7 +41,10 @@ class TransactionRepository {
     return maps.map((map) => Transaction.fromMap(map)).toList();
   }
 
-  Future<List<Transaction>> getTransactionsByDateRange(DateTime startDate, DateTime endDate) async {
+  Future<List<Transaction>> getTransactionsByDateRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
     final db = await _databaseHelper.database;
     final maps = await db.query(
       'transactions',
