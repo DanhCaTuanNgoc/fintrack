@@ -14,6 +14,7 @@ class More extends ConsumerStatefulWidget {
 }
 
 class _MoreState extends ConsumerState<More> {
+
   Future<void> removeData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();

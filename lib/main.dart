@@ -26,7 +26,10 @@ void main() async {
 
   // Khởi tạo database
   await DatabaseHelper.instance.database;
+  // Insert database ra terminal
   await DatabaseHelper.instance.showAllTables();
+  // Dữ liệu mẫu cho bảng Transactions
+  await DatabaseHelper.instance.insertSampleTransactions(1, 1);
 
   final prefs = await SharedPreferences.getInstance();
   final bool hasVisited = prefs.getBool('hasVisited') ?? false;

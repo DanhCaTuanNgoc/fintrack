@@ -31,6 +31,7 @@ class _BooksState extends ConsumerState<Books>
   bool _isExpense = true;
   bool? _hasBooks;
   late TabController _tabController;
+  int _selectedTabIndex = 0;
 
   // State để quản lý trạng thái mở rộng của mỗi ngày
   final Map<String, bool> _expandedDays = {};
@@ -68,10 +69,15 @@ class _BooksState extends ConsumerState<Books>
   @override
   void initState() {
     super.initState();
-    _bookRepository = BookRepository(_dbHelper);
+    // Lay du lieu bang Categories
     _loadCategories();
-    // _checkBooks();
+    // Tao bien TabController cho UI
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _selectedTabIndex = _tabController.index;
+      });
+    });
     _selectedDay = _focusedDay;
   }
 
@@ -80,13 +86,6 @@ class _BooksState extends ConsumerState<Books>
     _tabController.dispose();
     super.dispose();
   }
-
-  // Future<void> _checkBooks() async {
-  //   final books = await _dbHelper.getBooks();
-  //   setState(() {
-  //     _hasBooks = books.isNotEmpty;
-  //   });
-  // }
 
   Future<void> _loadCategories() async {
     final expenseCats = await _dbHelper.getCategoriesByType('expense');
@@ -241,55 +240,38 @@ class _BooksState extends ConsumerState<Books>
           appBar: AppBar(
             backgroundColor: Colors.white,
             elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.search, color: Color(0xFF2D3142)),
-              onPressed: () {
-                // TODO: Handle search
-              },
-            ),
-            centerTitle: true,
-            title: TextButton.icon(
-              onPressed: () {
-                // TODO: Handle dropdown menu
-              },
-              icon: Text(
-                books.first.name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                  color: Color(0xFF2D3142),
-                ),
-              ),
-              label: const Icon(
-                Icons.arrow_drop_down,
-                color: Color(0xFF2D3142),
-              ),
-            ),
-            bottom: TabBar(
-              controller: _tabController,
-              labelColor: const Color(0xFF6C63FF),
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: const Color(0xFF6C63FF),
-              labelStyle: const TextStyle(fontSize: 13),
-              unselectedLabelStyle: const TextStyle(fontSize: 13),
-              tabs: const [
-                Tab(
+            toolbarHeight: 70,
+            title: Row(
+              children: [
+                Expanded(
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.receipt, size: 20),
-                      SizedBox(width: 4),
-                      Text('Hóa đơn'),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Text(
+                          books.first.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Color(0xFF2D3142),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_drop_down,
+                        color: Color(0xFF2D3142),
+                      ),
                     ],
                   ),
                 ),
-                Tab(
+                Expanded(
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Icon(Icons.calendar_today, size: 20),
-                      SizedBox(width: 4),
-                      Text('Lịch'),
+                      _buildTabButton('Hóa đơn', 0),
+                      const SizedBox(width: 8),
+                      _buildTabButton('Lịch', 1),
                     ],
                   ),
                 ),
@@ -298,6 +280,7 @@ class _BooksState extends ConsumerState<Books>
           ),
           body: TabBarView(
             controller: _tabController,
+            physics: const NeverScrollableScrollPhysics(), // Disable swipe
             children: [
               // Tab Hóa đơn
               Column(
@@ -383,28 +366,18 @@ class _BooksState extends ConsumerState<Books>
                             Expanded(
                               child: Container(
                                 constraints: const BoxConstraints(
-                                  maxWidth: 120,
+                                  maxWidth: 110,
                                 ),
-                                child: _buildStatItem(
-                                  'Toàn bộ',
-                                  balance.abs().toString(),
-                                  isNegative
-                                      ? const Color(0xFFFF5252)
-                                      : const Color(0xFF4CAF50),
-                                  showNegative: isNegative,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Container(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 120,
-                                ),
-                                child: _buildStatItem(
-                                  'Thu nhập',
-                                  totalIncome.toString(),
-                                  const Color(0xFF4CAF50),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: _buildStatItem(
+                                    'Toàn bộ',
+                                    balance.abs().toString(),
+                                    isNegative
+                                        ? const Color(0xFFFF5252)
+                                        : const Color(0xFF4CAF50),
+                                    showNegative: isNegative,
+                                  ),
                                 ),
                               ),
                             ),
@@ -412,12 +385,31 @@ class _BooksState extends ConsumerState<Books>
                             Expanded(
                               child: Container(
                                 constraints: const BoxConstraints(
-                                  maxWidth: 120,
+                                  maxWidth: 110,
                                 ),
-                                child: _buildStatItem(
-                                  'Chi tiêu',
-                                  totalExpense.toString(),
-                                  const Color(0xFFFF5252),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: _buildStatItem(
+                                    'Thu nhập',
+                                    totalIncome.toString(),
+                                    const Color(0xFF4CAF50),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 110,
+                                ),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: _buildStatItem(
+                                    'Chi tiêu',
+                                    totalExpense.toString(),
+                                    const Color(0xFFFF5252),
+                                  ),
                                 ),
                               ),
                             ),
@@ -482,7 +474,7 @@ class _BooksState extends ConsumerState<Books>
                         }
 
                         return ListView.builder(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(6),
                           itemCount: groupedTransactions.length,
                           itemBuilder: (context, index) {
                             final dateKey = groupedTransactions.keys.elementAt(
@@ -491,10 +483,21 @@ class _BooksState extends ConsumerState<Books>
                             final transactions = groupedTransactions[dateKey]!;
                             final dayExpense = dailyExpenses[dateKey] ?? 0;
 
+                            // Tính tổng thu nhập trong ngày
+                            double dayIncome = 0;
+                            for (var transaction in transactions) {
+                              if (transaction.type == 'income') {
+                                dayIncome += transaction.amount;
+                              }
+                            }
+
+                            // Tính tổng theo ngày (thu - chi)
+                            final dayTotal = dayIncome - dayExpense;
+
                             return _buildExpenseItem(
                               dateKey: dateKey,
                               transactions: transactions,
-                              dayExpense: dayExpense,
+                              dayExpense: dayTotal,
                             );
                           },
                         );
@@ -723,7 +726,7 @@ class _BooksState extends ConsumerState<Books>
                   ),
                   const Spacer(),
                   Text(
-                    'Chi tiêu: ${formatCurrency(dayExpense, ref.watch(currencyProvider))}',
+                    'Tổng: ${_isAmountVisible ? (dayExpense >= 0 ? '+' : '-') + formatCurrency(dayExpense.abs(), ref.watch(currencyProvider)) : '•••••'}',
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],
@@ -780,7 +783,7 @@ class _BooksState extends ConsumerState<Books>
                           ),
                           // Số tiền
                           Text(
-                            '${transaction.type == 'expense' ? '-' : '+'}${formatCurrency(transaction.amount, ref.watch(currencyProvider))}',
+                            '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
                             style: TextStyle(
                               color:
                                   transaction.type == 'expense'
@@ -1165,19 +1168,34 @@ class _BooksState extends ConsumerState<Books>
       },
     );
   }
-}
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: const Text('Books'),
-      backgroundColor: Colors.deepPurpleAccent,
+  Widget _buildTabButton(String label, int index) {
+    final isSelected = _selectedTabIndex == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          _tabController.animateTo(index);
+          setState(() {
+            _selectedTabIndex = index;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFF6C63FF) : Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.grey[700],
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
