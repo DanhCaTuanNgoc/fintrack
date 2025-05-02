@@ -1,11 +1,9 @@
 import 'package:fintrack/providers/transaction_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../data/database/database_helper.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'components/number_pad.dart';
 import '../data/models/book.dart';
 import '../data/repositories/book_repository.dart';
@@ -690,6 +688,8 @@ class _BooksState extends ConsumerState<Books>
                 _expandedDays[dateKey] = !isExpanded;
               });
             },
+            splashFactory: NoSplash.splashFactory,
+            hoverColor: Colors.transparent,
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             child: Container(
