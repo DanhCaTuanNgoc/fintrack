@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-<<<<<<< Updated upstream
-import '../ui/more.dart'; // Import để lấy backgroundColorProvider
-=======
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../data/database/database_helper.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/currency_provider.dart';
->>>>>>> Stashed changes
+import '../ui/more.dart';
 
 class Charts extends ConsumerStatefulWidget {
   const Charts({super.key});
@@ -17,18 +14,6 @@ class Charts extends ConsumerStatefulWidget {
   ConsumerState<Charts> createState() => _ChartsState();
 }
 
-<<<<<<< Updated upstream
-class _ChartsState extends ConsumerState<Charts> {
-  @override
-  Widget build(BuildContext context) {
-    // Lấy màu nền từ provider
-    final backgroundColor = ref.watch(backgroundColorProvider);
-
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: const CustomAppBar(),
-      body: const Center(child: Text('Chart Content')),
-=======
 class _ChartsState extends ConsumerState<Charts>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
@@ -83,8 +68,10 @@ class _ChartsState extends ConsumerState<Charts>
   Widget build(BuildContext context) {
     final transactions = ref.watch(transactionsProvider);
     final currencyType = ref.watch(currencyProvider);
+    final backgroundColor = ref.watch(backgroundColorProvider);
 
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: CustomAppBar(
         selectedMonth: _selectedMonth,
         onMonthChanged: _updateSelectedMonth,
@@ -444,7 +431,6 @@ class _ChartsState extends ConsumerState<Charts>
           ],
         );
       },
->>>>>>> Stashed changes
     );
   }
 }
@@ -464,15 +450,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-<<<<<<< Updated upstream
-      title: const Text(
-        'Phân tích',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-          color: Color(0xFF2D3142),
-        ),
-=======
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -529,7 +506,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
         ],
->>>>>>> Stashed changes
       ),
       backgroundColor: Colors.white,
       elevation: 0,
