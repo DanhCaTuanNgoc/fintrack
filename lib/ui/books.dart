@@ -60,6 +60,10 @@ class _BooksState extends ConsumerState<Books>
   // Thêm vào phần khai báo state
   bool _isAmountVisible = true;
 
+  // Thêm biến state cho date range filter
+  DateTime? _startDate;
+  DateTime? _endDate;
+
   IconData _getIconFromEmoji(String emoji) {
     return _iconMapping[emoji] ?? Icons.category;
   }
@@ -102,33 +106,30 @@ class _BooksState extends ConsumerState<Books>
     final transactions = ref.watch(transactionsProvider);
 
     final totalAmount = transactions.when(
-      data:
-          (transactionsList) => transactionsList.fold(
-            0.0,
-            (sum, transaction) => sum + transaction.amount,
-          ),
+      data: (transactionsList) => transactionsList.fold(
+        0.0,
+        (sum, transaction) => sum + transaction.amount,
+      ),
       loading: () => 0.0,
       error: (_, __) => 0.0,
     );
 
     final totalIncome = transactions.when(
-      data:
-          (transactionsList) => transactionsList.fold(
-            0.0,
-            (sum, transaction) =>
-                transaction.type == 'income' ? sum + transaction.amount : sum,
-          ),
+      data: (transactionsList) => transactionsList.fold(
+        0.0,
+        (sum, transaction) =>
+            transaction.type == 'income' ? sum + transaction.amount : sum,
+      ),
       loading: () => 0.0,
       error: (_, __) => 0.0,
     );
 
     final totalExpense = transactions.when(
-      data:
-          (transactionsList) => transactionsList.fold(
-            0.0,
-            (sum, transaction) =>
-                transaction.type == 'expense' ? sum + transaction.amount : sum,
-          ),
+      data: (transactionsList) => transactionsList.fold(
+        0.0,
+        (sum, transaction) =>
+            transaction.type == 'expense' ? sum + transaction.amount : sum,
+      ),
       loading: () => 0.0,
       error: (_, __) => 0.0,
     );
@@ -138,12 +139,10 @@ class _BooksState extends ConsumerState<Books>
     final isNegative = balance < 0;
 
     return books.when(
-      loading:
-          () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error:
-          (error, stack) =>
-              Scaffold(body: Center(child: Text('Có lỗi xảy ra: $error'))),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, stack) =>
+          Scaffold(body: Center(child: Text('Có lỗi xảy ra: $error'))),
       data: (books) {
         if (books.isEmpty) {
           return Scaffold(
@@ -312,7 +311,7 @@ class _BooksState extends ConsumerState<Books>
                               children: [
                                 IconButton(
                                   icon: Icon(
-                                    Icons.chevron_left,
+                                    Icons.calendar_month,
                                     color: Colors.grey[600],
                                     size: 24,
                                   ),
@@ -320,23 +319,36 @@ class _BooksState extends ConsumerState<Books>
                                     // Handle previous date range
                                   },
                                 ),
-                                Text(
-                                  '20/4/2025 - 26/4/2025',
-                                  style: TextStyle(
-                                    color: Colors.grey[800],
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.chevron_right,
-                                    color: Colors.grey[600],
-                                    size: 24,
-                                  ),
-                                  onPressed: () {
-                                    // Handle next date range
+                                GestureDetector(
+                                  onTap: () async {
+                                    final picked = await showDateRangePicker(
+                                      context: context,
+                                      firstDate: DateTime(2020),
+                                      lastDate: DateTime(2030),
+                                      initialDateRange:
+                                          _startDate != null && _endDate != null
+                                              ? DateTimeRange(
+                                                  start: _startDate!,
+                                                  end: _endDate!)
+                                              : null,
+                                    );
+                                    if (picked != null) {
+                                      setState(() {
+                                        _startDate = picked.start;
+                                        _endDate = picked.end;
+                                      });
+                                    }
                                   },
+                                  child: Text(
+                                    _startDate != null && _endDate != null
+                                        ? '${DateFormat('dd/MM/yyyy').format(_startDate!)} - ${DateFormat('dd/MM/yyyy').format(_endDate!)}'
+                                        : 'Chọn khoảng thời gian',
+                                    style: TextStyle(
+                                      color: Colors.grey[800],
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -413,49 +425,57 @@ class _BooksState extends ConsumerState<Books>
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
+                        // const SizedBox(height: 16),
                         // Time range selector
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF5F5F5),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: _buildTimeRangeButton(
-                                  'Hàng tuần',
-                                  isSelected: true,
-                                ),
-                              ),
-                              Expanded(
-                                child: _buildTimeRangeButton('Hàng tháng'),
-                              ),
-                              Expanded(
-                                child: _buildTimeRangeButton('Hàng năm'),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // Container(
+                        //   padding: const EdgeInsets.all(4),
+                        //   decoration: BoxDecoration(
+                        //     color: const Color(0xFFF5F5F5),
+                        //     borderRadius: BorderRadius.circular(12),
+                        //   ),
+                        //   // child: Row(
+                        //   //   children: [
+                        //   //     Expanded(
+                        //   //       child: _buildTimeRangeButton(
+                        //   //         'Hàng tuần',
+                        //   //         isSelected: true,
+                        //   //       ),
+                        //   //     ),
+                        //   //     Expanded(
+                        //   //       child: _buildTimeRangeButton('Hàng tháng'),
+                        //   //     ),
+                        //   //     Expanded(
+                        //   //       child: _buildTimeRangeButton('Hàng năm'),
+                        //   //     ),
+                        //   //   ],
+                        //   // ),
+                        // ),
                       ],
                     ),
                   ),
                   // Danh sách các đầu mục chi tiêu
                   Expanded(
                     child: transactions.when(
-                      loading:
-                          () =>
-                              const Center(child: CircularProgressIndicator()),
-                      error:
-                          (error, stack) =>
-                              Center(child: Text('Error: $error')),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (error, stack) =>
+                          Center(child: Text('Error: $error')),
                       data: (transactionsList) {
+                        // Lọc theo khoảng thời gian
+                        final filteredTransactions =
+                            (_startDate != null && _endDate != null)
+                                ? transactionsList.where((transaction) {
+                                    final date = transaction.date!;
+                                    return !date.isBefore(_startDate!) &&
+                                        !date.isAfter(_endDate!);
+                                  }).toList()
+                                : transactionsList;
+
                         // Nhóm giao dịch theo ngày
                         final groupedTransactions = <String, List<dynamic>>{};
                         final dailyExpenses = <String, double>{};
 
-                        for (var transaction in transactionsList) {
+                        for (var transaction in filteredTransactions) {
                           final dateKey = DateFormat(
                             'dd/MM/yyyy',
                           ).format(transaction.date!);
@@ -467,7 +487,7 @@ class _BooksState extends ConsumerState<Books>
                           if (transaction.type == 'expense') {
                             dailyExpenses[dateKey] =
                                 (dailyExpenses[dateKey] ?? 0) +
-                                transaction.amount;
+                                    transaction.amount;
                           }
                         }
 
@@ -666,7 +686,7 @@ class _BooksState extends ConsumerState<Books>
     final numberFormat = NumberFormat('#,###');
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -695,15 +715,14 @@ class _BooksState extends ConsumerState<Books>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                border:
-                    isExpanded
-                        ? Border(
-                          bottom: BorderSide(
-                            color: Colors.grey.withOpacity(0.1),
-                            width: 1,
-                          ),
-                        )
-                        : null,
+                border: isExpanded
+                    ? Border(
+                        bottom: BorderSide(
+                          color: Colors.grey.withOpacity(0.1),
+                          width: 1,
+                        ),
+                      )
+                    : null,
               ),
               child: Row(
                 children: [
@@ -737,71 +756,68 @@ class _BooksState extends ConsumerState<Books>
           AnimatedCrossFade(
             firstChild: const SizedBox(height: 0),
             secondChild: Column(
-              children:
-                  transactions.map((transaction) {
-                    // Tìm category tương ứng
-                    final category = _categories.firstWhere(
-                      (cat) => cat['id'] == transaction.categoryId,
-                      orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
-                    );
+              children: transactions.map((transaction) {
+                // Tìm category tương ứng
+                final category = _categories.firstWhere(
+                  (cat) => cat['id'] == transaction.categoryId,
+                  orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
+                );
 
-                    // Chuyển đổi màu từ string sang Color
-                    final colorString = category['color'] ?? '0xFF6C63FF';
-                    final color = Color(int.parse(colorString));
-                    final bgColor = color.withOpacity(0.1);
+                // Chuyển đổi màu từ string sang Color
+                final colorString = category['color'] ?? '0xFF6C63FF';
+                final color = Color(int.parse(colorString));
+                final bgColor = color.withOpacity(0.1);
 
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    children: [
+                      // Icon từ category
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          _getIconFromEmoji(category['icon'] ?? '🏷️'),
+                          color: color,
+                          size: 20,
+                        ),
                       ),
-                      child: Row(
-                        children: [
-                          // Icon từ category
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: bgColor,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              _getIconFromEmoji(category['icon'] ?? '🏷️'),
-                              color: color,
-                              size: 20,
-                            ),
+                      const SizedBox(width: 12),
+                      // Thông tin giao dịch
+                      Expanded(
+                        child: Text(
+                          transaction.note,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
                           ),
-                          const SizedBox(width: 12),
-                          // Thông tin giao dịch
-                          Expanded(
-                            child: Text(
-                              transaction.note,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          // Số tiền
-                          Text(
-                            '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
-                            style: TextStyle(
-                              color:
-                                  transaction.type == 'expense'
-                                      ? Colors.red
-                                      : Colors.green,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    );
-                  }).toList(),
+                      // Số tiền
+                      Text(
+                        '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
+                        style: TextStyle(
+                          color: transaction.type == 'expense'
+                              ? Colors.red
+                              : Colors.green,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
-            crossFadeState:
-                isExpanded
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
+            crossFadeState: isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 200),
           ),
         ],
@@ -944,23 +960,22 @@ class _BooksState extends ConsumerState<Books>
                               ),
                             ),
                           ),
-                          items:
-                              (_isExpense
-                                      ? _expenseCategories
-                                      : _incomeCategories)
-                                  .map<DropdownMenuItem<String>>(
-                                    (category) => DropdownMenuItem<String>(
-                                      value: category['name'],
-                                      child: Row(
-                                        children: [
-                                          Text(category['icon']),
-                                          const SizedBox(width: 8),
-                                          Text(category['name']),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
+                          items: (_isExpense
+                                  ? _expenseCategories
+                                  : _incomeCategories)
+                              .map<DropdownMenuItem<String>>(
+                                (category) => DropdownMenuItem<String>(
+                                  value: category['name'],
+                                  child: Row(
+                                    children: [
+                                      Text(category['icon']),
+                                      const SizedBox(width: 8),
+                                      Text(category['name']),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
                           onChanged: (value) {
                             setState(() {
                               _selectedCategory = value;
@@ -979,24 +994,22 @@ class _BooksState extends ConsumerState<Books>
                                 );
 
                                 // Get category ID from selected category name
-                                final selectedCategoryData =
-                                    _isExpense
-                                        ? _expenseCategories.firstWhere(
-                                          (cat) =>
-                                              cat['name'] == _selectedCategory,
-                                        )
-                                        : _incomeCategories.firstWhere(
-                                          (cat) =>
-                                              cat['name'] == _selectedCategory,
-                                        );
+                                final selectedCategoryData = _isExpense
+                                    ? _expenseCategories.firstWhere(
+                                        (cat) =>
+                                            cat['name'] == _selectedCategory,
+                                      )
+                                    : _incomeCategories.firstWhere(
+                                        (cat) =>
+                                            cat['name'] == _selectedCategory,
+                                      );
 
                                 await transactionNotifier.createTransaction(
                                   amount: double.parse(_amount),
                                   note: _note,
                                   type: _isExpense ? 'expense' : 'income',
                                   categoryId: selectedCategoryData['id'],
-                                  bookId:
-                                      currentBook.id ??
+                                  bookId: currentBook.id ??
                                       0, // Add null check with default value
                                   userId: 1,
                                 );

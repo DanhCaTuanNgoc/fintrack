@@ -15,10 +15,10 @@ final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
 
 final transactionsProvider =
     StateNotifierProvider<TransactionsNotifier, AsyncValue<List<Transaction>>>((
-      ref,
-    ) {
-      return TransactionsNotifier(ref);
-    });
+  ref,
+) {
+  return TransactionsNotifier(ref);
+});
 
 class TransactionsNotifier
     extends StateNotifier<AsyncValue<List<Transaction>>> {
