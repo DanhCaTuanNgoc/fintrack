@@ -9,6 +9,7 @@ import '../data/models/book.dart';
 import '../data/repositories/book_repository.dart';
 import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
+import '../providers/theme_provider.dart';
 
 class Books extends ConsumerStatefulWidget {
   const Books({super.key});
@@ -104,6 +105,9 @@ class _BooksState extends ConsumerState<Books>
   Widget build(BuildContext context) {
     final books = ref.watch(booksProvider);
     final transactions = ref.watch(transactionsProvider);
+
+    // Lấy màu nền hiện tại
+    final themeColor = ref.watch(themeColorProvider);
 
     final totalAmount = transactions.when(
       data: (transactionsList) => transactionsList.fold(
@@ -235,9 +239,9 @@ class _BooksState extends ConsumerState<Books>
         return Scaffold(
           backgroundColor: const Color(0xFFF8F9FA),
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: themeColor,
             elevation: 0,
-            toolbarHeight: 70,
+            toolbarHeight: 60,
             title: Row(
               children: [
                 Expanded(
@@ -250,14 +254,14 @@ class _BooksState extends ConsumerState<Books>
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
-                            color: Color(0xFF2D3142),
+                            color: Colors.white,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const Icon(
                         Icons.arrow_drop_down,
-                        color: Color(0xFF2D3142),
+                        color: Color.fromARGB(255, 255, 255, 255),
                       ),
                     ],
                   ),
@@ -266,9 +270,9 @@ class _BooksState extends ConsumerState<Books>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      _buildTabButton('Hóa đơn', 0),
+                      _buildTabButton('Hóa đơn', 0, themeColor),
                       const SizedBox(width: 8),
-                      _buildTabButton('Lịch', 1),
+                      _buildTabButton('Lịch', 1, themeColor),
                     ],
                   ),
                 ),
@@ -312,7 +316,7 @@ class _BooksState extends ConsumerState<Books>
                                 IconButton(
                                   icon: Icon(
                                     Icons.calendar_month,
-                                    color: Colors.grey[600],
+                                    color: themeColor,
                                     size: 24,
                                   ),
                                   onPressed: () {
@@ -342,7 +346,7 @@ class _BooksState extends ConsumerState<Books>
                                   child: Text(
                                     _startDate != null && _endDate != null
                                         ? '${DateFormat('dd/MM/yyyy').format(_startDate!)} - ${DateFormat('dd/MM/yyyy').format(_endDate!)}'
-                                        : 'Chọn khoảng thời gian',
+                                        : 'Lọc',
                                     style: TextStyle(
                                       color: Colors.grey[800],
                                       fontSize: 15,
@@ -425,31 +429,6 @@ class _BooksState extends ConsumerState<Books>
                             ),
                           ],
                         ),
-                        // const SizedBox(height: 16),
-                        // Time range selector
-                        // Container(
-                        //   padding: const EdgeInsets.all(4),
-                        //   decoration: BoxDecoration(
-                        //     color: const Color(0xFFF5F5F5),
-                        //     borderRadius: BorderRadius.circular(12),
-                        //   ),
-                        //   // child: Row(
-                        //   //   children: [
-                        //   //     Expanded(
-                        //   //       child: _buildTimeRangeButton(
-                        //   //         'Hàng tuần',
-                        //   //         isSelected: true,
-                        //   //       ),
-                        //   //     ),
-                        //   //     Expanded(
-                        //   //       child: _buildTimeRangeButton('Hàng tháng'),
-                        //   //     ),
-                        //   //     Expanded(
-                        //   //       child: _buildTimeRangeButton('Hàng năm'),
-                        //   //     ),
-                        //   //   ],
-                        //   // ),
-                        // ),
                       ],
                     ),
                   ),
@@ -513,10 +492,10 @@ class _BooksState extends ConsumerState<Books>
                             final dayTotal = dayIncome - dayExpense;
 
                             return _buildExpenseItem(
-                              dateKey: dateKey,
-                              transactions: transactions,
-                              dayExpense: dayTotal,
-                            );
+                                dateKey: dateKey,
+                                transactions: transactions,
+                                dayExpense: dayTotal,
+                                themeColor: themeColor);
                           },
                         );
                       },
@@ -560,17 +539,17 @@ class _BooksState extends ConsumerState<Books>
                           _focusedDay = focusedDay;
                         });
                       },
-                      calendarStyle: const CalendarStyle(
+                      calendarStyle: CalendarStyle(
                         selectedDecoration: BoxDecoration(
-                          color: Color(0xFF6C63FF),
+                          color: themeColor,
                           shape: BoxShape.circle,
                         ),
                         todayDecoration: BoxDecoration(
-                          color: Color(0xFF6C63FF),
+                          color: themeColor,
                           shape: BoxShape.circle,
                         ),
                         markerDecoration: BoxDecoration(
-                          color: Color(0xFF6C63FF),
+                          color: themeColor,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -587,12 +566,12 @@ class _BooksState extends ConsumerState<Books>
                       itemBuilder: (context, index) {
                         final event = _events[_selectedDay]![index];
                         return _buildExpenseItem(
-                          dateKey: DateFormat(
-                            'HH:mm dd/MM/yyyy',
-                          ).format(event['date']),
-                          transactions: event['transactions'],
-                          dayExpense: event['amount'],
-                        );
+                            dateKey: DateFormat(
+                              'HH:mm dd/MM/yyyy',
+                            ).format(event['date']),
+                            transactions: event['transactions'],
+                            dayExpense: event['amount'],
+                            themeColor: themeColor);
                       },
                     ),
                   ),
@@ -602,9 +581,10 @@ class _BooksState extends ConsumerState<Books>
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              _showAddExpenseModal(context, books.first); // Pass current book
+              _showAddExpenseModal(
+                  context, books.first, themeColor); // Pass current book
             },
-            backgroundColor: const Color(0xFF6C63FF),
+            backgroundColor: themeColor,
             elevation: 4,
             child: const Icon(Icons.add, color: Colors.white),
           ),
@@ -677,11 +657,11 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  Widget _buildExpenseItem({
-    required String dateKey,
-    required List<dynamic> transactions,
-    required double dayExpense,
-  }) {
+  Widget _buildExpenseItem(
+      {required String dateKey,
+      required List<dynamic> transactions,
+      required double dayExpense,
+      required Color themeColor}) {
     final isExpanded = _expandedDays[dateKey] ?? false;
     final numberFormat = NumberFormat('#,###');
 
@@ -731,7 +711,7 @@ class _BooksState extends ConsumerState<Books>
                     duration: const Duration(milliseconds: 200),
                     child: Icon(
                       Icons.keyboard_arrow_right,
-                      color: Colors.grey[600],
+                      color: themeColor,
                       size: 24,
                     ),
                   ),
@@ -763,10 +743,7 @@ class _BooksState extends ConsumerState<Books>
                   orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
                 );
 
-                // Chuyển đổi màu từ string sang Color
-                final colorString = category['color'] ?? '0xFF6C63FF';
-                final color = Color(int.parse(colorString));
-                final bgColor = color.withOpacity(0.1);
+                final bgColor = themeColor.withOpacity(0.1);
 
                 return Container(
                   padding: const EdgeInsets.symmetric(
@@ -784,7 +761,7 @@ class _BooksState extends ConsumerState<Books>
                         ),
                         child: Icon(
                           _getIconFromEmoji(category['icon'] ?? '🏷️'),
-                          color: color,
+                          color: themeColor,
                           size: 20,
                         ),
                       ),
@@ -825,7 +802,8 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  void _showAddExpenseModal(BuildContext context, Book currentBook) {
+  void _showAddExpenseModal(
+      BuildContext context, Book currentBook, Color themeColor) {
     // Update parameter
     showModalBottomSheet(
       context: context,
@@ -868,9 +846,11 @@ class _BooksState extends ConsumerState<Books>
                             ),
                             Row(
                               children: [
-                                _buildTypeButton('Chi tiêu', true, setState),
+                                _buildTypeButton(
+                                    'Chi tiêu', true, setState, themeColor),
                                 const SizedBox(width: 8),
-                                _buildTypeButton('Thu nhập', false, setState),
+                                _buildTypeButton(
+                                    'Thu nhập', false, setState, themeColor),
                               ],
                             ),
                           ],
@@ -879,19 +859,19 @@ class _BooksState extends ConsumerState<Books>
                         TextField(
                           decoration: InputDecoration(
                             labelText: 'Ghi chú',
-                            labelStyle: const TextStyle(
-                              color: Color(0xFF6C63FF),
+                            labelStyle: TextStyle(
+                              color: themeColor,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF6C63FF),
+                              borderSide: BorderSide(
+                                color: themeColor,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF6C63FF),
+                              borderSide: BorderSide(
+                                color: themeColor,
                                 width: 2,
                               ),
                             ),
@@ -943,19 +923,19 @@ class _BooksState extends ConsumerState<Books>
                           value: _selectedCategory,
                           decoration: InputDecoration(
                             labelText: 'Danh mục',
-                            labelStyle: const TextStyle(
-                              color: Color(0xFF6C63FF),
+                            labelStyle: TextStyle(
+                              color: themeColor,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF6C63FF),
+                              borderSide: BorderSide(
+                                color: themeColor,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF6C63FF),
+                              borderSide: BorderSide(
+                                color: themeColor,
                                 width: 2,
                               ),
                             ),
@@ -1018,7 +998,7 @@ class _BooksState extends ConsumerState<Books>
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6C63FF),
+                              backgroundColor: themeColor,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -1048,7 +1028,8 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  Widget _buildTypeButton(String text, bool isExpense, StateSetter setState) {
+  Widget _buildTypeButton(
+      String text, bool isExpense, StateSetter setState, Color themeColor) {
     final isSelected = _isExpense == isExpense;
     return GestureDetector(
       onTap: () {
@@ -1060,7 +1041,7 @@ class _BooksState extends ConsumerState<Books>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF6C63FF) : Colors.grey[200],
+          color: isSelected ? themeColor : Colors.grey[200],
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -1182,8 +1163,9 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  Widget _buildTabButton(String label, int index) {
+  Widget _buildTabButton(String label, int index, Color themeColor) {
     final isSelected = _selectedTabIndex == index;
+
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -1192,18 +1174,33 @@ class _BooksState extends ConsumerState<Books>
             _selectedTabIndex = index;
           });
         },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF6C63FF) : Colors.grey[200],
-            borderRadius: BorderRadius.circular(8),
+            color: isSelected ? Colors.white : themeColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected ? Colors.grey.shade300 : themeColor,
+              width: 1.2,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: themeColor.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ]
+                : [],
           ),
           child: Center(
             child: Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.grey[700],
-                fontSize: 12,
+                color: isSelected ? const Color(0xFF2D3142) : Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),

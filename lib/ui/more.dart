@@ -5,6 +5,36 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
 import '../providers/transaction_provider.dart';
+import '../providers/theme_provider.dart';
+
+// 🔀 Danh sách các màu chủ đạo có thể chọn
+final List<Color> primaryVariants = [
+  Color(0xFF6C63FF), // Tím
+  Color(0xFF2196F3), // Xanh dương
+  Color(0xFF4CAF50), // Xanh lá
+  Color(0xFFFF5722), // Cam
+  Color(0xFFFF4081), // Hồng
+  Color(0xFF9C27B0), // Tím đậm
+  Color(0xFF3F51B5), // Indigo
+  Color(0xFF00BCD4), // Cyan
+  Color(0xFFFF9800), // Cam sáng
+  Color(0xFF795548), // Nâu
+  Color(0xFF607D8B), // Xám xanh
+];
+
+final List<String> _themeColorNames = [
+  'Tím',
+  'Xanh dương',
+  'Lá',
+  'Cam',
+  'Hồng',
+  'Tím đậm',
+  'Indigo',
+  'Cyan',
+  'Cam sáng',
+  'Nâu',
+  'Xám xanh',
+];
 
 class More extends ConsumerStatefulWidget {
   const More({super.key});
@@ -14,6 +44,22 @@ class More extends ConsumerStatefulWidget {
 }
 
 class _MoreState extends ConsumerState<More> {
+  int? _currentColorIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadThemeColor();
+  }
+
+  Future<void> _loadThemeColor() async {
+    final prefs = await SharedPreferences.getInstance();
+    final int index = prefs.getInt('theme_color') ?? 0;
+
+    setState(() {
+      _currentColorIndex = index;
+    });
+  }
 
   Future<void> removeData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -26,8 +72,11 @@ class _MoreState extends ConsumerState<More> {
     // Lấy đơn vị tiền tệ hiện tại từ provider
     final currentCurrency = ref.watch(currencyProvider);
 
+    // Lấy màu nền hiện tại
+    final themeColor = ref.watch(themeColorProvider);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: Colors.white, // Áp dụng màu nền
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -96,6 +145,15 @@ class _MoreState extends ConsumerState<More> {
             subtitle: currentCurrency.displayName,
             onTap: () {
               _showCurrencyDialog(currentCurrency);
+            },
+          ),
+          _buildDivider(),
+          _buildSettingItem(
+            icon: Icons.color_lens,
+            title: 'Màu chủ đạo',
+            subtitle: _themeColorNames[_currentColorIndex!],
+            onTap: () {
+              _showBackgroundColorDialog();
             },
           ),
         ],
@@ -171,87 +229,135 @@ class _MoreState extends ConsumerState<More> {
   void _showLanguageDialog() {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: const Text(
-              'Chọn ngôn ngữ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3142),
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildDialogOption(
-                  title: 'Tiếng Việt',
-                  isSelected: true,
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildDialogOption(
-                  title: 'English',
-                  isSelected: false,
-                  onTap: () {
-                    Navigator.pop(context);
-                    // Áp dụng ngôn ngữ tại đây
-                  },
-                ),
-              ],
-            ),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Chọn ngôn ngữ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2D3142),
           ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildDialogOption(
+              title: 'Tiếng Việt',
+              isSelected: true,
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            _buildDialogOption(
+              title: 'English',
+              isSelected: false,
+              onTap: () {
+                Navigator.pop(context);
+                // Áp dụng ngôn ngữ tại đây
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   void _showCurrencyDialog(CurrencyType currentCurrency) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: const Text(
-              'Chọn tiền tệ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3142),
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildDialogOption(
-                  title: 'VND (₫)',
-                  isSelected: currentCurrency == CurrencyType.vnd,
-                  onTap: () {
-                    _updateCurrency(CurrencyType.vnd);
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildDialogOption(
-                  title: 'USD (\$)',
-                  isSelected: currentCurrency == CurrencyType.usd,
-                  onTap: () {
-                    _updateCurrency(CurrencyType.usd);
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildDialogOption(
-                  title: 'EUR (€)',
-                  isSelected: currentCurrency == CurrencyType.eur,
-                  onTap: () {
-                    _updateCurrency(CurrencyType.eur);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Chọn tiền tệ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2D3142),
           ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildDialogOption(
+              title: 'VND (₫)',
+              isSelected: currentCurrency == CurrencyType.vnd,
+              onTap: () {
+                _updateCurrency(CurrencyType.vnd);
+                Navigator.pop(context);
+              },
+            ),
+            _buildDialogOption(
+              title: 'USD (\$)',
+              isSelected: currentCurrency == CurrencyType.usd,
+              onTap: () {
+                _updateCurrency(CurrencyType.usd);
+                Navigator.pop(context);
+              },
+            ),
+            _buildDialogOption(
+              title: 'EUR (€)',
+              isSelected: currentCurrency == CurrencyType.eur,
+              onTap: () {
+                _updateCurrency(CurrencyType.eur);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showBackgroundColorDialog() async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Chọn màu chủ đạo',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2D3142),
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(primaryVariants.length, (index) {
+            return _buildDialogOption(
+              title: _themeColorNames[index],
+              isSelected: _currentColorIndex == index,
+              color: primaryVariants[index],
+              onTap: () {
+                setState(() {
+                  _currentColorIndex = index;
+                });
+
+                // Lưu màu mới
+                ref.read(themeColorProvider.notifier).setThemeColor(index);
+
+                // Đóng dialog
+                Navigator.pop(context);
+
+                // Thông báo cho người dùng
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Đã đổi màu nền thành ${_themeColorNames[index]}',
+                    ),
+                    backgroundColor: const Color(0xFF4CAF50),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+            );
+          }),
+        ),
+      ),
     );
   }
 
@@ -285,6 +391,7 @@ class _MoreState extends ConsumerState<More> {
     required String title,
     required bool isSelected,
     required VoidCallback onTap,
+    Color? color,
   }) {
     return InkWell(
       onTap: onTap,
@@ -292,16 +399,26 @@ class _MoreState extends ConsumerState<More> {
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
         child: Row(
           children: [
+            if (color != null)
+              Container(
+                width: 24,
+                height: 24,
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+              ),
             Expanded(
               child: Text(
                 title,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color:
-                      isSelected
-                          ? const Color(0xFF4CAF50)
-                          : const Color(0xFF2D3142),
+                  color: isSelected
+                      ? const Color(0xFF4CAF50)
+                      : const Color(0xFF2D3142),
                 ),
               ),
             ),
