@@ -60,8 +60,8 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
       ),
       backgroundColor: backgroundColor,
       body: GestureDetector(
-        // ... existing code ...
-      ),
+          // ... existing code ...
+          ),
     );
   }
 

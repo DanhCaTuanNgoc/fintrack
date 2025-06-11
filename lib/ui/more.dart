@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
 import '../providers/transaction_provider.dart';
+import 'more/notification.dart';
 
 // Provider lưu trữ màu nền hiện tại
 final backgroundColorProvider = StateProvider<Color>((ref) {
@@ -168,6 +169,22 @@ class _MoreState extends ConsumerState<More> {
               _showBackgroundColorDialog();
             },
           ),
+          _buildDivider(),
+          _buildSettingItem(
+            icon: Icons.receipt_long,
+            title: 'Hóa đơn định kì',
+            onTap: () {
+              _showPeriodicInvoiceDialog();
+            },
+          ),
+          _buildDivider(),
+          _buildSettingItem(
+            icon: Icons.notifications,
+            title: 'Thông báo',
+            onTap: () {
+              _showNotificationDialog();
+            },
+          ),
         ],
       ),
     );
@@ -241,142 +258,139 @@ class _MoreState extends ConsumerState<More> {
   void _showLanguageDialog() {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: const Text(
-              'Chọn ngôn ngữ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3142),
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildDialogOption(
-                  title: 'Tiếng Việt',
-                  isSelected: true,
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildDialogOption(
-                  title: 'English',
-                  isSelected: false,
-                  onTap: () {
-                    Navigator.pop(context);
-                    // Áp dụng ngôn ngữ tại đây
-                  },
-                ),
-              ],
-            ),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Chọn ngôn ngữ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2D3142),
           ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildDialogOption(
+              title: 'Tiếng Việt',
+              isSelected: true,
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            _buildDialogOption(
+              title: 'English',
+              isSelected: false,
+              onTap: () {
+                Navigator.pop(context);
+                // Áp dụng ngôn ngữ tại đây
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   void _showCurrencyDialog(CurrencyType currentCurrency) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: const Text(
-              'Chọn tiền tệ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3142),
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildDialogOption(
-                  title: 'VND (₫)',
-                  isSelected: currentCurrency == CurrencyType.vnd,
-                  onTap: () {
-                    _updateCurrency(CurrencyType.vnd);
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildDialogOption(
-                  title: 'USD (\$)',
-                  isSelected: currentCurrency == CurrencyType.usd,
-                  onTap: () {
-                    _updateCurrency(CurrencyType.usd);
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildDialogOption(
-                  title: 'EUR (€)',
-                  isSelected: currentCurrency == CurrencyType.eur,
-                  onTap: () {
-                    _updateCurrency(CurrencyType.eur);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Chọn tiền tệ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2D3142),
           ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildDialogOption(
+              title: 'VND (₫)',
+              isSelected: currentCurrency == CurrencyType.vnd,
+              onTap: () {
+                _updateCurrency(CurrencyType.vnd);
+                Navigator.pop(context);
+              },
+            ),
+            _buildDialogOption(
+              title: 'USD (\$)',
+              isSelected: currentCurrency == CurrencyType.usd,
+              onTap: () {
+                _updateCurrency(CurrencyType.usd);
+                Navigator.pop(context);
+              },
+            ),
+            _buildDialogOption(
+              title: 'EUR (€)',
+              isSelected: currentCurrency == CurrencyType.eur,
+              onTap: () {
+                _updateCurrency(CurrencyType.eur);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   void _showBackgroundColorDialog() {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: const Text(
-              'Chọn màu nền',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3142),
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(_backgroundColors.length, (index) {
-                return _buildDialogOption(
-                  title: _colorNames[index],
-                  isSelected: _currentColorIndex == index,
-                  color: _backgroundColors[index],
-                  onTap: () {
-                    setState(() {
-                      _currentColorIndex = index;
-                    });
-
-                    // Cập nhật màu toàn cục
-                    ref.read(backgroundColorProvider.notifier).state =
-                        _backgroundColors[index];
-
-                    // Lưu màu mới
-                    _saveColorIndex(index);
-
-                    // Đóng dialog
-                    Navigator.pop(context);
-
-                    // Thông báo cho người dùng
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Đã đổi màu nền thành ${_colorNames[index]}',
-                        ),
-                        backgroundColor: const Color(0xFF4CAF50),
-                        duration: const Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                );
-              }),
-            ),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Chọn màu nền',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2D3142),
           ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(_backgroundColors.length, (index) {
+            return _buildDialogOption(
+              title: _colorNames[index],
+              isSelected: _currentColorIndex == index,
+              color: _backgroundColors[index],
+              onTap: () {
+                setState(() {
+                  _currentColorIndex = index;
+                });
+
+                // Cập nhật màu toàn cục
+                ref.read(backgroundColorProvider.notifier).state =
+                    _backgroundColors[index];
+
+                // Lưu màu mới
+                _saveColorIndex(index);
+
+                // Đóng dialog
+                Navigator.pop(context);
+
+                // Thông báo cho người dùng
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Đã đổi màu nền thành ${_colorNames[index]}',
+                    ),
+                    backgroundColor: const Color(0xFF4CAF50),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+            );
+          }),
+        ),
+      ),
     );
   }
 
@@ -435,10 +449,9 @@ class _MoreState extends ConsumerState<More> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color:
-                      isSelected
-                          ? const Color(0xFF4CAF50)
-                          : const Color(0xFF2D3142),
+                  color: isSelected
+                      ? const Color(0xFF4CAF50)
+                      : const Color(0xFF2D3142),
                 ),
               ),
             ),
@@ -450,6 +463,24 @@ class _MoreState extends ConsumerState<More> {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showPeriodicInvoiceDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hóa đơn định kì'),
+      ),
+    );
+  }
+
+  void _showNotificationDialog() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const NotificationScreen(),
       ),
     );
   }
