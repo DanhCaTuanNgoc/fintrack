@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../ui/more.dart'; // Import để lấy backgroundColorProvider
 
-class Wallet extends StatefulWidget {
+class Wallet extends ConsumerStatefulWidget {
   const Wallet({super.key});
 
   @override
-  State<Wallet> createState() => _WalletState();
+  ConsumerState<Wallet> createState() => _WalletState();
 }
 
-class _WalletState extends State<Wallet> {
+class _WalletState extends ConsumerState<Wallet> {
   bool _showAmounts = true;
   List<Map<String, String>> wallets = [];
 
@@ -54,8 +54,99 @@ class _WalletState extends State<Wallet> {
 
   @override
   Widget build(BuildContext context) {
+    // Lấy màu nền từ provider
+    final backgroundColor = ref.watch(backgroundColorProvider);
+
+    if (!_hasWallets) {
+      return Scaffold(
+        backgroundColor: backgroundColor,
+        appBar: AppBar(
+          title: const Text(
+            'Ví của tôi',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Color(0xFF2D3142),
+            ),
+          ),
+          backgroundColor: Colors.white,
+          elevation: 0,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const Icon(
+                      Icons.account_balance_wallet,
+                      size: 64,
+                      color: Color(0xFF6C63FF),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Chưa có ví nào',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2D3142),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Hãy tạo ví đầu tiên của bạn',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        _showAddWalletModal(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF6C63FF),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Tạo ví mới',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         title: const Text(
           'Ví của tôi',
@@ -87,73 +178,74 @@ class _WalletState extends State<Wallet> {
           ),
         ],
       ),
-      body: wallets.isEmpty ? _buildEmptyState() : _buildWalletList(),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: Column(
         children: [
+          // Header với thông tin tổng quan
           Container(
             padding: const EdgeInsets.all(20),
             margin: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              gradient: const LinearGradient(
+                colors: [Color(0xFF6C63FF), Color(0xFF4A45B1)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
+                  color: const Color(0xFF6C63FF).withOpacity(0.3),
+                  spreadRadius: 2,
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
                 ),
               ],
             ),
             child: Column(
               children: [
-                const Icon(
-                  Icons.account_balance_wallet,
-                  size: 64,
-                  color: Color(0xFF6C63FF),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Tổng số dư',
+                      style: TextStyle(fontSize: 16, color: Colors.white70),
+                    ),
+                    Text(
+                      _formatAmount('5,000,000 đ'),
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Chưa có ví nào',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3142),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Hãy tạo ví đầu tiên của bạn',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    _showAddWalletModal(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6C63FF),
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildStatItem(
+                      'Ví tiền mặt',
+                      _formatAmount('3,000,000 đ'),
+                      Colors.white,
                     ),
-                  ),
-                  child: const Text(
-                    'Tạo ví mới',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    _buildStatItem(
+                      'Ví ngân hàng',
+                      _formatAmount('2,000,000 đ'),
+                      Colors.white,
                     ),
-                  ),
+                  ],
                 ),
               ],
+            ),
+          ),
+          // Danh sách các ví
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return _buildWalletItem();
+              },
             ),
           ),
         ],

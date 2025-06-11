@@ -261,12 +261,85 @@ class _MoreState extends ConsumerState<More> {
           ],
         ),
       ),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Chọn ngôn ngữ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2D3142),
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildDialogOption(
+              title: 'Tiếng Việt',
+              isSelected: true,
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            _buildDialogOption(
+              title: 'English',
+              isSelected: false,
+              onTap: () {
+                Navigator.pop(context);
+                // Áp dụng ngôn ngữ tại đây
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   void _showCurrencyDialog(CurrencyType currentCurrency) {
     showDialog(
       context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Chọn tiền tệ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2D3142),
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildDialogOption(
+              title: 'VND (₫)',
+              isSelected: currentCurrency == CurrencyType.vnd,
+              onTap: () {
+                _updateCurrency(CurrencyType.vnd);
+                Navigator.pop(context);
+              },
+            ),
+            _buildDialogOption(
+              title: 'USD (\$)',
+              isSelected: currentCurrency == CurrencyType.usd,
+              onTap: () {
+                _updateCurrency(CurrencyType.usd);
+                Navigator.pop(context);
+              },
+            ),
+            _buildDialogOption(
+              title: 'EUR (€)',
+              isSelected: currentCurrency == CurrencyType.eur,
+              onTap: () {
+                _updateCurrency(CurrencyType.eur);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -392,6 +465,7 @@ class _MoreState extends ConsumerState<More> {
     required bool isSelected,
     required VoidCallback onTap,
     Color? color,
+    Color? color,
   }) {
     return InkWell(
       onTap: onTap,
@@ -399,6 +473,17 @@ class _MoreState extends ConsumerState<More> {
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
         child: Row(
           children: [
+            if (color != null)
+              Container(
+                width: 24,
+                height: 24,
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+              ),
             if (color != null)
               Container(
                 width: 24,
@@ -419,6 +504,9 @@ class _MoreState extends ConsumerState<More> {
                   color: isSelected
                       ? const Color(0xFF4CAF50)
                       : const Color(0xFF2D3142),
+                  color: isSelected
+                      ? const Color(0xFF4CAF50)
+                      : const Color(0xFF2D3142),
                 ),
               ),
             ),
@@ -430,6 +518,22 @@ class _MoreState extends ConsumerState<More> {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showPeriodicInvoiceDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => const ReceiptLongScreen(),
+    );
+  }
+
+  void _showNotificationDialog() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const NotificationScreen(),
       ),
     );
   }

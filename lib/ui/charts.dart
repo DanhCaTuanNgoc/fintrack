@@ -68,9 +68,10 @@ class _ChartsState extends ConsumerState<Charts>
   Widget build(BuildContext context) {
     final transactions = ref.watch(transactionsProvider);
     final currencyType = ref.watch(currencyProvider);
+    final backgroundColor = ref.watch(backgroundColorProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: backgroundColor,
       appBar: CustomAppBar(
         selectedMonth: _selectedMonth,
         onMonthChanged: _updateSelectedMonth,
@@ -81,7 +82,10 @@ class _ChartsState extends ConsumerState<Charts>
           // Tab bar for expense/income analysis
           TabBar(
             controller: _tabController,
-            tabs: const [Tab(text: 'Chi tiêu'), Tab(text: 'Thu nhập')],
+            tabs: const [
+              Tab(text: 'Chi tiêu'),
+              Tab(text: 'Thu nhập'),
+            ],
             labelColor: const Color(0xFF6C63FF),
             unselectedLabelColor: Colors.grey,
           ),
@@ -101,10 +105,7 @@ class _ChartsState extends ConsumerState<Charts>
   }
 
   Widget _buildPieChart(
-    Map<String, double> data,
-    CurrencyType currencyType,
-    bool isExpense,
-  ) {
+      Map<String, double> data, CurrencyType currencyType, bool isExpense) {
     final total = data.values.fold(0.0, (sum, amount) => sum + amount);
     final sortedData = data.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
@@ -155,11 +156,17 @@ class _ChartsState extends ConsumerState<Charts>
                 ),
                 Text(
                   isExpense ? 'Tổng chi tiêu' : 'Tổng thu nhập',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
                 ),
                 Text(
                   DateFormat('MM/yyyy').format(_selectedMonth),
-                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
                 ),
               ],
             ),
@@ -202,9 +209,7 @@ class _ChartsState extends ConsumerState<Charts>
   }
 
   Widget _buildExpenseAnalysis(
-    AsyncValue<List<dynamic>> transactions,
-    CurrencyType currencyType,
-  ) {
+      AsyncValue<List<dynamic>> transactions, CurrencyType currencyType) {
     return transactions.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
@@ -317,9 +322,7 @@ class _ChartsState extends ConsumerState<Charts>
   }
 
   Widget _buildIncomeAnalysis(
-    AsyncValue<List<dynamic>> transactions,
-    CurrencyType currencyType,
-  ) {
+      AsyncValue<List<dynamic>> transactions, CurrencyType currencyType) {
     return transactions.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
@@ -463,18 +466,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               IconButton(
                 icon: const Icon(Icons.chevron_left),
                 onPressed: () {
-                  onMonthChanged(
-                    DateTime(selectedMonth.year, selectedMonth.month - 1),
-                  );
+                  onMonthChanged(DateTime(
+                    selectedMonth.year,
+                    selectedMonth.month - 1,
+                  ));
                 },
               ),
               GestureDetector(
                 onTap: onMonthTap,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: const Color(0xFF6C63FF),
                     borderRadius: BorderRadius.circular(20),
@@ -495,12 +497,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         selectedMonth.month == DateTime.now().month
                     ? null
                     : () {
-                        onMonthChanged(
-                          DateTime(
-                            selectedMonth.year,
-                            selectedMonth.month + 1,
-                          ),
-                        );
+                        onMonthChanged(DateTime(
+                          selectedMonth.year,
+                          selectedMonth.month + 1,
+                        ));
                       },
               ),
             ],
@@ -514,6 +514,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+String formatCurrency(double amount, CurrencyType currencyType) {
+  final formatter = NumberFormat.currency(
+    locale: 'vi_VN',
+    symbol: currencyType == CurrencyType.vnd ? '₫' : '\$',
+    decimalDigits: 0,
+  );
+  return formatter.format(amount);
 }
 
 String formatCurrency(double amount, CurrencyType currencyType) {
