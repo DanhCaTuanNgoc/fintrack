@@ -6,6 +6,7 @@ import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
 import '../providers/transaction_provider.dart';
 import 'more/notification.dart';
+import 'more/receipt_long.dart';
 
 // Provider lưu trữ màu nền hiện tại
 final backgroundColorProvider = StateProvider<Color>((ref) {
@@ -470,9 +471,7 @@ class _MoreState extends ConsumerState<More> {
   void _showPeriodicInvoiceDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hóa đơn định kì'),
-      ),
+      builder: (context) => const ReceiptLongScreen(),
     );
   }
 
