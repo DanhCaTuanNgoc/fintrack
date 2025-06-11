@@ -39,7 +39,7 @@ class _BooksState extends ConsumerState<Books>
   // Calendar state
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  DateTime _selectedDay = DateTime.now();
   Map<DateTime, List<Map<String, dynamic>>> _events = {};
 
   // Thêm vào phần khai báo state
@@ -64,6 +64,10 @@ class _BooksState extends ConsumerState<Books>
   // Thêm biến state cho date range filter
   DateTime? _startDate;
   DateTime? _endDate;
+
+  bool _isExpanded = false;
+  late List<dynamic> _filteredTransactions = [];
+  late double _dayExpense = 0.0;
 
   IconData _getIconFromEmoji(String emoji) {
     return _iconMapping[emoji] ?? Icons.category;
@@ -248,21 +252,39 @@ class _BooksState extends ConsumerState<Books>
                   child: Row(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 16),
+                        padding: const EdgeInsets.only(left: 0),
                         child: Text(
                           books.first.name,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                            fontSize: 22,
                             color: Colors.white,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Icon(
-                        Icons.arrow_drop_down,
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
+                      Material(
+                        color: Colors.transparent, // để không che nền
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _isExpanded = !_isExpanded;
+                            });
+                          },
+                          borderRadius:
+                              BorderRadius.circular(999), // ripple bo tròn
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.arrow_drop_down,
+                              size: 30,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -270,314 +292,383 @@ class _BooksState extends ConsumerState<Books>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      _buildTabButton('Hóa đơn', 0, themeColor),
+                      _buildTabButton('Hóa đơn', 0, themeColor,
+                          icon: Icons.receipt),
                       const SizedBox(width: 8),
-                      _buildTabButton('Lịch', 1, themeColor),
+                      _buildTabButton('Lịch', 1, themeColor,
+                          icon: Icons.calendar_today),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          body: TabBarView(
-            controller: _tabController,
-            physics: const NeverScrollableScrollPhysics(), // Disable swipe
-            children: [
-              // Tab Hóa đơn
-              Column(
+          body: Container(
+            decoration: BoxDecoration(
+              color: themeColor,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white, // Background color for the body
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(22),
+                  topRight: Radius.circular(22),
+                ), // Rounded top-left and top-right corners
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: TabBarView(
+                controller: _tabController,
+                physics: const NeverScrollableScrollPhysics(), // Disable swipe
                 children: [
-                  // Header với thông tin tổng quan
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 20,
-                    ),
-                    margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 1,
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
+                  // Tab Hóa đơn
+                  Column(
+                    children: [
+                      // Header với thông tin tổng quan
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 22,
+                          horizontal: 20,
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        // Date range selector và nút ẩn/hiện
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        margin: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(
+                                  0.2), // Increased opacity for stronger shadow
+                              spreadRadius:
+                                  2, // Increased spread for more coverage
+                              blurRadius:
+                                  8, // Increased blur for a softer, more pronounced effect
+                              offset: const Offset(0,
+                                  4), // Increased vertical offset for greater elevation
+                            ),
+                            BoxShadow(
+                              color: Colors.grey
+                                  .withOpacity(0.1), // Additional subtle shadow
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
                           children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.calendar_month,
+                                        color: themeColor,
+                                        size: 24,
+                                      ),
+                                      onPressed: () {
+                                        // Handle previous date range
+                                      },
+                                    ),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        final picked =
+                                            await showDateRangePicker(
+                                          context: context,
+                                          firstDate: DateTime(2020),
+                                          lastDate: DateTime(2030),
+                                          initialDateRange:
+                                              _startDate != null &&
+                                                      _endDate != null
+                                                  ? DateTimeRange(
+                                                      start: _startDate!,
+                                                      end: _endDate!)
+                                                  : null,
+                                        );
+                                        if (picked != null) {
+                                          setState(() {
+                                            _startDate = picked.start;
+                                            _endDate = picked.end;
+                                          });
+                                        }
+                                      },
+                                      child: Text(
+                                        _startDate != null && _endDate != null
+                                            ? '${DateFormat('dd/MM/yyyy').format(_startDate!)} - ${DateFormat('dd/MM/yyyy').format(_endDate!)}'
+                                            : 'Lọc khoảng thời gian',
+                                        style: TextStyle(
+                                          color: Colors.grey[800],
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 IconButton(
                                   icon: Icon(
-                                    Icons.calendar_month,
-                                    color: themeColor,
+                                    _isAmountVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Colors.grey[600],
                                     size: 24,
                                   ),
                                   onPressed: () {
-                                    // Handle previous date range
+                                    setState(() {
+                                      _isAmountVisible = !_isAmountVisible;
+                                    });
                                   },
                                 ),
-                                GestureDetector(
-                                  onTap: () async {
-                                    final picked = await showDateRangePicker(
-                                      context: context,
-                                      firstDate: DateTime(2020),
-                                      lastDate: DateTime(2030),
-                                      initialDateRange:
-                                          _startDate != null && _endDate != null
-                                              ? DateTimeRange(
-                                                  start: _startDate!,
-                                                  end: _endDate!)
-                                              : null,
-                                    );
-                                    if (picked != null) {
-                                      setState(() {
-                                        _startDate = picked.start;
-                                        _endDate = picked.end;
-                                      });
-                                    }
-                                  },
-                                  child: Text(
-                                    _startDate != null && _endDate != null
-                                        ? '${DateFormat('dd/MM/yyyy').format(_startDate!)} - ${DateFormat('dd/MM/yyyy').format(_endDate!)}'
-                                        : 'Lọc',
-                                    style: TextStyle(
-                                      color: Colors.grey[800],
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            // Stats row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 110,
+                                    ),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: _buildStatItem(
+                                        'Toàn bộ',
+                                        balance.abs().toString(),
+                                        isNegative
+                                            ? const Color(0xFFFF5252)
+                                            : const Color(0xFF4CAF50),
+                                        showNegative: isNegative,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 110,
+                                    ),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: _buildStatItem(
+                                        'Thu nhập',
+                                        totalIncome.toString(),
+                                        const Color(0xFF4CAF50),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 110,
+                                    ),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: _buildStatItem(
+                                        'Chi tiêu',
+                                        totalExpense.toString(),
+                                        const Color(0xFFFF5252),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                            IconButton(
-                              icon: Icon(
-                                _isAmountVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.grey[600],
-                                size: 24,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isAmountVisible = !_isAmountVisible;
-                                });
-                              },
-                            ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        // Stats row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 110,
-                                ),
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: _buildStatItem(
-                                    'Toàn bộ',
-                                    balance.abs().toString(),
-                                    isNegative
-                                        ? const Color(0xFFFF5252)
-                                        : const Color(0xFF4CAF50),
-                                    showNegative: isNegative,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Container(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 110,
-                                ),
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: _buildStatItem(
-                                    'Thu nhập',
-                                    totalIncome.toString(),
-                                    const Color(0xFF4CAF50),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Container(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 110,
-                                ),
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: _buildStatItem(
-                                    'Chi tiêu',
-                                    totalExpense.toString(),
-                                    const Color(0xFFFF5252),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Danh sách các đầu mục chi tiêu
-                  Expanded(
-                    child: transactions.when(
-                      loading: () =>
-                          const Center(child: CircularProgressIndicator()),
-                      error: (error, stack) =>
-                          Center(child: Text('Error: $error')),
-                      data: (transactionsList) {
-                        // Lọc theo khoảng thời gian
-                        final filteredTransactions =
-                            (_startDate != null && _endDate != null)
-                                ? transactionsList.where((transaction) {
-                                    final date = transaction.date!;
-                                    return !date.isBefore(_startDate!) &&
-                                        !date.isAfter(_endDate!);
-                                  }).toList()
-                                : transactionsList;
+                      ),
+                      // Danh sách các đầu mục chi tiêu
+                      Expanded(
+                        child: transactions.when(
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
+                          error: (error, stack) =>
+                              Center(child: Text('Error: $error')),
+                          data: (transactionsList) {
+                            // Lọc theo khoảng thời gian
+                            final filteredTransactions =
+                                (_startDate != null && _endDate != null)
+                                    ? transactionsList.where((transaction) {
+                                        final date = transaction.date!;
+                                        return !date.isBefore(_startDate!) &&
+                                            !date.isAfter(_endDate!);
+                                      }).toList()
+                                    : transactionsList;
 
-                        // Nhóm giao dịch theo ngày
-                        final groupedTransactions = <String, List<dynamic>>{};
-                        final dailyExpenses = <String, double>{};
+                            // Nhóm giao dịch theo ngày
+                            final groupedTransactions =
+                                <String, List<dynamic>>{};
+                            final dailyExpenses = <String, double>{};
 
-                        for (var transaction in filteredTransactions) {
-                          final dateKey = DateFormat(
-                            'dd/MM/yyyy',
-                          ).format(transaction.date!);
-                          if (!groupedTransactions.containsKey(dateKey)) {
-                            groupedTransactions[dateKey] = [];
-                            dailyExpenses[dateKey] = 0;
-                          }
-                          groupedTransactions[dateKey]!.add(transaction);
-                          if (transaction.type == 'expense') {
-                            dailyExpenses[dateKey] =
-                                (dailyExpenses[dateKey] ?? 0) +
-                                    transaction.amount;
-                          }
-                        }
-
-                        return ListView.builder(
-                          padding: const EdgeInsets.all(6),
-                          itemCount: groupedTransactions.length,
-                          itemBuilder: (context, index) {
-                            final dateKey = groupedTransactions.keys.elementAt(
-                              index,
-                            );
-                            final transactions = groupedTransactions[dateKey]!;
-                            final dayExpense = dailyExpenses[dateKey] ?? 0;
-
-                            // Tính tổng thu nhập trong ngày
-                            double dayIncome = 0;
-                            for (var transaction in transactions) {
-                              if (transaction.type == 'income') {
-                                dayIncome += transaction.amount;
+                            for (var transaction in filteredTransactions) {
+                              final dateKey = DateFormat(
+                                'dd/MM/yyyy',
+                              ).format(transaction.date!);
+                              if (!groupedTransactions.containsKey(dateKey)) {
+                                groupedTransactions[dateKey] = [];
+                                dailyExpenses[dateKey] = 0;
+                              }
+                              groupedTransactions[dateKey]!.add(transaction);
+                              if (transaction.type == 'expense') {
+                                dailyExpenses[dateKey] =
+                                    (dailyExpenses[dateKey] ?? 0) +
+                                        transaction.amount;
                               }
                             }
 
-                            // Tính tổng theo ngày (thu - chi)
-                            final dayTotal = dayIncome - dayExpense;
+                            return ListView.builder(
+                              padding: const EdgeInsets.all(6),
+                              itemCount: groupedTransactions.length,
+                              itemBuilder: (context, index) {
+                                final dateKey =
+                                    groupedTransactions.keys.elementAt(
+                                  index,
+                                );
+                                final transactions =
+                                    groupedTransactions[dateKey]!;
+                                final dayExpense = dailyExpenses[dateKey] ?? 0;
 
-                            return _buildExpenseItem(
-                                dateKey: dateKey,
-                                transactions: transactions,
-                                dayExpense: dayTotal,
-                                themeColor: themeColor);
+                                // Tính tổng thu nhập trong ngày
+                                double dayIncome = 0;
+                                for (var transaction in transactions) {
+                                  if (transaction.type == 'income') {
+                                    dayIncome += transaction.amount;
+                                  }
+                                }
+
+                                // Tính tổng theo ngày (thu - chi)
+                                final dayTotal = dayIncome - dayExpense;
+
+                                return _buildExpenseItem(
+                                    dateKey: dateKey,
+                                    transactions: transactions,
+                                    dayExpense: dayTotal,
+                                    themeColor: themeColor);
+                              },
+                            );
                           },
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Tab Lịch
+                  Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(
+                                  0.2), // Increased opacity for stronger shadow
+                              spreadRadius:
+                                  2, // Increased spread for more coverage
+                              blurRadius:
+                                  8, // Increased blur for a softer, more pronounced effect
+                              offset: const Offset(0,
+                                  4), // Increased vertical offset for greater elevation
+                            ),
+                            BoxShadow(
+                              color: Colors.grey
+                                  .withOpacity(0.1), // Additional subtle shadow
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: TableCalendar(
+                          firstDay: DateTime.utc(2020, 1, 1),
+                          lastDay: DateTime.utc(2030, 12, 31),
+                          focusedDay: _focusedDay,
+                          selectedDayPredicate: (day) {
+                            return isSameDay(_selectedDay, day);
+                          },
+                          calendarFormat: _calendarFormat,
+                          onFormatChanged: (format) {
+                            setState(() {
+                              _calendarFormat = format;
+                            });
+                          },
+                          onDaySelected: (selectedDay, focusedDay) {
+                            setState(() {
+                              _selectedDay = selectedDay;
+                              _focusedDay = focusedDay;
+                              // Chuyển đổi selectedDay thành định dạng DB để lọc
+                              final selectedDateStr =
+                                  DateFormat('yyyy-MM-dd').format(selectedDay) +
+                                      'T00:00:00.000';
+                              if (_events.containsKey(selectedDay)) {
+                                final event = _events[selectedDay]![
+                                    0]; // Lấy sự kiện đầu tiên
+                                _filteredTransactions =
+                                    event['transactions']?.where((t) {
+                                          return t['date'] ==
+                                              selectedDateStr; // So sánh với định dạng DB
+                                        }).toList() ??
+                                        [];
+                                _dayExpense = _filteredTransactions.fold(
+                                    0.0,
+                                    (sum, t) =>
+                                        sum +
+                                        (t['type'] == 'expense'
+                                            ? -t['amount']
+                                            : t['amount']));
+                              } else {
+                                _filteredTransactions = [];
+                                _dayExpense = 0.0;
+                              }
+                            });
+                          },
+                          calendarStyle: CalendarStyle(
+                            selectedDecoration: BoxDecoration(
+                              color: themeColor,
+                              shape: BoxShape.circle,
+                            ),
+                            markerDecoration: BoxDecoration(
+                              color: themeColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          headerStyle: const HeaderStyle(
+                            formatButtonVisible: false,
+                            titleCentered: true,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: 1, // Chỉ hiển thị một mục cho ngày đã chọn
+                          itemBuilder: (context, index) {
+                            return _buildExpenseItemForCalendar(
+                              dateKey: DateFormat('dd/MM/yyyy').format(
+                                  _selectedDay), // Định dạng ngày hiển thị
+                              transactions: _filteredTransactions,
+                              dayExpense: _dayExpense,
+                              themeColor: themeColor,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              // Tab Lịch
-              Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 1,
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: TableCalendar(
-                      firstDay: DateTime.utc(2020, 1, 1),
-                      lastDay: DateTime.utc(2030, 12, 31),
-                      focusedDay: _focusedDay,
-                      selectedDayPredicate: (day) {
-                        return isSameDay(_selectedDay, day);
-                      },
-                      calendarFormat: _calendarFormat,
-                      onFormatChanged: (format) {
-                        setState(() {
-                          _calendarFormat = format;
-                        });
-                      },
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setState(() {
-                          _selectedDay = selectedDay;
-                          _focusedDay = focusedDay;
-                        });
-                      },
-                      calendarStyle: CalendarStyle(
-                        selectedDecoration: BoxDecoration(
-                          color: themeColor,
-                          shape: BoxShape.circle,
-                        ),
-                        todayDecoration: BoxDecoration(
-                          color: themeColor,
-                          shape: BoxShape.circle,
-                        ),
-                        markerDecoration: BoxDecoration(
-                          color: themeColor,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      headerStyle: const HeaderStyle(
-                        formatButtonVisible: false,
-                        titleCentered: true,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _events[_selectedDay]?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        final event = _events[_selectedDay]![index];
-                        return _buildExpenseItem(
-                            dateKey: DateFormat(
-                              'HH:mm dd/MM/yyyy',
-                            ).format(event['date']),
-                            transactions: event['transactions'],
-                            dayExpense: event['amount'],
-                            themeColor: themeColor);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -586,7 +677,7 @@ class _BooksState extends ConsumerState<Books>
             },
             backgroundColor: themeColor,
             elevation: 4,
-            child: const Icon(Icons.add, color: Colors.white),
+            child: const Icon(Icons.add, size: 30, color: Colors.white),
           ),
         );
       },
@@ -672,9 +763,18 @@ class _BooksState extends ConsumerState<Books>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
-            spreadRadius: 2,
-            blurRadius: 8,
+            color: Colors.grey
+                .withOpacity(0.2), // Increased opacity for stronger shadow
+            spreadRadius: 2, // Increased spread for more coverage
+            blurRadius:
+                8, // Increased blur for a softer, more pronounced effect
+            offset: const Offset(
+                0, 4), // Increased vertical offset for greater elevation
+          ),
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1), // Additional subtle shadow
+            spreadRadius: 1,
+            blurRadius: 2,
             offset: const Offset(0, 2),
           ),
         ],
@@ -802,9 +902,155 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
+  Widget _buildExpenseItemForCalendar({
+    required String dateKey,
+    required List<dynamic> transactions,
+    required double dayExpense,
+    required Color themeColor,
+  }) {
+    // Chuyển dateKey từ "dd/MM/yyyy" sang DateTime (local)
+    final dateKeyDateTime =
+        DateFormat('dd/MM/yyyy').parse(dateKey, true).toLocal();
+
+    // Lọc transactions dựa trên dateKey
+    final filteredTransactions = transactions.where((transaction) {
+      try {
+        // Chuyển transaction['date'] từ chuỗi sang DateTime (giả sử DB là UTC)
+        final transactionDate =
+            DateTime.parse(transaction['date']); // Chuyển sang local
+        // So sánh chỉ ngày
+        print(
+            'transactionDate: $transactionDate, dateKeyDateTime: $dateKeyDateTime');
+        return isSameDay(transactionDate, dateKeyDateTime);
+      } catch (e) {
+        print(
+            'Error parsing transaction date: $e, transaction[date]: ${transaction['date']}');
+        return false;
+      }
+    }).toList();
+
+    print(
+        'dateKey: $dateKey, dateKeyDateTime: $dateKeyDateTime, filteredTransactions count: ${filteredTransactions.length}');
+
+    transactions.forEach((element) => print(element.Date));
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 2,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Header ngày
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.withOpacity(0.1),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  color: themeColor,
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  dateKey,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  'Tổng: ${_isAmountVisible ? (dayExpense >= 0 ? '+' : '-') + formatCurrency(dayExpense.abs(), ref.watch(currencyProvider)) : '•••••'}',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+          // Danh sách giao dịch
+          Column(
+            children: filteredTransactions.map((transaction) {
+              final category = _categories.firstWhere(
+                (cat) => cat['id'] == transaction['categoryId'],
+                orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
+              );
+
+              final bgColor = themeColor.withOpacity(0.1);
+
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        _getIconFromEmoji(category['icon'] ?? '🏷️'),
+                        color: themeColor,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        transaction['note'],
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${transaction['type'] == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction['amount'], ref.watch(currencyProvider)) : '•••••'}',
+                      style: TextStyle(
+                        color: transaction['type'] == 'expense'
+                            ? Colors.red
+                            : Colors.green,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showAddExpenseModal(
       BuildContext context, Book currentBook, Color themeColor) {
-    // Update parameter
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1163,7 +1409,8 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  Widget _buildTabButton(String label, int index, Color themeColor) {
+  Widget _buildTabButton(String label, int index, Color themeColor,
+      {IconData? icon}) {
     final isSelected = _selectedTabIndex == index;
 
     return Expanded(
@@ -1176,13 +1423,15 @@ class _BooksState extends ConsumerState<Books>
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           decoration: BoxDecoration(
             color: isSelected ? Colors.white : themeColor,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? Colors.grey.shade300 : themeColor,
-              width: 1.2,
+              color: isSelected
+                  ? Colors.grey.shade300
+                  : themeColor, // Border for both states
+              width: 1.5, // Slightly thicker border for emphasis
             ),
             boxShadow: isSelected
                 ? [
@@ -1195,13 +1444,25 @@ class _BooksState extends ConsumerState<Books>
                 : [],
           ),
           child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? const Color(0xFF2D3142) : Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null)
+                  Icon(
+                    icon,
+                    color: isSelected ? const Color(0xFF2D3142) : Colors.white,
+                    size: 16,
+                  ),
+                if (icon != null) const SizedBox(width: 4),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isSelected ? const Color(0xFF2D3142) : Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
