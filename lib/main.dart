@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.robotoTextTheme(),
         scaffoldBackgroundColor: const Color(0xFFF5F5F5),
       ),
-      home: hasVisited ? const HomePage() : const WelcomeScreen(),
+      home: hasVisited ? HomePage() : const WelcomeScreen(),
     );
   }
 }

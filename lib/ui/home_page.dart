@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'books.dart';
 import 'wallet.dart';
@@ -9,15 +8,12 @@ import 'more.dart';
 import '../providers/theme_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
   ConsumerState<HomePage> createState() => _MyHomePageState();
-  ConsumerState<HomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends ConsumerState<HomePage> {
 class _MyHomePageState extends ConsumerState<HomePage> {
   int _selectedIndex = 0;
 
@@ -51,9 +47,11 @@ class _MyHomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     final themeColor = ref.watch(themeColorProvider);
+
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: Colors.white,
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: _screens[_selectedIndex],

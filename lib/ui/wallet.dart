@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../ui/more.dart'; // Import để lấy backgroundColorProvider
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-class Wallet extends ConsumerStatefulWidget {
+class Wallet extends StatefulWidget {
   const Wallet({super.key});
 
   @override
-  ConsumerState<Wallet> createState() => _WalletState();
+  State<Wallet> createState() => _WalletState();
 }
 
-class _WalletState extends ConsumerState<Wallet> {
+class _WalletState extends State<Wallet> {
   bool _showAmounts = true;
   List<Map<String, String>> wallets = [];
 
@@ -54,99 +54,8 @@ class _WalletState extends ConsumerState<Wallet> {
 
   @override
   Widget build(BuildContext context) {
-    // Lấy màu nền từ provider
-    final backgroundColor = ref.watch(backgroundColorProvider);
-
-    if (!_hasWallets) {
-      return Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: AppBar(
-          title: const Text(
-            'Ví của tôi',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: Color(0xFF2D3142),
-            ),
-          ),
-          backgroundColor: Colors.white,
-          elevation: 0,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                margin: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.account_balance_wallet,
-                      size: 64,
-                      color: Color(0xFF6C63FF),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Chưa có ví nào',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D3142),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Hãy tạo ví đầu tiên của bạn',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        _showAddWalletModal(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C63FF),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Tạo ví mới',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         title: const Text(
           'Ví của tôi',
@@ -178,74 +87,74 @@ class _WalletState extends ConsumerState<Wallet> {
           ),
         ],
       ),
-      body: Column(
+      body: wallets.isEmpty ? _buildEmptyState() : _buildWalletList(),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Header với thông tin tổng quan
           Container(
             padding: const EdgeInsets.all(20),
             margin: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6C63FF), Color(0xFF4A45B1)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF6C63FF).withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Tổng số dư',
-                      style: TextStyle(fontSize: 16, color: Colors.white70),
-                    ),
-                    Text(
-                      _formatAmount('5,000,000 đ'),
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                const Icon(
+                  Icons.account_balance_wallet,
+                  size: 64,
+                  color: Color(0xFF6C63FF),
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildStatItem(
-                      'Ví tiền mặt',
-                      _formatAmount('3,000,000 đ'),
-                      Colors.white,
+                const Text(
+                  'Chưa có ví nào',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3142),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Hãy tạo ví đầu tiên của bạn',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    _showAddWalletModal(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6C63FF),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    _buildStatItem(
-                      'Ví ngân hàng',
-                      _formatAmount('2,000,000 đ'),
-                      Colors.white,
+                  ),
+                  child: const Text(
+                    'Tạo ví mới',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                  ],
+                  ),
                 ),
               ],
-            ),
-          ),
-          // Danh sách các ví
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return _buildWalletItem();
-              },
             ),
           ),
         ],
@@ -264,7 +173,8 @@ class _WalletState extends ConsumerState<Wallet> {
   }
 
   Widget _buildWalletItem(Map<String, String> wallet, int index) {
-    IconData icon = wallet['type'] == 'cash' ? Icons.money : Icons.account_balance;
+    IconData icon =
+        wallet['type'] == 'cash' ? Icons.money : Icons.account_balance;
     String formattedBalance = _formatBalance(wallet['balance'] ?? '0 đ');
 
     return GestureDetector(
@@ -317,7 +227,8 @@ class _WalletState extends ConsumerState<Wallet> {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF2D3142)),
+            const Icon(Icons.arrow_forward_ios,
+                size: 16, color: Color(0xFF2D3142)),
           ],
         ),
       ),
@@ -352,13 +263,15 @@ class _WalletState extends ConsumerState<Wallet> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text('Thêm ví mới', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const Text('Thêm ví mới',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: 'Tên ví',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -367,7 +280,8 @@ class _WalletState extends ConsumerState<Wallet> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: 'Số dư ban đầu',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -375,7 +289,8 @@ class _WalletState extends ConsumerState<Wallet> {
                 value: walletType,
                 decoration: InputDecoration(
                   labelText: 'Loại ví',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 items: const [
                   DropdownMenuItem(value: 'cash', child: Text('Ví tiền mặt')),
@@ -403,9 +318,11 @@ class _WalletState extends ConsumerState<Wallet> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6C63FF),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Thêm ví', style: TextStyle(color: Colors.white)),
+                  child: const Text('Thêm ví',
+                      style: TextStyle(color: Colors.white)),
                 ),
               ),
             ],
@@ -467,7 +384,8 @@ class WalletDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    IconData icon = wallet['type'] == 'cash' ? Icons.money : Icons.account_balance;
+    IconData icon =
+        wallet['type'] == 'cash' ? Icons.money : Icons.account_balance;
     String formattedBalance = _formatBalance(wallet['balance'] ?? '0 đ');
 
     return Scaffold(
@@ -562,7 +480,8 @@ class WalletDetailPage extends StatelessWidget {
 
   void _showEditWalletModal(BuildContext context) {
     final nameController = TextEditingController(text: wallet['name']);
-    final balanceController = TextEditingController(text: wallet['balance']?.replaceAll(' đ', '').replaceAll('.', ''));
+    final balanceController = TextEditingController(
+        text: wallet['balance']?.replaceAll(' đ', '').replaceAll('.', ''));
     String walletType = wallet['type'] ?? 'cash';
 
     showModalBottomSheet(
@@ -578,13 +497,15 @@ class WalletDetailPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Sửa ví', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const Text('Sửa ví',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: 'Tên ví',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -593,7 +514,8 @@ class WalletDetailPage extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: 'Số dư',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -601,7 +523,8 @@ class WalletDetailPage extends StatelessWidget {
                 value: walletType,
                 decoration: InputDecoration(
                   labelText: 'Loại ví',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 items: const [
                   DropdownMenuItem(value: 'cash', child: Text('Ví tiền mặt')),
@@ -627,9 +550,11 @@ class WalletDetailPage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6C63FF),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Cập nhật', style: TextStyle(color: Colors.white)),
+                  child: const Text('Cập nhật',
+                      style: TextStyle(color: Colors.white)),
                 ),
               ),
             ],
