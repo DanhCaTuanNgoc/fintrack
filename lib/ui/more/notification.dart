@@ -11,24 +11,24 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
   NotificationsNotifier()
       : super([
           NotificationItem(
-            title: 'Giao dịch mới',
-            message: 'Bạn vừa nhận được một khoản thanh toán mới',
-            time: DateTime.now().subtract(const Duration(minutes: 5)),
-            isRead: false,
-          ),
-          NotificationItem(
-            title: 'Nhắc nhở thanh toán',
-            message: 'Đã đến hạn thanh toán khoản vay của bạn',
-            time: DateTime.now().subtract(const Duration(hours: 2)),
-            isRead: true,
-          ),
-          NotificationItem(
             title: 'Cập nhật ứng dụng',
             message: 'Phiên bản mới của ứng dụng đã sẵn sàng',
             time: DateTime.now().subtract(const Duration(days: 1)),
             isRead: true,
           ),
         ]);
+
+  void addInvoiceDueNotification(
+      String invoiceName, double amount, DateTime dueDate) {
+    final notification = NotificationItem(
+      title: 'Hóa đơn đến hạn',
+      message:
+          'Hóa đơn "$invoiceName" với số tiền ${amount.toStringAsFixed(0)}đ đã đến hạn thanh toán',
+      time: DateTime.now(),
+      isRead: false,
+    );
+    state = [notification, ...state];
+  }
 
   void markAllAsRead() {
     state = state.map((notification) {
