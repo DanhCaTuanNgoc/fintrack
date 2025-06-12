@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/models/transaction.dart';
-import '../data/models/book.dart';
-import '../data/models/wallet.dart';
-import '../providers/transaction_provider.dart';
-import '../providers/currency_provider.dart';
-import 'more.dart'; // Import để lấy backgroundColorProvider
+import '../../data/models/transaction.dart';
+import '../../data/models/book.dart';
+import '../../data/models/wallet.dart';
+import '../../providers/transaction_provider.dart';
+import '../../providers/currency_provider.dart';
+import '../more.dart'; // Import để lấy backgroundColorProvider
 
 // Định nghĩa enum cho các loại giao dịch
 enum TransactionType { income, expense }
@@ -42,8 +42,6 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
     final transactionNotifier = ref.watch(transactionsProvider.notifier);
     final currencyNotifier = ref.read(currencyProvider.notifier);
     final currentCurrency = ref.watch(currencyProvider);
-    // Lấy màu nền từ provider
-    final backgroundColor = ref.watch(backgroundColorProvider);
 
     // ... existing code ...
 
@@ -58,7 +56,7 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
         iconTheme: IconThemeData(color: Colors.black87),
         centerTitle: true,
       ),
-      backgroundColor: backgroundColor,
+      backgroundColor: Colors.white,
       body: GestureDetector(
           // ... existing code ...
           ),
