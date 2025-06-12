@@ -412,17 +412,6 @@ class _MoreState extends ConsumerState<More> {
                   border: Border.all(color: Colors.grey.shade300),
                 ),
               ),
-            if (color != null)
-              Container(
-                width: 24,
-                height: 24,
-                margin: const EdgeInsets.only(right: 12),
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-              ),
             Expanded(
               child: Text(
                 title,
