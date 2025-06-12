@@ -10,6 +10,7 @@ import '../data/repositories/book_repository.dart';
 import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
 import '../providers/theme_provider.dart';
+import '../data/models/transaction.dart';
 
 class Books extends ConsumerStatefulWidget {
   const Books({super.key});
@@ -21,26 +22,24 @@ class Books extends ConsumerStatefulWidget {
 class _BooksState extends ConsumerState<Books>
     with SingleTickerProviderStateMixin {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
-  late final BookRepository _bookRepository;
+
   String _amount = '';
   String _note = '';
   String? _selectedCategory;
   List<Map<String, dynamic>> _expenseCategories = [];
   List<Map<String, dynamic>> _incomeCategories = [];
   bool _isExpense = true;
-  bool? _hasBooks;
+  Map<DateTime, List<Map<String, dynamic>>> _events = {};
   late TabController _tabController;
   int _selectedTabIndex = 0;
 
   // State để quản lý trạng thái mở rộng của mỗi ngày
   final Map<String, bool> _expandedDays = {};
-  final Map<int, bool> _expandedTransactions = {};
 
   // Calendar state
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
-  Map<DateTime, List<Map<String, dynamic>>> _events = {};
 
   // Thêm vào phần khai báo state
   List<Map<String, dynamic>> _categories = [];
@@ -654,12 +653,28 @@ class _BooksState extends ConsumerState<Books>
                           padding: const EdgeInsets.all(16),
                           itemCount: 1, // Chỉ hiển thị một mục cho ngày đã chọn
                           itemBuilder: (context, index) {
-                            return _buildExpenseItemForCalendar(
-                              dateKey: DateFormat('dd/MM/yyyy').format(
-                                  _selectedDay), // Định dạng ngày hiển thị
-                              transactions: _filteredTransactions,
-                              dayExpense: _dayExpense,
-                              themeColor: themeColor,
+                            return transactions.when(
+                              data: (allTransactions) {
+                                final transactionsByDate = allTransactions
+                                    .where(
+                                        (t) => isSameDay(t.date, _selectedDay))
+                                    .toList();
+                                final dayExpense =
+                                    transactionsByDate.fold<double>(
+                                  0.0,
+                                  (sum, t) => sum + t.amount,
+                                );
+                                return _buildExpenseItemForCalendar(
+                                  dateKey: DateFormat('dd/MM/yyyy')
+                                      .format(_selectedDay),
+                                  transactions: transactionsByDate,
+                                  dayExpense: dayExpense,
+                                  themeColor: themeColor,
+                                );
+                              },
+                              loading: () => const Center(
+                                  child: CircularProgressIndicator()),
+                              error: (e, _) => Center(child: Text('Lỗi: $e')),
                             );
                           },
                         ),
@@ -904,36 +919,10 @@ class _BooksState extends ConsumerState<Books>
 
   Widget _buildExpenseItemForCalendar({
     required String dateKey,
-    required List<dynamic> transactions,
+    required List<Transaction> transactions,
     required double dayExpense,
     required Color themeColor,
   }) {
-    // Chuyển dateKey từ "dd/MM/yyyy" sang DateTime (local)
-    final dateKeyDateTime =
-        DateFormat('dd/MM/yyyy').parse(dateKey, true).toLocal();
-
-    // Lọc transactions dựa trên dateKey
-    final filteredTransactions = transactions.where((transaction) {
-      try {
-        // Chuyển transaction['date'] từ chuỗi sang DateTime (giả sử DB là UTC)
-        final transactionDate =
-            DateTime.parse(transaction['date']); // Chuyển sang local
-        // So sánh chỉ ngày
-        print(
-            'transactionDate: $transactionDate, dateKeyDateTime: $dateKeyDateTime');
-        return isSameDay(transactionDate, dateKeyDateTime);
-      } catch (e) {
-        print(
-            'Error parsing transaction date: $e, transaction[date]: ${transaction['date']}');
-        return false;
-      }
-    }).toList();
-
-    print(
-        'dateKey: $dateKey, dateKeyDateTime: $dateKeyDateTime, filteredTransactions count: ${filteredTransactions.length}');
-
-    transactions.forEach((element) => print(element.Date));
-
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
@@ -955,8 +944,9 @@ class _BooksState extends ConsumerState<Books>
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header ngày
+          // 🔒 HEADER CỐ ĐỊNH
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
@@ -990,59 +980,66 @@ class _BooksState extends ConsumerState<Books>
               ],
             ),
           ),
-          // Danh sách giao dịch
-          Column(
-            children: filteredTransactions.map((transaction) {
-              final category = _categories.firstWhere(
-                (cat) => cat['id'] == transaction['categoryId'],
-                orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
-              );
 
-              final bgColor = themeColor.withOpacity(0.1);
+          // 📜 DANH SÁCH CÓ THỂ CUỘN
+          SizedBox(
+            height: 230, // 👈 tùy chỉnh chiều cao cuộn
+            child: ListView.builder(
+              padding: const EdgeInsets.only(bottom: 8),
+              itemCount: transactions.length,
+              itemBuilder: (context, index) {
+                final transaction = transactions[index];
+                final category = _categories.firstWhere(
+                  (cat) => cat['id'] == transaction.categoryId,
+                  orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
+                );
 
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: bgColor,
-                        borderRadius: BorderRadius.circular(8),
+                final bgColor = themeColor.withOpacity(0.1);
+
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          _getIconFromEmoji(category['icon'] ?? '🏷️'),
+                          color: themeColor,
+                          size: 20,
+                        ),
                       ),
-                      child: Icon(
-                        _getIconFromEmoji(category['icon'] ?? '🏷️'),
-                        color: themeColor,
-                        size: 20,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          transaction.note,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        transaction['note'],
-                        style: const TextStyle(
+                      Text(
+                        '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
+                        style: TextStyle(
+                          color: transaction.type == 'expense'
+                              ? Colors.red
+                              : Colors.green,
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ),
-                    Text(
-                      '${transaction['type'] == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction['amount'], ref.watch(currencyProvider)) : '•••••'}',
-                      style: TextStyle(
-                        color: transaction['type'] == 'expense'
-                            ? Colors.red
-                            : Colors.green,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),

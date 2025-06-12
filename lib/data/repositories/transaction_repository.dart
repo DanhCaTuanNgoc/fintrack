@@ -30,6 +30,17 @@ class TransactionRepository {
     return Transaction.fromMap(maps.first);
   }
 
+  Future<List<Transaction>?> getTransactionsByDate(DateTime datekey) async {
+    final db = await _databaseHelper.database;
+    final maps = await db.query(
+      'transaction',
+      where: 'Date = ?',
+      whereArgs: [datekey],
+    );
+    if (maps.isEmpty) return null;
+    return maps.map((map) => Transaction.fromMap(map)).toList();
+  }
+
   Future<List<Transaction>> getTransactionsByBookId(int bookId) async {
     final db = await _databaseHelper.database;
     final maps = await db.query(

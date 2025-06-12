@@ -122,4 +122,13 @@ class TransactionsNotifier
       state = AsyncValue.error(e, stack);
     }
   }
+
+  Future<void> getTransactionByDate(DateTime datekey) async {
+    try {
+      final repository = ref.read(transactionRepositoryProvider);
+      await repository.getTransactionsByDate(datekey);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
 }
