@@ -1,10 +1,11 @@
 import 'package:fintrack/providers/transaction_provider.dart';
+import 'package:fintrack/ui/widget/type_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../data/database/database_helper.dart';
-import 'components/number_pad.dart';
+import 'widget/number_pad.dart';
 import '../data/models/book.dart';
 import '../data/repositories/book_repository.dart';
 import '../providers/book_provider.dart';
@@ -1111,11 +1112,28 @@ class _BooksState extends ConsumerState<Books>
                             ),
                             Row(
                               children: [
-                                _buildTypeButton(
-                                    'Chi tiêu', true, setState, themeColor),
+                                TypeButton(
+                                    text: 'Chi tiêu',
+                                    isSelected: _isExpense == true,
+                                    onTap: () {
+                                      setState(() {
+                                        _isExpense = true;
+                                        _selectedCategory = null;
+                                      });
+                                    },
+                                    themeColor: themeColor),
                                 const SizedBox(width: 8),
-                                _buildTypeButton(
-                                    'Thu nhập', false, setState, themeColor),
+                                TypeButton(
+                                  text: 'Thu nhập',
+                                  isSelected: _isExpense == false,
+                                  themeColor: themeColor,
+                                  onTap: () {
+                                    setState(() {
+                                      _isExpense = false;
+                                      _selectedCategory = null;
+                                    });
+                                  },
+                                ),
                               ],
                             ),
                           ],
@@ -1259,7 +1277,9 @@ class _BooksState extends ConsumerState<Books>
                                   userId: 1,
                                 );
 
-                                Navigator.pop(context);
+                                if (mounted) {
+                                  Navigator.pop(context);
+                                }
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -1290,33 +1310,6 @@ class _BooksState extends ConsumerState<Books>
           },
         );
       },
-    );
-  }
-
-  Widget _buildTypeButton(
-      String text, bool isExpense, StateSetter setState, Color themeColor) {
-    final isSelected = _isExpense == isExpense;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _isExpense = isExpense;
-          _selectedCategory = null;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? themeColor : Colors.grey[200],
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey[700],
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
     );
   }
 
@@ -1435,9 +1428,7 @@ class _BooksState extends ConsumerState<Books>
           ),
         );
       },
-    ).whenComplete(() {
-      _bookNameController.dispose(); // Giải phóng controller khi modal đóng
-    });
+    );
   }
 
   Widget _buildTabButton(String label, int index, Color themeColor,

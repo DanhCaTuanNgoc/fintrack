@@ -86,7 +86,7 @@ class DatabaseHelper {
     ''');
 
     // Thêm một số category mặc định
-    await _insertDefaultCategories(db);
+    // await _insertDefaultCategories(db);
   }
 
   Future<void> _insertDefaultCategories(Database db) async {
@@ -235,63 +235,62 @@ class DatabaseHelper {
     return await db.query('categories');
   }
 
-  Future<void> insertSampleTransactions(int userId, int bookId) async {
-    final db = await database;
-    final random = Random();
-    final now = DateTime.now();
+  // Future<void> insertSampleTransactions(int userId, int bookId) async {
+  //   final db = await database;
+  //   final random = Random();
+  //   final now = DateTime.now();
 
-    // Lấy danh sách categories
-    final expenseCategories = await getCategoriesByType('expense');
-    final incomeCategories = await getCategoriesByType('income');
+  //   // Lấy danh sách categories
+  //   final expenseCategories = await getCategoriesByType('expense');
+  //   final incomeCategories = await getCategoriesByType('income');
 
-    // Tạo dữ liệu mẫu cho 5 tháng
-    for (int month = 0; month < 5; month++) {
-      // Tạo 5-10 giao dịch chi tiêu mỗi tháng
-      int numExpenses = random.nextInt(6) + 5;
-      for (int i = 0; i < numExpenses; i++) {
-        final category =
-            expenseCategories[random.nextInt(expenseCategories.length)];
-        final amount = (random.nextDouble() * 5000000)
-            .roundToDouble(); // Số tiền từ 0-5 triệu
-        final date = DateTime(
-          now.year,
-          now.month - month,
-          random.nextInt(28) + 1,
-        );
+  //   // Tạo dữ liệu mẫu cho 5 tháng
+  //   for (int month = 0; month < 5; month++) {
+  //     // Tạo 5-10 giao dịch chi tiêu mỗi tháng
+  //     int numExpenses = random.nextInt(6) + 5;
+  //     for (int i = 0; i < numExpenses; i++) {
+  //       final category =
+  //           expenseCategories[random.nextInt(expenseCategories.length)];
+  //       final amount = (random.nextDouble() * 5000000)
+  //           .roundToDouble(); // Số tiền từ 0-5 triệu
+  //       final date = DateTime(
+  //         now.year,
+  //         now.month - month,
+  //         random.nextInt(28) + 1,
+  //       );
 
-        await db.insert('transactions', {
-          'amount': amount,
-          'note': 'Giao dịch chi tiêu mẫu ${i + 1}',
-          'date': date.toIso8601String(),
-          'type': 'expense',
-          'category_id': category['id'],
-          'book_id': bookId,
-          'user_id': userId,
-        });
-      }
+  //       await db.insert('transactions', {
+  //         'amount': amount,
+  //         'note': 'Giao dịch chi tiêu mẫu ${i + 1}',
+  //         'date': date.toIso8601String(),
+  //         'type': 'expense',
+  //         'category_id': category['id'],
+  //         'book_id': bookId,
+  //         'user_id': userId,
+  //       });
+  //     }
 
-      // Tạo 1-3 giao dịch thu nhập mỗi tháng
-      int numIncomes = random.nextInt(1) + 1;
-      for (int i = 0; i < numIncomes; i++) {
-        final category =
-            incomeCategories[random.nextInt(incomeCategories.length)];
-        final amount = (random.nextDouble() * 15000).roundToDouble();
-        final date = DateTime(
-          now.year,
-          now.month - month,
-          random.nextInt(28) + 1,
-        );
+  //     // Tạo 1-3 giao dịch thu nhập mỗi tháng
+  //     int numIncomes = random.nextInt(1) + 1;
+  //     for (int i = 0; i < numIncomes; i++) {
+  //       final category =
+  //           incomeCategories[random.nextInt(incomeCategories.length)];
+  //       final amount = (random.nextDouble() * 15000).roundToDouble();
+  //       final date = DateTime(
+  //         now.year,
+  //         now.month - month,
+  //         random.nextInt(28) + 1,
+  //       );
 
-        await db.insert('transactions', {
-          'amount': amount,
-          'note': 'Giao dịch thu nhập mẫu ${i + 1}',
-          'date': date.toIso8601String(),
-          'type': 'income',
-          'category_id': category['id'],
-          'book_id': bookId,
-          'user_id': userId,
-        });
-      }
-    }
-  }
+  //       await db.insert('transactions', {
+  //         'amount': amount,
+  //         'note': 'Giao dịch thu nhập mẫu ${i + 1}',
+  //         'date': date.toIso8601String(),
+  //         'type': 'income',
+  //         'category_id': category['id'],
+  //         'book_id': bookId,
+  //         'user_id': userId,
+  //       });
+  //     }
+  //   }
 }

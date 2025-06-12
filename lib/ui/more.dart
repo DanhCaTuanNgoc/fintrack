@@ -158,6 +158,22 @@ class _MoreState extends ConsumerState<More> {
               _showBackgroundColorDialog();
             },
           ),
+          _buildDivider(),
+          _buildSettingItem(
+            icon: Icons.receipt_long,
+            title: 'Hóa đơn định kì',
+            onTap: () {
+              _showPeriodicInvoiceDialog();
+            },
+          ),
+          _buildDivider(),
+          _buildSettingItem(
+            icon: Icons.notifications,
+            title: 'Thông báo',
+            onTap: () {
+              _showNotificationDialog();
+            },
+          ),
         ],
       ),
     );

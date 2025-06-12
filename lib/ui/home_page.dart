@@ -47,7 +47,6 @@ class _MyHomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     final themeColor = ref.watch(themeColorProvider);
 
     return Scaffold(
@@ -56,29 +55,38 @@ class _MyHomePageState extends ConsumerState<HomePage> {
         duration: const Duration(milliseconds: 300),
         child: _screens[_selectedIndex],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12, // màu bóng
+              blurRadius: 8, // độ mờ
+              offset: Offset(0, -2), // đổ bóng lên phía trên
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
                 icon: Icon(Icons.book_outlined), label: 'Sổ'),
             BottomNavigationBarItem(
-              icon: Icon(Icons.wallet_outlined),
-              label: 'Ví',
-            ),
+                icon: Icon(Icons.wallet_outlined), label: 'Ví'),
             BottomNavigationBarItem(
-              icon: Icon(Icons.analytics_outlined),
-              label: 'Phân tích',
-            ),
+                icon: Icon(Icons.analytics_outlined), label: 'Phân tích'),
             BottomNavigationBarItem(
-              icon: Icon(Icons.more_horiz_outlined),
-              label: 'Thêm',
-            ),
+                icon: Icon(Icons.more_horiz_outlined), label: 'Thêm'),
           ],
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
           showUnselectedLabels: true,
           unselectedItemColor: Colors.grey,
-          selectedItemColor: themeColor),
+          selectedItemColor: themeColor,
+          backgroundColor: Colors.white,
+          elevation: 0, // 👈 Đặt elevation = 0 để dùng boxShadow tự custom
+        ),
+      ),
     );
   }
 }
