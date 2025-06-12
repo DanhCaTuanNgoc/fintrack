@@ -134,9 +134,9 @@ String formatCurrency(double amount, CurrencyType currency) {
   if (currency == CurrencyType.vnd) {
     // Định dạng VND chỉ hiển thị số nguyên
     formatted = amount.toInt().toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
     formatted = '$formatted${currency.symbol}';
   } else {
     // Định dạng USD và EUR với 2 chữ số thập phân

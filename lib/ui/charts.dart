@@ -6,6 +6,7 @@ import '../data/database/database_helper.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/currency_provider.dart';
 import '../ui/more.dart';
+import '../providers/theme_provider.dart';
 
 class Charts extends ConsumerStatefulWidget {
   const Charts({super.key});
@@ -68,10 +69,9 @@ class _ChartsState extends ConsumerState<Charts>
   Widget build(BuildContext context) {
     final transactions = ref.watch(transactionsProvider);
     final currencyType = ref.watch(currencyProvider);
-    final backgroundColor = ref.watch(backgroundColorProvider);
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         selectedMonth: _selectedMonth,
         onMonthChanged: _updateSelectedMonth,

@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:math';
 import 'home_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../data/models/book.dart';
 import '../data/database/database_helper.dart';
 import '../data/repositories/book_repository.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'more.dart'; // Import để lấy backgroundColorProvider
 
-class WelcomeScreen extends ConsumerStatefulWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
   @override
-  ConsumerState<WelcomeScreen> createState() => _WelcomeScreenState();
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
+class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   final PageController _pageController = PageController();
   late AnimationController _animationController;
@@ -38,90 +33,97 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Lấy màu nền từ provider
-    final backgroundColor = ref.watch(backgroundColorProvider);
-
     return Scaffold(
-      backgroundColor: backgroundColor,
-      body: Stack(
-        children: [
-          PageView(
-            controller: _pageController,
-            physics: const ClampingScrollPhysics(),
-            onPageChanged: (int page) {
-              setState(() {
-                _currentPage = page;
-              });
-            },
-            children: [
-              WelcomePage(onNext: () => _changePage(1)),
-              TermsPage(
-                onNext: () => _changePage(2),
-                onBack: () => _changePage(0),
-              ),
-              CreateBookPage(
-                onNext: () => _changePage(3),
-                onBack: () => _changePage(1),
-              ),
-              CreateWalletPage(
-                onNext: () => _changePage(4),
-                onBack: () => _changePage(2),
-              ),
-              GetStartedPage(
-                onGetStarted: () {
-                  Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder:
-                          (context, animation, secondaryAnimation) =>
-                              const HomePage(),
-                      transitionsBuilder: (
-                        context,
-                        animation,
-                        secondaryAnimation,
-                        child,
-                      ) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(1.0, 0.0),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      transitionDuration: const Duration(milliseconds: 500),
-                    ),
-                  );
-                },
-                onBack: () => _changePage(3),
-              ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.white, // Màu trắng
+              Colors.white, // Màu trắng
             ],
           ),
-          // Thêm indicators để hiển thị vị trí trang
-          // Positioned(
-          //   bottom: 20.0,
-          //   left: 0,
-          //   right: 0,
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: List.generate(
-          //       3,
-          //       (index) => Container(
-          //         margin: const EdgeInsets.symmetric(horizontal: 4.0),
-          //         width: 8.0,
-          //         height: 8.0,
-          //         decoration: BoxDecoration(
-          //           shape: BoxShape.circle,
-          //           color:
-          //               _currentPage == index
-          //                   ? Theme.of(context).primaryColor
-          //                   : Colors.grey.withOpacity(0.5),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-        ],
+        ),
+        child: Stack(
+          children: [
+            PageView(
+              controller: _pageController,
+              physics: const ClampingScrollPhysics(),
+              onPageChanged: (int page) {
+                setState(() {
+                  _currentPage = page;
+                });
+              },
+              children: [
+                WelcomePage(onNext: () => _changePage(1)),
+                TermsPage(
+                  onNext: () => _changePage(2),
+                  onBack: () => _changePage(0),
+                ),
+                CreateBookPage(
+                  onNext: () => _changePage(3),
+                  onBack: () => _changePage(1),
+                ),
+                CreateWalletPage(
+                  onNext: () => _changePage(4),
+                  onBack: () => _changePage(2),
+                ),
+                GetStartedPage(
+                  onGetStarted: () {
+                    Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const HomePage(),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(1.0, 0.0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                        transitionDuration: const Duration(milliseconds: 500),
+                      ),
+                    );
+                  },
+                  onBack: () => _changePage(3),
+                ),
+              ],
+            ),
+            // Thêm indicators để hiển thị vị trí trang
+            // Positioned(
+            //   bottom: 20.0,
+            //   left: 0,
+            //   right: 0,
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: List.generate(
+            //       3,
+            //       (index) => Container(
+            //         margin: const EdgeInsets.symmetric(horizontal: 4.0),
+            //         width: 8.0,
+            //         height: 8.0,
+            //         decoration: BoxDecoration(
+            //           shape: BoxShape.circle,
+            //           color:
+            //               _currentPage == index
+            //                   ? Theme.of(context).primaryColor
+            //                   : Colors.grey.withOpacity(0.5),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+          ],
+        ),
       ),
     );
   }
@@ -289,9 +291,9 @@ class TermsPage extends StatelessWidget {
                   Text(
                     'Điều khoản sử dụng',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 20),
                   Container(
@@ -385,9 +387,9 @@ class GetStartedPage extends StatelessWidget {
                 Text(
                   'Hãy bắt đầu!',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 20),
                 Text(
@@ -496,9 +498,9 @@ class _CreateBookPageState extends State<CreateBookPage> {
                         style: Theme.of(
                           context,
                         ).textTheme.headlineMedium?.copyWith(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
@@ -568,7 +570,9 @@ class _CreateBookPageState extends State<CreateBookPage> {
                         ),
                         child: Text(
                           'Bỏ qua',
-                          style: Theme.of(context).textTheme.bodyMedium
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
                               ?.copyWith(color: Colors.black54),
                         ),
                       ),
@@ -665,9 +669,9 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
                         style: Theme.of(
                           context,
                         ).textTheme.headlineMedium?.copyWith(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
@@ -817,7 +821,9 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
                         ),
                         child: Text(
                           'Bỏ qua',
-                          style: Theme.of(context).textTheme.bodyMedium
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
                               ?.copyWith(color: Colors.black54),
                         ),
                       ),

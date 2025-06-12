@@ -8,7 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/currency_provider.dart';
 import 'package:flutter/services.dart';
-import 'ui/more.dart'; // import để lấy backgroundColorProvider
+import './ui/more.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +27,7 @@ void main() async {
 
   // Khởi tạo database
   await DatabaseHelper.instance.database;
+  // Insert database ra terminal
   await DatabaseHelper.instance.showAllTables();
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -46,7 +47,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   final bool hasVisited;
   const MyApp({super.key, required this.hasVisited});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

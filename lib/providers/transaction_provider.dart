@@ -15,10 +15,10 @@ final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
 
 final transactionsProvider =
     StateNotifierProvider<TransactionsNotifier, AsyncValue<List<Transaction>>>((
-      ref,
-    ) {
-      return TransactionsNotifier(ref);
-    });
+  ref,
+) {
+  return TransactionsNotifier(ref);
+});
 
 class TransactionsNotifier
     extends StateNotifier<AsyncValue<List<Transaction>>> {
@@ -118,6 +118,15 @@ class TransactionsNotifier
       final repository = ref.read(transactionRepositoryProvider);
       await repository.deleteAllTransactions();
       await loadTransactions();
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  Future<void> getTransactionByDate(DateTime datekey) async {
+    try {
+      final repository = ref.read(transactionRepositoryProvider);
+      await repository.getTransactionsByDate(datekey);
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
