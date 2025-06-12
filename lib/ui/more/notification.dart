@@ -19,13 +19,33 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
         ]);
 
   void addInvoiceDueNotification(
-      String invoiceName, double amount, DateTime dueDate) {
+      String invoiceName, double amount, DateTime dueDate, String invoiceId) {
+    // Check if a similar notification for this invoice and due date already exists and is unread
+    NotificationItem? existingNotification;
+    for (var item in state) {
+      if (item.invoiceId == invoiceId &&
+          item.invoiceDueDate != null &&
+          DateTime(item.invoiceDueDate!.year, item.invoiceDueDate!.month,
+                  item.invoiceDueDate!.day) ==
+              DateTime(dueDate.year, dueDate.month, dueDate.day) &&
+          !item.isRead) {
+        existingNotification = item;
+        break;
+      }
+    }
+
+    if (existingNotification != null) {
+      return; // Do not add duplicate notification
+    }
+
     final notification = NotificationItem(
       title: 'Hóa đơn đến hạn',
       message:
           'Hóa đơn "$invoiceName" với số tiền ${amount.toStringAsFixed(0)}đ đã đến hạn thanh toán',
       time: DateTime.now(),
       isRead: false,
+      invoiceId: invoiceId,
+      invoiceDueDate: dueDate,
     );
     state = [notification, ...state];
   }
@@ -57,12 +77,16 @@ class NotificationItem {
   final String message;
   final DateTime time;
   final bool isRead;
+  final String? invoiceId;
+  final DateTime? invoiceDueDate;
 
   NotificationItem({
     required this.title,
     required this.message,
     required this.time,
     this.isRead = false,
+    this.invoiceId,
+    this.invoiceDueDate,
   });
 
   NotificationItem copyWith({
@@ -70,12 +94,16 @@ class NotificationItem {
     String? message,
     DateTime? time,
     bool? isRead,
+    String? invoiceId,
+    DateTime? invoiceDueDate,
   }) {
     return NotificationItem(
       title: title ?? this.title,
       message: message ?? this.message,
       time: time ?? this.time,
       isRead: isRead ?? this.isRead,
+      invoiceId: invoiceId ?? this.invoiceId,
+      invoiceDueDate: invoiceDueDate ?? this.invoiceDueDate,
     );
   }
 }

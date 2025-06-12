@@ -6,6 +6,7 @@ import '../../providers/currency_provider.dart';
 import '../../providers/transaction_provider.dart';
 import '../../data/models/transaction.dart';
 import '../../providers/notifications_provider.dart';
+import 'package:flutter/scheduler.dart';
 
 // Provider để quản lý danh sách hóa đơn định kỳ
 final periodicInvoicesProvider =
@@ -127,8 +128,8 @@ class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
   }
 
   void _initializeAutoRenewal() {
-    // Kiểm tra mỗi ngày
-    Future.delayed(const Duration(days: 1), () {
+    // Kiểm tra mỗi giờ
+    Future.delayed(const Duration(seconds: 10), () {
       _checkAndRenewInvoices();
       _initializeAutoRenewal(); // Lặp lại
     });
@@ -217,6 +218,10 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
   void initState() {
     super.initState();
     _loadCategories();
+    // Delay the notification check until after the build phase
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _checkAndNotifyInvoices();
+    });
   }
 
   Future<void> _loadCategories() async {
@@ -233,8 +238,13 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
     for (final invoice in invoices) {
       if (!invoice.isPaid && invoice.nextDueDate != null) {
         final nextDue = invoice.nextDueDate!;
-        if (now.isAfter(nextDue)) {
-          // Thêm thông báo cho hóa đơn quá hạn
+        final isDueOrOverdue = now.year > nextDue.year ||
+            (now.year == nextDue.year && now.month > nextDue.month) ||
+            (now.year == nextDue.year &&
+                now.month == nextDue.month &&
+                now.day >= nextDue.day);
+
+        if (isDueOrOverdue) {
           ref.read(notificationsProvider.notifier).addInvoiceDueNotification(
                 invoice.name,
                 invoice.amount,
@@ -250,7 +260,7 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
     final invoices = ref.watch(periodicInvoicesProvider);
 
     // Kiểm tra và thông báo hóa đơn đến hạn
-    _checkAndNotifyInvoices();
+    // _checkAndNotifyInvoices(); // REMOVED FROM HERE
 
     return Scaffold(
       appBar: AppBar(
@@ -444,15 +454,6 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
                 ),
               ),
             ],
-            const SizedBox(height: 4),
-            Text(
-              'Hạn thanh toán tiếp: ${DateFormat('dd/MM/yyyy').format(nextDueDate)}',
-              style: TextStyle(
-                fontSize: 14,
-                color: isOverdue ? Colors.red : const Color(0xFF9E9E9E),
-                fontWeight: isOverdue ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
           ],
         ),
       ),
@@ -675,23 +676,91 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {
-                              if (nameController.text.isNotEmpty &&
-                                  amountController.text.isNotEmpty &&
-                                  selectedCategory != null) {
+                              // Kiểm tra dữ liệu đầu vào
+                              if (nameController.text.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Vui lòng nhập tên hóa đơn'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              if (amountController.text.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Vui lòng nhập số tiền'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              if (selectedCategory == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Vui lòng chọn danh mục'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              // Parse số tiền
+                              double amount;
+                              try {
+                                amount = double.parse(
+                                    amountController.text.replaceAll(',', ''));
+                                if (amount <= 0) {
+                                  throw FormatException(
+                                      'Số tiền phải lớn hơn 0');
+                                }
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Số tiền không hợp lệ'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              try {
                                 final newInvoice = PeriodicInvoice(
-                                  id: DateTime.now().toString(),
-                                  name: nameController.text,
-                                  amount: double.parse(amountController.text),
+                                  id: DateTime.now()
+                                      .millisecondsSinceEpoch
+                                      .toString(),
+                                  name: nameController.text.trim(),
+                                  amount: amount,
                                   startDate: DateTime.now(),
                                   frequency: selectedFrequency,
                                   category: selectedCategory!,
-                                  description: descriptionController.text,
+                                  description:
+                                      descriptionController.text.trim(),
                                 );
 
                                 ref
                                     .read(periodicInvoicesProvider.notifier)
                                     .addInvoice(newInvoice);
                                 Navigator.pop(context);
+
+                                // Thông báo thành công
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Đã thêm hóa đơn định kỳ thành công'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Lỗi khi tạo hóa đơn: ${e.toString()}'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
                               }
                             },
                             style: ElevatedButton.styleFrom(
