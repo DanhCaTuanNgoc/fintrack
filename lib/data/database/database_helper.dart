@@ -251,9 +251,8 @@ class DatabaseHelper {
       for (int i = 0; i < numExpenses; i++) {
         final category =
             expenseCategories[random.nextInt(expenseCategories.length)];
-        final amount =
-            (random.nextDouble() * 5000000)
-                .roundToDouble(); // Số tiền từ 0-5 triệu
+        final amount = (random.nextDouble() * 5000000)
+            .roundToDouble(); // Số tiền từ 0-5 triệu
         final date = DateTime(
           now.year,
           now.month - month,
@@ -272,13 +271,11 @@ class DatabaseHelper {
       }
 
       // Tạo 1-3 giao dịch thu nhập mỗi tháng
-      int numIncomes = random.nextInt(3) + 1;
+      int numIncomes = random.nextInt(1) + 1;
       for (int i = 0; i < numIncomes; i++) {
         final category =
             incomeCategories[random.nextInt(incomeCategories.length)];
-        final amount =
-            (random.nextDouble() * 15000000)
-                .roundToDouble(); // Số tiền từ 0-15 triệu
+        final amount = (random.nextDouble() * 15000).roundToDouble();
         final date = DateTime(
           now.year,
           now.month - month,

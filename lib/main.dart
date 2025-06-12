@@ -9,7 +9,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/currency_provider.dart';
 import 'package:flutter/services.dart';
 import './ui/more.dart';
-import 'ui/more.dart'; // import để lấy backgroundColorProvider
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,7 +59,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.robotoTextTheme(),
         scaffoldBackgroundColor: const Color(0xFFF5F5F5),
       ),
-      home: hasVisited ? HomePage() : const WelcomeScreen(),
+      home: hasVisited ? const HomePage() : const WelcomeScreen(),
     );
   }
 }

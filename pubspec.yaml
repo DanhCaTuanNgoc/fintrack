@@ -45,7 +45,8 @@ dependencies:
   flutter_riverpod: ^2.4.9
   riverpod_annotation: ^2.3.3
   fl_chart: ^0.65.0
-  
+  flutter_native_splash: ^2.4.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -100,3 +101,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  assets:
+    - assets/images/splash.png # Đường dẫn đến hình ảnh splash
+
+# Thêm cấu hình flutter_native_splash ở đây (ngoài phần flutter)
+flutter_native_splash:
+  color: "#ffffff" # Màu nền của splash screen
+  image: assets/images/splash.png # Đường dẫn đến hình ảnh logo
+  android: true # Bật splash screen cho Android
+  ios: false # Tắt cho iOS nếu không cần
+  fill: true # Hình ảnh sẽ lấp đầy màn hình (tùy chọn)

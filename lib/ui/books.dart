@@ -153,87 +153,109 @@ class _BooksState extends ConsumerState<Books>
       data: (books) {
         if (books.isEmpty) {
           return Scaffold(
-            backgroundColor: const Color(0xFFF8F9FA),
+            backgroundColor: Colors.white,
             appBar: AppBar(
+              backgroundColor: themeColor,
+              elevation: 0,
+              toolbarHeight: 60,
               title: const Text(
                 'Sổ chi tiêu',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Color(0xFF2D3142),
+                  fontSize: 24,
+                  color: Colors.white,
                 ),
               ),
-              backgroundColor: Colors.white,
-              elevation: 0,
             ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 1,
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+            body: Container(
+              decoration: BoxDecoration(color: themeColor),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white, // Background color for the body
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(22),
+                    topRight: Radius.circular(22),
+                  ), // Rounded top-left and top-right corners
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
                     ),
-                    child: Column(
-                      children: [
-                        const Icon(
-                          Icons.book,
-                          size: 64,
-                          color: Color(0xFF6C63FF),
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Chưa có sổ chi tiêu nào',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2D3142),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Hãy tạo sổ chi tiêu đầu tiên của bạn',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            _showCreateBookModal(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF6C63FF),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+                  ],
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        margin: const EdgeInsets.all(16),
+                        // decoration: BoxDecoration(
+                        //   color: Colors.white,
+                        //   borderRadius: BorderRadius.circular(20),
+                        //   boxShadow: [
+                        //     BoxShadow(
+                        //       color: Colors.grey.withOpacity(0.1),
+                        //       spreadRadius: 1,
+                        //       blurRadius: 10,
+                        //       offset: const Offset(0, 2),
+                        //     ),
+                        //   ],
+                        // ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.book,
+                              size: 64,
+                              color: themeColor,
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Chưa có sổ chi tiêu nào',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2D3142),
+                              ),
                             ),
-                          ),
-                          child: const Text(
-                            'Tạo sổ chi tiêu',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Hãy tạo sổ chi tiêu đầu tiên của bạn',
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.grey),
                             ),
-                          ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              onPressed: () {
+                                _showCreateBookModal(context, themeColor);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: themeColor,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text(
+                                'Tạo sổ chi tiêu',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           );
@@ -981,7 +1003,7 @@ class _BooksState extends ConsumerState<Books>
             ),
           ),
 
-          // 📜 DANH SÁCH CÓ THỂ CUỘN
+          // ListView cho transaction details
           SizedBox(
             height: 230, // 👈 tùy chỉnh chiều cao cuộn
             child: ListView.builder(
@@ -1298,112 +1320,124 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  void _showCreateBookModal(BuildContext context) {
+  void _showCreateBookModal(BuildContext context, Color themeColor) {
     final _formKey = GlobalKey<FormState>();
     final _bookNameController = TextEditingController();
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true,
+      isScrollControlled:
+          true, // Giữ nguyên để modal chiếm toàn màn hình nếu cần
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context)
+                .viewInsets
+                .bottom, // Điều chỉnh padding dựa trên bàn phím
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const Text(
-                  'Tạo sổ chi tiêu mới',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3142),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: _bookNameController,
-                        decoration: InputDecoration(
-                          labelText: 'Tên sổ chi tiêu',
-                          border: OutlineInputBorder(
+          child: SingleChildScrollView(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const Text(
+                      'Tạo sổ chi tiêu mới',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2D3142),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: _bookNameController,
+                            decoration: InputDecoration(
+                              labelText: 'Tên sổ chi tiêu',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              prefixIcon: const Icon(Icons.book),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Vui lòng nhập tên sổ chi tiêu';
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              final book = Book(
+                                name: _bookNameController.text,
+                                balance: 0.0,
+                                userId: 1, // TODO: Get current user ID
+                              );
+                              await ref
+                                  .read(booksProvider.notifier)
+                                  .createBook(_bookNameController.text);
+                              Navigator.pop(context);
+                            } catch (e) {
+                              // TODO: Show error message
+                              print('Error creating book: $e');
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: themeColor,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          prefixIcon: const Icon(Icons.book),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Vui lòng nhập tên sổ chi tiêu';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        try {
-                          final book = Book(
-                            name: _bookNameController.text,
-                            balance: 0.0,
-                            userId: 1, // TODO: Get current user ID
-                          );
-                          await ref
-                              .read(booksProvider.notifier)
-                              .createBook(_bookNameController.text);
-                          Navigator.pop(context);
-                        } catch (e) {
-                          // TODO: Show error message
-                          print('Error creating book: $e');
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6C63FF),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        child: const Text(
+                          'Tạo sổ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
-                    child: const Text(
-                      'Tạo sổ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
-                const SizedBox(height: 16),
-              ],
+              ),
             ),
           ),
         );
       },
-    );
+    ).whenComplete(() {
+      _bookNameController.dispose(); // Giải phóng controller khi modal đóng
+    });
   }
 
   Widget _buildTabButton(String label, int index, Color themeColor,
