@@ -1,11 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/database/database_helper.dart';
 import '../data/models/book.dart';
 import '../data/repositories/book_repository.dart';
-
-final databaseHelperProvider = Provider<DatabaseHelper>((ref) {
-  return DatabaseHelper.instance;
-});
+import './database_provider.dart';
 
 final bookRepositoryProvider = Provider<BookRepository>((ref) {
   final dbHelper = ref.watch(databaseHelperProvider);
@@ -14,8 +10,8 @@ final bookRepositoryProvider = Provider<BookRepository>((ref) {
 
 final booksProvider =
     StateNotifierProvider<BooksNotifier, AsyncValue<List<Book>>>((ref) {
-      return BooksNotifier(ref);
-    });
+  return BooksNotifier(ref);
+});
 
 class BooksNotifier extends StateNotifier<AsyncValue<List<Book>>> {
   BooksNotifier(this.ref) : super(const AsyncValue.loading()) {
@@ -58,8 +54,8 @@ class BooksNotifier extends StateNotifier<AsyncValue<List<Book>>> {
 
 final currentBookProvider =
     StateNotifierProvider<CurrentBookNotifier, AsyncValue<Book?>>((ref) {
-      return CurrentBookNotifier(ref);
-    });
+  return CurrentBookNotifier(ref);
+});
 
 class CurrentBookNotifier extends StateNotifier<AsyncValue<Book?>> {
   CurrentBookNotifier(this.ref) : super(const AsyncValue.loading()) {

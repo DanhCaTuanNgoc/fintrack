@@ -28,7 +28,7 @@ void main() async {
   // Khởi tạo database
   await DatabaseHelper.instance.database;
   // Insert database ra terminal
-  await DatabaseHelper.instance.showAllTables();
+  // await DatabaseHelper.instance.showAllTables();
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool hasVisited = prefs.getBool('hasVisited') ?? false;

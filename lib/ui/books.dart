@@ -1,19 +1,11 @@
-import 'package:fintrack/providers/transaction_provider.dart';
-import 'package:fintrack/ui/widget/tab_button.dart';
-import 'package:fintrack/ui/widget/type_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../data/database/database_helper.dart';
-import 'widget/number_pad.dart';
-import '../data/models/book.dart';
-import '../data/repositories/book_repository.dart';
-import '../providers/book_provider.dart';
-import '../providers/currency_provider.dart';
-import '../providers/theme_provider.dart';
-import '../data/models/transaction.dart';
-import './widget/stat_item.dart';
+import '../providers/providers_barrel.dart';
+import './widget/widget_barrel.dart';
+import '../data/models/models_barrel.dart';
 
 class Books extends ConsumerStatefulWidget {
   const Books({super.key});
@@ -704,34 +696,37 @@ class _BooksState extends ConsumerState<Books>
                                   children: [
                                     GestureDetector(
                                       onTap: () async {
+                                        final now = DateTime.now();
+                                        final defaultStart = now
+                                            .subtract(const Duration(days: 29));
+                                        final defaultEnd = now;
                                         final picked =
                                             await showDateRangePicker(
                                           context: context,
                                           firstDate: DateTime(2020),
                                           lastDate: DateTime(2030),
                                           initialDateRange:
-                                              _startDate != null &&
-                                                      _endDate != null
+                                              (_startDate != null &&
+                                                      _endDate != null)
                                                   ? DateTimeRange(
                                                       start: _startDate!,
                                                       end: _endDate!)
-                                                  : null,
+                                                  : DateTimeRange(
+                                                      start: defaultStart,
+                                                      end: defaultEnd,
+                                                    ),
                                           builder: (context, child) {
                                             return Theme(
                                               data: Theme.of(context).copyWith(
                                                 colorScheme: ColorScheme.light(
-                                                  primary:
-                                                      themeColor, // ✅ màu nền của range và ngày chọn
-                                                  onPrimary: Colors
-                                                      .white, // màu chữ trên ngày chọn
-                                                  onSurface:
-                                                      themeColor, // màu chữ thường
+                                                  primary: themeColor,
+                                                  onPrimary: Colors.white,
+                                                  onSurface: themeColor,
                                                 ),
                                                 textButtonTheme:
                                                     TextButtonThemeData(
                                                   style: TextButton.styleFrom(
-                                                    foregroundColor:
-                                                        themeColor, // ✅ màu nút Hủy, Lưu
+                                                    foregroundColor: themeColor,
                                                   ),
                                                 ),
                                               ),
@@ -749,7 +744,7 @@ class _BooksState extends ConsumerState<Books>
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 12),
+                                            horizontal: 16, vertical: 10),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
@@ -773,16 +768,31 @@ class _BooksState extends ConsumerState<Books>
                                             Icon(Icons.calendar_today,
                                                 size: 18, color: themeColor),
                                             const SizedBox(width: 8),
-                                            Text(
-                                              _startDate != null &&
-                                                      _endDate != null
-                                                  ? '${DateFormat('dd/MM/yyyy').format(_startDate!)} - ${DateFormat('dd/MM/yyyy').format(_endDate!)}'
-                                                  : 'Chọn thời gian',
-                                              style: const TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xFF2D3142),
-                                              ),
+                                            Builder(
+                                              builder: (context) {
+                                                final now = DateTime.now();
+                                                final defaultStart =
+                                                    now.subtract(const Duration(
+                                                        days: 29));
+                                                final defaultEnd = now;
+                                                final displayStart =
+                                                    _startDate ?? defaultStart;
+                                                final displayEnd =
+                                                    _endDate ?? defaultEnd;
+                                                final isDefault =
+                                                    _startDate == null &&
+                                                        _endDate == null;
+                                                return Text(
+                                                  isDefault
+                                                      ? '${DateFormat('dd/MM/yyyy').format(defaultStart)} - ${DateFormat('dd/MM/yyyy').format(defaultEnd)}'
+                                                      : '${DateFormat('dd/MM/yyyy').format(displayStart)} - ${DateFormat('dd/MM/yyyy').format(displayEnd)}',
+                                                  style: const TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xFF2D3142),
+                                                  ),
+                                                );
+                                              },
                                             ),
                                           ],
                                         ),
@@ -806,7 +816,7 @@ class _BooksState extends ConsumerState<Books>
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 20),
                             // Stats row
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1018,7 +1028,7 @@ class _BooksState extends ConsumerState<Books>
                           ),
                         ),
                       ),
-                      Expanded(
+                      IntrinsicHeight(
                         child: transactions.when(
                           loading: () => _buildTransactionListSkeleton(),
                           error: (error, stack) =>
@@ -1040,7 +1050,7 @@ class _BooksState extends ConsumerState<Books>
                             );
                           },
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ],
@@ -1258,8 +1268,9 @@ class _BooksState extends ConsumerState<Books>
 
     final formattedDate =
         '${weekdayMap[weekdayNumber]}, ${DateFormat('dd/MM').format(date)}';
+
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -1794,6 +1805,17 @@ class _BooksState extends ConsumerState<Books>
                                         ref.read(transactionsProvider.notifier);
                                     await transactionNotifier
                                         .deleteTransaction(transaction.id!);
+                                    // Thông báo cho người dùng
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Xóa thành công',
+                                        ),
+                                        backgroundColor:
+                                            const Color(0xFF4CAF50),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
                                     if (mounted) {
                                       Navigator.pop(context);
                                     }
@@ -1801,7 +1823,7 @@ class _BooksState extends ConsumerState<Books>
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
+                                        vertical: 14),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -1810,7 +1832,7 @@ class _BooksState extends ConsumerState<Books>
                                   child: const Text(
                                     'Xóa',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 13,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
@@ -1826,9 +1848,9 @@ class _BooksState extends ConsumerState<Books>
                                         context, transaction, themeColor);
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: themeColor,
+                                    backgroundColor: Colors.blueAccent,
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
+                                        vertical: 14),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -1837,7 +1859,7 @@ class _BooksState extends ConsumerState<Books>
                                   child: const Text(
                                     'Chỉnh sửa',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
@@ -1861,376 +1883,30 @@ class _BooksState extends ConsumerState<Books>
   }
 
   void _showEditTransactionModal(
-      BuildContext context, Transaction transaction, Color themeColor) {
-    String _amount = transaction.amount.toString();
-    String _note = transaction.note;
-    String? _selectedCategory = _categories.firstWhere(
-      (cat) => cat['id'] == transaction.categoryId,
-      orElse: () => {'name': null},
-    )['name'];
-    bool _isExpense = transaction.type == 'expense';
-
+    BuildContext context,
+    Transaction transaction,
+    Color themeColor,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(top: 12, bottom: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Chỉnh sửa giao dịch',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2D3142),
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                TypeButton(
-                                    text: 'Chi tiêu',
-                                    isSelected: _isExpense == true,
-                                    onTap: () {
-                                      setState(() {
-                                        _isExpense = true;
-                                        _selectedCategory = null;
-                                      });
-                                    },
-                                    themeColor: themeColor),
-                                const SizedBox(width: 8),
-                                TypeButton(
-                                  text: 'Thu nhập',
-                                  isSelected: _isExpense == false,
-                                  themeColor: themeColor,
-                                  onTap: () {
-                                    setState(() {
-                                      _isExpense = false;
-                                      _selectedCategory = null;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        TextField(
-                          controller: TextEditingController(text: _note),
-                          decoration: InputDecoration(
-                            labelText: 'Ghi chú',
-                            labelStyle: TextStyle(
-                              color: themeColor,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          onChanged: (value) => _note = value,
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                _amount.isEmpty
-                                    ? '0 ${ref.watch(currencyProvider).symbol}'
-                                    : '${formatCurrency(double.tryParse(_amount) ?? 0, ref.watch(currencyProvider))}',
-                                style: const TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2D3142),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              NumberPad(
-                                onNumberTap: (number) {
-                                  setState(() {
-                                    _amount += number;
-                                  });
-                                },
-                                onBackspaceTap: () {
-                                  setState(() {
-                                    if (_amount.isNotEmpty) {
-                                      _amount = _amount.substring(
-                                        0,
-                                        _amount.length - 1,
-                                      );
-                                    }
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        DropdownButtonFormField<String>(
-                          value: _selectedCategory,
-                          decoration: InputDecoration(
-                            labelText: 'Danh mục',
-                            labelStyle: TextStyle(
-                              color: themeColor,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          items: (_isExpense
-                                  ? _expenseCategories
-                                  : _incomeCategories)
-                              .map<DropdownMenuItem<String>>(
-                                (category) => DropdownMenuItem<String>(
-                                  value: category['name'],
-                                  child: Row(
-                                    children: [
-                                      Text(category['icon']),
-                                      const SizedBox(width: 8),
-                                      Text(category['name']),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedCategory = value;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (_amount.isNotEmpty &&
-                                  _selectedCategory != null) {
-                                final transactionNotifier = ref.read(
-                                  transactionsProvider.notifier,
-                                );
-
-                                // Get category ID from selected category name
-                                final selectedCategoryData = _isExpense
-                                    ? _expenseCategories.firstWhere(
-                                        (cat) =>
-                                            cat['name'] == _selectedCategory,
-                                      )
-                                    : _incomeCategories.firstWhere(
-                                        (cat) =>
-                                            cat['name'] == _selectedCategory,
-                                      );
-
-                                await transactionNotifier.updateTransaction(
-                                  Transaction(
-                                    id: transaction.id,
-                                    amount: double.parse(_amount),
-                                    note: _note,
-                                    type: _isExpense ? 'expense' : 'income',
-                                    categoryId: selectedCategoryData['id'],
-                                    bookId: transaction.bookId,
-                                    userId: transaction.userId,
-                                    date: transaction.date,
-                                  ),
-                                );
-
-                                if (mounted) {
-                                  Navigator.pop(context);
-                                }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: themeColor,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: const Text(
-                              'Lưu thay đổi',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+      builder: (context) => EditTransactionModal(
+        transaction: transaction,
+        themeColor: themeColor,
+        categories: _categories,
+        expenseCategories: _expenseCategories,
+        incomeCategories: _incomeCategories,
+      ),
     );
   }
 
   void _showCreateBookModal(BuildContext context, Color themeColor) {
-    final _formKey = GlobalKey<FormState>();
-    final _bookNameController = TextEditingController();
-
     showModalBottomSheet(
       context: context,
-      isScrollControlled:
-          true, // Giữ nguyên để modal chiếm toàn màn hình nếu cần
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context)
-                .viewInsets
-                .bottom, // Điều chỉnh padding dựa trên bàn phím
-          ),
-          child: SingleChildScrollView(
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const Text(
-                      'Tạo sổ chi tiêu mới',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D3142),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: _bookNameController,
-                            decoration: InputDecoration(
-                              labelText: 'Tên sổ chi tiêu',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              prefixIcon: const Icon(Icons.book),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Vui lòng nhập tên sổ chi tiêu';
-                              }
-                              return null;
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            try {
-                              final book = Book(
-                                name: _bookNameController.text,
-                                balance: 0.0,
-                                userId: 1, // TODO: Get current user ID
-                              );
-                              await ref
-                                  .read(booksProvider.notifier)
-                                  .createBook(_bookNameController.text);
-                              Navigator.pop(context);
-                            } catch (e) {
-                              // TODO: Show error message
-                              print('Error creating book: $e');
-                            }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: themeColor,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Tạo sổ',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+      builder: (context) => CreateBookModal(themeColor: themeColor),
     );
   }
 }
