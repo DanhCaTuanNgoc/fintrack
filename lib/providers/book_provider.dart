@@ -33,6 +33,8 @@ class BooksNotifier extends StateNotifier<AsyncValue<List<Book>>> {
   Future<void> createBook(String name) async {
     try {
       final repository = ref.read(bookRepositoryProvider);
+      // Lấy danh sách book hiện tại để kiểm tra trùng tên
+      final books = await repository.getBooks();
       final book = Book(name: name, balance: 0.0, userId: 1);
       await repository.createBook(book);
       await loadBooks();
