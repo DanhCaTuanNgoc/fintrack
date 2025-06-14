@@ -1,4 +1,5 @@
 import 'package:fintrack/providers/transaction_provider.dart';
+import 'package:fintrack/ui/widget/tab_button.dart';
 import 'package:fintrack/ui/widget/type_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +13,7 @@ import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
 import '../providers/theme_provider.dart';
 import '../data/models/transaction.dart';
+import './widget/stat_item.dart';
 
 class Books extends ConsumerStatefulWidget {
   const Books({super.key});
@@ -69,6 +71,205 @@ class _BooksState extends ConsumerState<Books>
   late List<dynamic> _filteredTransactions = [];
   late double _dayExpense = 0.0;
 
+  Widget _buildSkeletonLoading() {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        elevation: 0,
+        toolbarHeight: 60,
+        title: Container(
+          width: 150,
+          height: 24,
+          decoration: BoxDecoration(
+            color: Colors.grey[400],
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            width: 100,
+            height: 36,
+            decoration: BoxDecoration(
+              color: Colors.grey[400],
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+          ),
+          child: Column(
+            children: [
+              // Header skeleton
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 22,
+                  horizontal: 20,
+                ),
+                margin: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildStatSkeleton(),
+                        _buildStatSkeleton(),
+                        _buildStatSkeleton(),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              // Transaction list skeleton
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(6),
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  width: 80,
+                                  height: 16,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                                const Spacer(),
+                                Container(
+                                  width: 100,
+                                  height: 16,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatSkeleton() {
+    return Container(
+      width: 100,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 60,
+            height: 12,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: 80,
+            height: 20,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   IconData _getIconFromEmoji(String emoji) {
     return _iconMapping[emoji] ?? Icons.category;
   }
@@ -103,6 +304,121 @@ class _BooksState extends ConsumerState<Books>
       _incomeCategories = incomeCats;
       _categories = categories;
     });
+  }
+
+  Widget _buildTransactionListSkeleton() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(6),
+      itemCount: 5,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Date header skeleton
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.grey.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 100,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      width: 120,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Transaction items skeleton
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Column(
+                  children: List.generate(
+                    3,
+                    (index) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Container(
+                              height: 16,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Container(
+                            width: 100,
+                            height: 16,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -147,8 +463,7 @@ class _BooksState extends ConsumerState<Books>
     final isNegative = balance < 0;
 
     return books.when(
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () => _buildSkeletonLoading(),
       error: (error, stack) =>
           Scaffold(body: Center(child: Text('Có lỗi xảy ra: $error'))),
       data: (books) {
@@ -172,11 +487,11 @@ class _BooksState extends ConsumerState<Books>
               decoration: BoxDecoration(color: themeColor),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white, // Background color for the body
+                  color: Colors.white,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(22),
                     topRight: Radius.circular(22),
-                  ), // Rounded top-left and top-right corners
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.1),
@@ -193,18 +508,6 @@ class _BooksState extends ConsumerState<Books>
                       Container(
                         padding: const EdgeInsets.all(20),
                         margin: const EdgeInsets.all(16),
-                        // decoration: BoxDecoration(
-                        //   color: Colors.white,
-                        //   borderRadius: BorderRadius.circular(20),
-                        //   boxShadow: [
-                        //     BoxShadow(
-                        //       color: Colors.grey.withOpacity(0.1),
-                        //       spreadRadius: 1,
-                        //       blurRadius: 10,
-                        //       offset: const Offset(0, 2),
-                        //     ),
-                        //   ],
-                        // ),
                         child: Column(
                           children: [
                             Icon(
@@ -286,15 +589,14 @@ class _BooksState extends ConsumerState<Books>
                         ),
                       ),
                       Material(
-                        color: Colors.transparent, // để không che nền
+                        color: Colors.transparent,
                         child: InkWell(
                           onTap: () {
                             setState(() {
                               _isExpanded = !_isExpanded;
                             });
                           },
-                          borderRadius:
-                              BorderRadius.circular(999), // ripple bo tròn
+                          borderRadius: BorderRadius.circular(999),
                           child: Container(
                             width: 36,
                             height: 36,
@@ -314,11 +616,33 @@ class _BooksState extends ConsumerState<Books>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      _buildTabButton('Hóa đơn', 0, themeColor,
-                          icon: Icons.receipt),
+                      TabButton(
+                        label: 'Hóa đơn',
+                        index: 0,
+                        selectedIndex: _selectedTabIndex,
+                        themeColor: themeColor,
+                        icon: Icons.receipt,
+                        onTap: (i) {
+                          _tabController.animateTo(i);
+                          setState(() {
+                            _selectedTabIndex = i;
+                          });
+                        },
+                      ),
                       const SizedBox(width: 8),
-                      _buildTabButton('Lịch', 1, themeColor,
-                          icon: Icons.calendar_today),
+                      TabButton(
+                        label: 'Lịch',
+                        index: 1,
+                        selectedIndex: _selectedTabIndex,
+                        themeColor: themeColor,
+                        icon: Icons.calendar_today,
+                        onTap: (i) {
+                          _tabController.animateTo(i);
+                          setState(() {
+                            _selectedTabIndex = i;
+                          });
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -331,11 +655,11 @@ class _BooksState extends ConsumerState<Books>
             ),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white, // Background color for the body
+                color: Colors.white,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(22),
                   topRight: Radius.circular(22),
-                ), // Rounded top-left and top-right corners
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.1),
@@ -347,7 +671,7 @@ class _BooksState extends ConsumerState<Books>
               ),
               child: TabBarView(
                 controller: _tabController,
-                physics: const NeverScrollableScrollPhysics(), // Disable swipe
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   // Tab Hóa đơn
                   Column(
@@ -364,21 +688,10 @@ class _BooksState extends ConsumerState<Books>
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(
-                                  0.2), // Increased opacity for stronger shadow
-                              spreadRadius:
-                                  2, // Increased spread for more coverage
-                              blurRadius:
-                                  8, // Increased blur for a softer, more pronounced effect
-                              offset: const Offset(0,
-                                  4), // Increased vertical offset for greater elevation
-                            ),
-                            BoxShadow(
-                              color: Colors.grey
-                                  .withOpacity(0.1), // Additional subtle shadow
-                              spreadRadius: 1,
-                              blurRadius: 2,
-                              offset: const Offset(0, 2),
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
@@ -389,16 +702,6 @@ class _BooksState extends ConsumerState<Books>
                               children: [
                                 Row(
                                   children: [
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.calendar_month,
-                                        color: themeColor,
-                                        size: 24,
-                                      ),
-                                      onPressed: () {
-                                        // Handle previous date range
-                                      },
-                                    ),
                                     GestureDetector(
                                       onTap: () async {
                                         final picked =
@@ -413,7 +716,30 @@ class _BooksState extends ConsumerState<Books>
                                                       start: _startDate!,
                                                       end: _endDate!)
                                                   : null,
+                                          builder: (context, child) {
+                                            return Theme(
+                                              data: Theme.of(context).copyWith(
+                                                colorScheme: ColorScheme.light(
+                                                  primary:
+                                                      themeColor, // ✅ màu nền của range và ngày chọn
+                                                  onPrimary: Colors
+                                                      .white, // màu chữ trên ngày chọn
+                                                  onSurface:
+                                                      themeColor, // màu chữ thường
+                                                ),
+                                                textButtonTheme:
+                                                    TextButtonThemeData(
+                                                  style: TextButton.styleFrom(
+                                                    foregroundColor:
+                                                        themeColor, // ✅ màu nút Hủy, Lưu
+                                                  ),
+                                                ),
+                                              ),
+                                              child: child!,
+                                            );
+                                          },
                                         );
+
                                         if (picked != null) {
                                           setState(() {
                                             _startDate = picked.start;
@@ -421,14 +747,44 @@ class _BooksState extends ConsumerState<Books>
                                           });
                                         }
                                       },
-                                      child: Text(
-                                        _startDate != null && _endDate != null
-                                            ? '${DateFormat('dd/MM/yyyy').format(_startDate!)} - ${DateFormat('dd/MM/yyyy').format(_endDate!)}'
-                                            : 'Lọc khoảng thời gian',
-                                        style: TextStyle(
-                                          color: Colors.grey[800],
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color: Colors.grey.shade300,
+                                            width: 1.2,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.1),
+                                              blurRadius: 6,
+                                              offset: const Offset(0, 3),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.calendar_today,
+                                                size: 18, color: themeColor),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              _startDate != null &&
+                                                      _endDate != null
+                                                  ? '${DateFormat('dd/MM/yyyy').format(_startDate!)} - ${DateFormat('dd/MM/yyyy').format(_endDate!)}'
+                                                  : 'Chọn thời gian',
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xFF2D3142),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -462,13 +818,14 @@ class _BooksState extends ConsumerState<Books>
                                     ),
                                     child: FittedBox(
                                       fit: BoxFit.scaleDown,
-                                      child: _buildStatItem(
-                                        'Toàn bộ',
-                                        balance.abs().toString(),
-                                        isNegative
+                                      child: StatItem(
+                                        title: 'Toàn bộ',
+                                        amount: balance.abs().toString(),
+                                        textColor: isNegative
                                             ? const Color(0xFFFF5252)
                                             : const Color(0xFF4CAF50),
                                         showNegative: isNegative,
+                                        isAmountVisible: _isAmountVisible,
                                       ),
                                     ),
                                   ),
@@ -481,10 +838,11 @@ class _BooksState extends ConsumerState<Books>
                                     ),
                                     child: FittedBox(
                                       fit: BoxFit.scaleDown,
-                                      child: _buildStatItem(
-                                        'Thu nhập',
-                                        totalIncome.toString(),
-                                        const Color(0xFF4CAF50),
+                                      child: StatItem(
+                                        title: 'Thu nhập',
+                                        amount: totalIncome.toString(),
+                                        textColor: const Color(0xFF4CAF50),
+                                        isAmountVisible: _isAmountVisible,
                                       ),
                                     ),
                                   ),
@@ -497,10 +855,11 @@ class _BooksState extends ConsumerState<Books>
                                     ),
                                     child: FittedBox(
                                       fit: BoxFit.scaleDown,
-                                      child: _buildStatItem(
-                                        'Chi tiêu',
-                                        totalExpense.toString(),
-                                        const Color(0xFFFF5252),
+                                      child: StatItem(
+                                        title: 'Chi tiêu',
+                                        amount: totalExpense.toString(),
+                                        textColor: const Color(0xFFFF5252),
+                                        isAmountVisible: _isAmountVisible,
                                       ),
                                     ),
                                   ),
@@ -513,8 +872,7 @@ class _BooksState extends ConsumerState<Books>
                       // Danh sách các đầu mục chi tiêu
                       Expanded(
                         child: transactions.when(
-                          loading: () =>
-                              const Center(child: CircularProgressIndicator()),
+                          loading: () => _buildTransactionListSkeleton(),
                           error: (error, stack) =>
                               Center(child: Text('Error: $error')),
                           data: (transactionsList) {
@@ -594,21 +952,10 @@ class _BooksState extends ConsumerState<Books>
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(
-                                  0.2), // Increased opacity for stronger shadow
-                              spreadRadius:
-                                  2, // Increased spread for more coverage
-                              blurRadius:
-                                  8, // Increased blur for a softer, more pronounced effect
-                              offset: const Offset(0,
-                                  4), // Increased vertical offset for greater elevation
-                            ),
-                            BoxShadow(
-                              color: Colors.grey
-                                  .withOpacity(0.1), // Additional subtle shadow
-                              spreadRadius: 1,
-                              blurRadius: 2,
-                              offset: const Offset(0, 2),
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
@@ -672,32 +1019,24 @@ class _BooksState extends ConsumerState<Books>
                         ),
                       ),
                       Expanded(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: 1, // Chỉ hiển thị một mục cho ngày đã chọn
-                          itemBuilder: (context, index) {
-                            return transactions.when(
-                              data: (allTransactions) {
-                                final transactionsByDate = allTransactions
-                                    .where(
-                                        (t) => isSameDay(t.date, _selectedDay))
-                                    .toList();
-                                final dayExpense =
-                                    transactionsByDate.fold<double>(
-                                  0.0,
-                                  (sum, t) => sum + t.amount,
-                                );
-                                return _buildExpenseItemForCalendar(
-                                  dateKey: DateFormat('dd/MM/yyyy')
-                                      .format(_selectedDay),
-                                  transactions: transactionsByDate,
-                                  dayExpense: dayExpense,
-                                  themeColor: themeColor,
-                                );
-                              },
-                              loading: () => const Center(
-                                  child: CircularProgressIndicator()),
-                              error: (e, _) => Center(child: Text('Lỗi: $e')),
+                        child: transactions.when(
+                          loading: () => _buildTransactionListSkeleton(),
+                          error: (error, stack) =>
+                              Center(child: Text('Error: $error')),
+                          data: (allTransactions) {
+                            final transactionsByDate = allTransactions
+                                .where((t) => isSameDay(t.date, _selectedDay))
+                                .toList();
+                            final dayExpense = transactionsByDate.fold<double>(
+                              0.0,
+                              (sum, t) => sum + t.amount,
+                            );
+                            return _buildExpenseItemForCalendar(
+                              dateKey:
+                                  DateFormat('dd/MM/yyyy').format(_selectedDay),
+                              transactions: transactionsByDate,
+                              dayExpense: dayExpense,
+                              themeColor: themeColor,
                             );
                           },
                         ),
@@ -722,70 +1061,6 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  Widget _buildTimeRangeButton(String text, {bool isSelected = false}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF6C63FF) : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: isSelected ? Colors.white : Colors.grey[600],
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatItem(
-    String title,
-    String amount,
-    Color textColor, {
-    bool showNegative = false,
-  }) {
-    final numberFormat = NumberFormat('#,###');
-    final amountValue =
-        double.tryParse(amount.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
-
-    // Lấy đơn vị tiền tệ hiện tại
-    final currencyType = ref.watch(currencyProvider);
-
-    return Container(
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            _isAmountVisible
-                ? '${showNegative ? '-' : ''}${formatCurrency(amountValue, currencyType)}'
-                : '•••••',
-            style: TextStyle(
-              color: textColor,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildExpenseItem(
       {required String dateKey,
       required List<dynamic> transactions,
@@ -793,6 +1068,21 @@ class _BooksState extends ConsumerState<Books>
       required Color themeColor}) {
     final isExpanded = _expandedDays[dateKey] ?? false;
     final numberFormat = NumberFormat('#,###');
+
+    final date = DateFormat('dd/MM/yy').parse(dateKey);
+    final weekdayNumber = date.weekday;
+    const weekdayMap = {
+      1: 'Th 2',
+      2: 'Th 3',
+      3: 'Th 4',
+      4: 'Th 5',
+      5: 'Th 6',
+      6: 'Th 7',
+      7: 'CN',
+    };
+
+    final formattedDate =
+        '${weekdayMap[weekdayNumber]}, ${DateFormat('dd/MM').format(date)}';
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -855,9 +1145,9 @@ class _BooksState extends ConsumerState<Books>
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    dateKey,
+                    formattedDate,
                     style: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 13.5,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -888,44 +1178,50 @@ class _BooksState extends ConsumerState<Books>
                     horizontal: 16,
                     vertical: 12,
                   ),
-                  child: Row(
-                    children: [
-                      // Icon từ category
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(8),
+                  child: InkWell(
+                    onTap: () {
+                      _showTransactionDetailModal(
+                          context, transaction, themeColor);
+                    },
+                    child: Row(
+                      children: [
+                        // Icon từ category
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: bgColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            _getIconFromEmoji(category['icon'] ?? '🏷️'),
+                            color: themeColor,
+                            size: 20,
+                          ),
                         ),
-                        child: Icon(
-                          _getIconFromEmoji(category['icon'] ?? '🏷️'),
-                          color: themeColor,
-                          size: 20,
+                        const SizedBox(width: 12),
+                        // Thông tin giao dịch
+                        Expanded(
+                          child: Text(
+                            transaction.note,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Thông tin giao dịch
-                      Expanded(
-                        child: Text(
-                          transaction.note,
-                          style: const TextStyle(
+                        // Số tiền
+                        Text(
+                          '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
+                          style: TextStyle(
+                            color: transaction.type == 'expense'
+                                ? Colors.red
+                                : Colors.green,
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                      // Số tiền
-                      Text(
-                        '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
-                        style: TextStyle(
-                          color: transaction.type == 'expense'
-                              ? Colors.red
-                              : Colors.green,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               }).toList(),
@@ -946,6 +1242,22 @@ class _BooksState extends ConsumerState<Books>
     required double dayExpense,
     required Color themeColor,
   }) {
+    final date = DateFormat('dd/MM/yy').parse(dateKey);
+
+    final weekdayNumber = date.weekday;
+
+    const weekdayMap = {
+      1: 'Th 2',
+      2: 'Th 3',
+      3: 'Th 4',
+      4: 'Th 5',
+      5: 'Th 6',
+      6: 'Th 7',
+      7: 'CN',
+    };
+
+    final formattedDate =
+        '${weekdayMap[weekdayNumber]}, ${DateFormat('dd/MM').format(date)}';
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
@@ -989,9 +1301,9 @@ class _BooksState extends ConsumerState<Books>
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  dateKey,
+                  formattedDate,
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 13.5,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1024,41 +1336,47 @@ class _BooksState extends ConsumerState<Books>
                     horizontal: 16,
                     vertical: 12,
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(8),
+                  child: InkWell(
+                    onTap: () {
+                      _showTransactionDetailModal(
+                          context, transaction, themeColor);
+                    },
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: bgColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            _getIconFromEmoji(category['icon'] ?? '🏷️'),
+                            color: themeColor,
+                            size: 20,
+                          ),
                         ),
-                        child: Icon(
-                          _getIconFromEmoji(category['icon'] ?? '🏷️'),
-                          color: themeColor,
-                          size: 20,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            transaction.note,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          transaction.note,
-                          style: const TextStyle(
+                        Text(
+                          '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
+                          style: TextStyle(
+                            color: transaction.type == 'expense'
+                                ? Colors.red
+                                : Colors.green,
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                      Text(
-                        '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
-                        style: TextStyle(
-                          color: transaction.type == 'expense'
-                              ? Colors.red
-                              : Colors.green,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
@@ -1173,7 +1491,7 @@ class _BooksState extends ConsumerState<Books>
                               Text(
                                 _amount.isEmpty
                                     ? '0 ${ref.watch(currencyProvider).symbol}'
-                                    : '$_amount ${ref.watch(currencyProvider).symbol}',
+                                    : '${formatCurrency(double.tryParse(_amount) ?? 0, ref.watch(currencyProvider))}',
                                 style: const TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
@@ -1313,6 +1631,491 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
+  void _showTransactionDetailModal(
+      BuildContext context, Transaction transaction, Color themeColor) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(
+          child: SingleChildScrollView(
+            child: Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(top: 12, bottom: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        children: [
+                          // Transaction Type and Amount
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: transaction.type == 'expense'
+                                      ? Colors.red.withOpacity(0.1)
+                                      : Colors.green.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  transaction.type == 'expense'
+                                      ? 'Chi tiêu'
+                                      : 'Thu nhập',
+                                  style: TextStyle(
+                                    color: transaction.type == 'expense'
+                                        ? Colors.red
+                                        : Colors.green,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                '${transaction.type == 'expense' ? '-' : '+'}${formatCurrency(transaction.amount, ref.watch(currencyProvider))}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: transaction.type == 'expense'
+                                      ? Colors.red
+                                      : Colors.green,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          // Category
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: themeColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  _getIconFromEmoji(_categories.firstWhere(
+                                        (cat) =>
+                                            cat['id'] == transaction.categoryId,
+                                        orElse: () => {'icon': '🏷️'},
+                                      )['icon'] ??
+                                      '🏷️'),
+                                  color: themeColor,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                _categories.firstWhere(
+                                      (cat) =>
+                                          cat['id'] == transaction.categoryId,
+                                      orElse: () => {'name': 'Không xác định'},
+                                    )['name'] ??
+                                    'Không xác định',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          // Note
+                          if (transaction.note.isNotEmpty) ...[
+                            const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Ghi chú',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                transaction.note,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 24),
+                          // Date
+                          Row(
+                            children: [
+                              Icon(Icons.calendar_today,
+                                  size: 20, color: Colors.grey[600]),
+                              const SizedBox(width: 8),
+                              Text(
+                                DateFormat('dd/MM/yyyy')
+                                    .format(transaction.date!),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 32),
+                          // Action Buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    final transactionNotifier =
+                                        ref.read(transactionsProvider.notifier);
+                                    await transactionNotifier
+                                        .deleteTransaction(transaction.id!);
+                                    if (mounted) {
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: const Text(
+                                    'Xóa',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    _showEditTransactionModal(
+                                        context, transaction, themeColor);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: themeColor,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: const Text(
+                                    'Chỉnh sửa',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showEditTransactionModal(
+      BuildContext context, Transaction transaction, Color themeColor) {
+    String _amount = transaction.amount.toString();
+    String _note = transaction.note;
+    String? _selectedCategory = _categories.firstWhere(
+      (cat) => cat['id'] == transaction.categoryId,
+      orElse: () => {'name': null},
+    )['name'];
+    bool _isExpense = transaction.type == 'expense';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(top: 12, bottom: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Chỉnh sửa giao dịch',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2D3142),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                TypeButton(
+                                    text: 'Chi tiêu',
+                                    isSelected: _isExpense == true,
+                                    onTap: () {
+                                      setState(() {
+                                        _isExpense = true;
+                                        _selectedCategory = null;
+                                      });
+                                    },
+                                    themeColor: themeColor),
+                                const SizedBox(width: 8),
+                                TypeButton(
+                                  text: 'Thu nhập',
+                                  isSelected: _isExpense == false,
+                                  themeColor: themeColor,
+                                  onTap: () {
+                                    setState(() {
+                                      _isExpense = false;
+                                      _selectedCategory = null;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        TextField(
+                          controller: TextEditingController(text: _note),
+                          decoration: InputDecoration(
+                            labelText: 'Ghi chú',
+                            labelStyle: TextStyle(
+                              color: themeColor,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: themeColor,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: themeColor,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) => _note = value,
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                _amount.isEmpty
+                                    ? '0 ${ref.watch(currencyProvider).symbol}'
+                                    : '${formatCurrency(double.tryParse(_amount) ?? 0, ref.watch(currencyProvider))}',
+                                style: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2D3142),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              NumberPad(
+                                onNumberTap: (number) {
+                                  setState(() {
+                                    _amount += number;
+                                  });
+                                },
+                                onBackspaceTap: () {
+                                  setState(() {
+                                    if (_amount.isNotEmpty) {
+                                      _amount = _amount.substring(
+                                        0,
+                                        _amount.length - 1,
+                                      );
+                                    }
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: _selectedCategory,
+                          decoration: InputDecoration(
+                            labelText: 'Danh mục',
+                            labelStyle: TextStyle(
+                              color: themeColor,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: themeColor,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: themeColor,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          items: (_isExpense
+                                  ? _expenseCategories
+                                  : _incomeCategories)
+                              .map<DropdownMenuItem<String>>(
+                                (category) => DropdownMenuItem<String>(
+                                  value: category['name'],
+                                  child: Row(
+                                    children: [
+                                      Text(category['icon']),
+                                      const SizedBox(width: 8),
+                                      Text(category['name']),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedCategory = value;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (_amount.isNotEmpty &&
+                                  _selectedCategory != null) {
+                                final transactionNotifier = ref.read(
+                                  transactionsProvider.notifier,
+                                );
+
+                                // Get category ID from selected category name
+                                final selectedCategoryData = _isExpense
+                                    ? _expenseCategories.firstWhere(
+                                        (cat) =>
+                                            cat['name'] == _selectedCategory,
+                                      )
+                                    : _incomeCategories.firstWhere(
+                                        (cat) =>
+                                            cat['name'] == _selectedCategory,
+                                      );
+
+                                await transactionNotifier.updateTransaction(
+                                  Transaction(
+                                    id: transaction.id,
+                                    amount: double.parse(_amount),
+                                    note: _note,
+                                    type: _isExpense ? 'expense' : 'income',
+                                    categoryId: selectedCategoryData['id'],
+                                    bookId: transaction.bookId,
+                                    userId: transaction.userId,
+                                    date: transaction.date,
+                                  ),
+                                );
+
+                                if (mounted) {
+                                  Navigator.pop(context);
+                                }
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: themeColor,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: const Text(
+                              'Lưu thay đổi',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _showCreateBookModal(BuildContext context, Color themeColor) {
     final _formKey = GlobalKey<FormState>();
     final _bookNameController = TextEditingController();
@@ -1428,67 +2231,6 @@ class _BooksState extends ConsumerState<Books>
           ),
         );
       },
-    );
-  }
-
-  Widget _buildTabButton(String label, int index, Color themeColor,
-      {IconData? icon}) {
-    final isSelected = _selectedTabIndex == index;
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          _tabController.animateTo(index);
-          setState(() {
-            _selectedTabIndex = index;
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.white : themeColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected
-                  ? Colors.grey.shade300
-                  : themeColor, // Border for both states
-              width: 1.5, // Slightly thicker border for emphasis
-            ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: themeColor.withOpacity(0.2),
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ]
-                : [],
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (icon != null)
-                  Icon(
-                    icon,
-                    color: isSelected ? const Color(0xFF2D3142) : Colors.white,
-                    size: 16,
-                  ),
-                if (icon != null) const SizedBox(width: 4),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: isSelected ? const Color(0xFF2D3142) : Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

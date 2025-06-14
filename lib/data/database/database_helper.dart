@@ -86,7 +86,7 @@ class DatabaseHelper {
     ''');
 
     // Thêm một số category mặc định
-    // await _insertDefaultCategories(db);
+    await _insertDefaultCategories(db);
   }
 
   Future<void> _insertDefaultCategories(Database db) async {
