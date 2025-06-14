@@ -1466,237 +1466,241 @@ class _BooksState extends ConsumerState<Books>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(top: 12, bottom: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(top: 12, bottom: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Thêm giao dịch',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2D3142),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Thêm giao dịch',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2D3142),
+                                ),
                               ),
-                            ),
-                            Row(
-                              children: [
-                                TypeButton(
-                                    text: 'Chi tiêu',
-                                    isSelected: _isExpense == true,
+                              Row(
+                                children: [
+                                  TypeButton(
+                                      text: 'Chi tiêu',
+                                      isSelected: _isExpense == true,
+                                      onTap: () {
+                                        setState(() {
+                                          _isExpense = true;
+                                          _selectedCategory = null;
+                                        });
+                                      },
+                                      themeColor: themeColor),
+                                  const SizedBox(width: 8),
+                                  TypeButton(
+                                    text: 'Thu nhập',
+                                    isSelected: _isExpense == false,
+                                    themeColor: themeColor,
                                     onTap: () {
                                       setState(() {
-                                        _isExpense = true;
+                                        _isExpense = false;
                                         _selectedCategory = null;
                                       });
                                     },
-                                    themeColor: themeColor),
-                                const SizedBox(width: 8),
-                                TypeButton(
-                                  text: 'Thu nhập',
-                                  isSelected: _isExpense == false,
-                                  themeColor: themeColor,
-                                  onTap: () {
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Ghi chú',
+                              labelStyle: TextStyle(
+                                color: themeColor,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: themeColor,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: themeColor,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            onChanged: (value) => _note = value,
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  _amount.isEmpty
+                                      ? '0 ${ref.watch(currencyProvider).symbol}'
+                                      : '${formatCurrency(double.tryParse(_amount) ?? 0, ref.watch(currencyProvider))}',
+                                  style: const TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF2D3142),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                NumberPad(
+                                  onNumberTap: (number) {
                                     setState(() {
-                                      _isExpense = false;
-                                      _selectedCategory = null;
+                                      _amount += number;
+                                    });
+                                  },
+                                  onBackspaceTap: () {
+                                    setState(() {
+                                      if (_amount.isNotEmpty) {
+                                        _amount = _amount.substring(
+                                          0,
+                                          _amount.length - 1,
+                                        );
+                                      }
                                     });
                                   },
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Ghi chú',
-                            labelStyle: TextStyle(
-                              color: themeColor,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<String>(
+                            value: _selectedCategory,
+                            decoration: InputDecoration(
+                              labelText: 'Danh mục',
+                              labelStyle: TextStyle(
                                 color: themeColor,
                               ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          onChanged: (value) => _note = value,
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                _amount.isEmpty
-                                    ? '0 ${ref.watch(currencyProvider).symbol}'
-                                    : '${formatCurrency(double.tryParse(_amount) ?? 0, ref.watch(currencyProvider))}',
-                                style: const TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2D3142),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              NumberPad(
-                                onNumberTap: (number) {
-                                  setState(() {
-                                    _amount += number;
-                                  });
-                                },
-                                onBackspaceTap: () {
-                                  setState(() {
-                                    if (_amount.isNotEmpty) {
-                                      _amount = _amount.substring(
-                                        0,
-                                        _amount.length - 1,
-                                      );
-                                    }
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        DropdownButtonFormField<String>(
-                          value: _selectedCategory,
-                          decoration: InputDecoration(
-                            labelText: 'Danh mục',
-                            labelStyle: TextStyle(
-                              color: themeColor,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          items: (_isExpense
-                                  ? _expenseCategories
-                                  : _incomeCategories)
-                              .map<DropdownMenuItem<String>>(
-                                (category) => DropdownMenuItem<String>(
-                                  value: category['name'],
-                                  child: Row(
-                                    children: [
-                                      Text(category['icon']),
-                                      const SizedBox(width: 8),
-                                      Text(category['name']),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedCategory = value;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (_amount.isNotEmpty &&
-                                  _selectedCategory != null) {
-                                final transactionNotifier = ref.read(
-                                  transactionsProvider.notifier,
-                                );
-
-                                // Get category ID from selected category name
-                                final selectedCategoryData = _isExpense
-                                    ? _expenseCategories.firstWhere(
-                                        (cat) =>
-                                            cat['name'] == _selectedCategory,
-                                      )
-                                    : _incomeCategories.firstWhere(
-                                        (cat) =>
-                                            cat['name'] == _selectedCategory,
-                                      );
-
-                                await transactionNotifier.createTransaction(
-                                  amount: double.parse(_amount),
-                                  note: _note,
-                                  type: _isExpense ? 'expense' : 'income',
-                                  categoryId: selectedCategoryData['id'],
-                                  bookId: currentBook.id ?? 0,
-                                  userId: 1,
-                                );
-
-                                if (mounted) {
-                                  Navigator.pop(context);
-                                }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: themeColor,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
+                              border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: themeColor,
+                                ),
                               ),
-                              elevation: 0,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: themeColor,
+                                  width: 2,
+                                ),
+                              ),
                             ),
-                            child: const Text(
-                              'Thêm',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                            items: (_isExpense
+                                    ? _expenseCategories
+                                    : _incomeCategories)
+                                .map<DropdownMenuItem<String>>(
+                                  (category) => DropdownMenuItem<String>(
+                                    value: category['name'],
+                                    child: Row(
+                                      children: [
+                                        Text(category['icon']),
+                                        const SizedBox(width: 8),
+                                        Text(category['name']),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedCategory = value;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 24),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                if (_amount.isNotEmpty &&
+                                    _selectedCategory != null) {
+                                  final transactionNotifier = ref.read(
+                                    transactionsProvider.notifier,
+                                  );
+
+                                  // Get category ID from selected category name
+                                  final selectedCategoryData = _isExpense
+                                      ? _expenseCategories.firstWhere(
+                                          (cat) =>
+                                              cat['name'] == _selectedCategory,
+                                        )
+                                      : _incomeCategories.firstWhere(
+                                          (cat) =>
+                                              cat['name'] == _selectedCategory,
+                                        );
+
+                                  await transactionNotifier.createTransaction(
+                                    amount: double.parse(_amount),
+                                    note: _note,
+                                    type: _isExpense ? 'expense' : 'income',
+                                    categoryId: selectedCategoryData['id'],
+                                    bookId: currentBook.id ?? 0,
+                                    userId: 1,
+                                  );
+
+                                  if (mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: themeColor,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: const Text(
+                                'Thêm',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                          const SizedBox(height: 16),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
     );
