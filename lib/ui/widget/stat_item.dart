@@ -32,7 +32,7 @@ class StatItem extends ConsumerWidget {
         children: [
           Text(
             isAmountVisible
-                ? '${showNegative ? '-' : ''}${formatCurrency(amountValue, currencyType)}'
+                ? '${formatCurrency(amountValue, currencyType)}'
                 : '•••••',
             style: TextStyle(
               color: textColor,

@@ -3,10 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../data/database/database_helper.dart';
-import '../providers/transaction_provider.dart';
-import '../providers/currency_provider.dart';
 import '../ui/more.dart';
-import '../providers/theme_provider.dart';
+import '../providers/providers_barrel.dart';
 
 class Charts extends ConsumerStatefulWidget {
   const Charts({super.key});
@@ -23,11 +21,15 @@ class _ChartsState extends ConsumerState<Charts>
   Map<String, double> _categoryExpenses = {};
   Map<String, double> _categoryIncomes = {};
   DateTime _selectedMonth = DateTime.now();
+  int _selectedTab = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {}); // Bắt buộc để cập nhật selected tab
+    });
     _loadCategories();
   }
 
@@ -69,37 +71,128 @@ class _ChartsState extends ConsumerState<Charts>
   Widget build(BuildContext context) {
     final transactions = ref.watch(transactionsProvider);
     final currencyType = ref.watch(currencyProvider);
-
+    final currentBook = ref.watch(currentBookProvider);
+// Lấy màu nền hiện tại
+    final themeColor = ref.watch(themeColorProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
         selectedMonth: _selectedMonth,
         onMonthChanged: _updateSelectedMonth,
         onMonthTap: () => _selectMonth(context),
+        themeColor: themeColor,
       ),
-      body: Column(
-        children: [
-          // Tab bar for expense/income analysis
-          TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(text: 'Chi tiêu'),
-              Tab(text: 'Thu nhập'),
-            ],
-            labelColor: const Color(0xFF6C63FF),
-            unselectedLabelColor: Colors.grey,
-          ),
-          // Main content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildExpenseAnalysis(transactions, currencyType),
-                _buildIncomeAnalysis(transactions, currencyType),
-              ],
+      body: currentBook.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+        data: (book) {
+          if (book == null) {
+            return const Center(
+              child: Text('Vui lòng chọn một sổ để xem phân tích'),
+            );
+          }
+          return Container(
+            decoration: BoxDecoration(color: themeColor),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(22),
+                  topRight: Radius.circular(22),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Tab bar for expense/income analysis
+                  Row(
+                    children: List.generate(2, (index) {
+                      final isSelected = _selectedTab == index;
+
+                      return Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedTab = index;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 20),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: isSelected ? themeColor : Colors.grey[200],
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color:
+                                            Colors.deepPurple.withOpacity(0.3),
+                                        offset: const Offset(0, 3),
+                                        blurRadius: 6,
+                                      )
+                                    ]
+                                  : [],
+                              border: Border.all(
+                                color: isSelected
+                                    ? themeColor
+                                    : Colors.grey.shade400,
+                                width: 1.2,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  index == 0
+                                      ? Icons.money_off
+                                      : Icons.attach_money,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.black54,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  index == 0 ? 'Chi tiêu' : 'Thu nhập',
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black87,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+
+                  // Main content
+                  Expanded(
+                    child: _selectedTab == 0
+                        ? _buildExpenseAnalysis(
+                            transactions, currencyType, book.id!)
+                        : _buildIncomeAnalysis(
+                            transactions, currencyType, book.id!),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -208,17 +301,18 @@ class _ChartsState extends ConsumerState<Charts>
     });
   }
 
-  Widget _buildExpenseAnalysis(
-      AsyncValue<List<dynamic>> transactions, CurrencyType currencyType) {
+  Widget _buildExpenseAnalysis(AsyncValue<List<dynamic>> transactions,
+      CurrencyType currencyType, int bookId) {
     return transactions.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
       data: (transactionsList) {
-        // Calculate expenses by category for selected month
+        // Calculate expenses by category for selected month and current book
         _categoryExpenses.clear();
 
         for (var transaction in transactionsList) {
           if (transaction.type == 'expense' &&
+              transaction.bookId == bookId &&
               transaction.date != null &&
               transaction.date!.year == _selectedMonth.year &&
               transaction.date!.month == _selectedMonth.month) {
@@ -321,17 +415,18 @@ class _ChartsState extends ConsumerState<Charts>
     );
   }
 
-  Widget _buildIncomeAnalysis(
-      AsyncValue<List<dynamic>> transactions, CurrencyType currencyType) {
+  Widget _buildIncomeAnalysis(AsyncValue<List<dynamic>> transactions,
+      CurrencyType currencyType, int bookId) {
     return transactions.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
       data: (transactionsList) {
-        // Calculate income by category for selected month
+        // Calculate income by category for selected month and current book
         _categoryIncomes.clear();
 
         for (var transaction in transactionsList) {
           if (transaction.type == 'income' &&
+              transaction.bookId == bookId &&
               transaction.date != null &&
               transaction.date!.year == _selectedMonth.year &&
               transaction.date!.month == _selectedMonth.month) {
@@ -439,17 +534,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final DateTime selectedMonth;
   final Function(DateTime) onMonthChanged;
   final VoidCallback onMonthTap;
-
-  const CustomAppBar({
-    super.key,
-    required this.selectedMonth,
-    required this.onMonthChanged,
-    required this.onMonthTap,
-  });
+  final Color themeColor;
+  const CustomAppBar(
+      {super.key,
+      required this.selectedMonth,
+      required this.onMonthChanged,
+      required this.onMonthTap,
+      required this.themeColor});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: themeColor,
+      toolbarHeight: 60,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -457,8 +554,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             'Phân tích chi tiêu',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: Color(0xFF2D3142),
+              fontSize: 18.5,
+              color: Color.fromARGB(255, 255, 255, 255),
             ),
           ),
           Row(
@@ -478,13 +575,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF6C63FF),
+                    color: const Color.fromARGB(255, 255, 255, 255),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     DateFormat('MM/yyyy').format(selectedMonth),
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Color.fromARGB(255, 0, 0, 0),
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -507,7 +604,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
-      backgroundColor: Colors.white,
       elevation: 0,
     );
   }

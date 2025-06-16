@@ -425,7 +425,6 @@ class _BooksState extends ConsumerState<Books>
 
     // Lấy màu nền hiện tại
     final themeColor = ref.watch(themeColorProvider);
-
     return books.when(
       loading: () => _buildSkeletonLoading(),
       error: (error, stack) =>
@@ -1497,7 +1496,7 @@ class _BooksState extends ConsumerState<Books>
                               const Text(
                                 'Thêm giao dịch',
                                 style: TextStyle(
-                                  fontSize: 15,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF2D3142),
                                 ),
@@ -1530,7 +1529,7 @@ class _BooksState extends ConsumerState<Books>
                               ),
                             ],
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 18),
                           TextField(
                             decoration: InputDecoration(
                               labelText: 'Ghi chú',
@@ -1555,7 +1554,7 @@ class _BooksState extends ConsumerState<Books>
                           ),
                           const SizedBox(height: 16),
                           Container(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(9),
                             decoration: BoxDecoration(
                               color: Colors.grey[100],
                               borderRadius: BorderRadius.circular(12),
@@ -2056,6 +2055,7 @@ class _BooksState extends ConsumerState<Books>
                           ref
                               .read(currentBookProvider.notifier)
                               .setCurrentBook(book);
+                          print(book.name);
                           Navigator.pop(context);
                         },
                       ),

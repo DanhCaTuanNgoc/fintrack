@@ -30,7 +30,7 @@ class TabButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           decoration: BoxDecoration(
             color: isSelected ? Colors.white : themeColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(30),
             border: Border.all(
               color: isSelected ? Colors.grey.shade300 : themeColor,
               width: 1.5,

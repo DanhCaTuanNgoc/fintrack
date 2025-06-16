@@ -22,7 +22,7 @@ class NumberPad extends StatelessWidget {
     final background = backgroundColor ?? theme.scaffoldBackgroundColor;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: background,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -61,8 +61,6 @@ class NumberPad extends StatelessWidget {
               _buildBackspaceButton(onBackspaceTap),
             ],
           ),
-
-          const SizedBox(height: 20),
         ],
       ),
     );
