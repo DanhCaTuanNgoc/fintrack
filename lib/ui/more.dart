@@ -82,12 +82,15 @@ class _MoreState extends ConsumerState<More> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Cài đặt',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Color(0xFF2D3142),
+        title: const Padding(
+          padding: EdgeInsets.only(left: 14.0),
+          child: Text(
+            'Cài đặt',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+              color: Color(0xFF2D3142),
+            ),
           ),
         ),
         actions: [
@@ -114,25 +117,15 @@ class _MoreState extends ConsumerState<More> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: Colors.grey.withOpacity(0.15),
+            spreadRadius: 2,
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         children: [
-          _buildSettingItem(
-            icon: Icons.settings,
-            title: 'Cài đặt',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Tính năng đang phát triển')),
-              );
-            },
-          ),
-          _buildDivider(),
           _buildSettingItem(
             icon: Icons.language,
             title: 'Ngôn ngữ',
