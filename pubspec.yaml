@@ -1,4 +1,4 @@
-name: fintrack
+name: Fintrack
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   logging: ^1.2.0
   path_provider: ^2.1.2
+  flutter_launcher_icons: ^0.13.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -106,8 +107,28 @@ flutter:
 
 # Thêm cấu hình flutter_native_splash ở đây (ngoài phần flutter)
 flutter_native_splash:
-  color: "#ffffff" # Màu nền của splash screen
-  image: assets/images/splash.png # Đường dẫn đến hình ảnh logo
-  android: true # Bật splash screen cho Android
-  ios: false # Tắt cho iOS nếu không cần
-  fill: true # Hình ảnh sẽ lấp đầy màn hình (tùy chọn)
+  color: "#ffffff"
+  image: assets/images/splashscreen.png
+  android: true
+  ios: true
+  web: false
+  android_12:
+    image: assets/images/splashscreen.png
+    icon_background_color: "#ffffff"
+  fullscreen: true
+  android_gravity: center
+  ios_content_mode: center
+
+# Thêm cấu hình flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  remove_alpha_ios: true
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false
