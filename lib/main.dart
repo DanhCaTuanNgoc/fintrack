@@ -1,6 +1,6 @@
-import 'package:fintrack/ui/home_page.dart';
+import 'package:Fintrack/ui/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:fintrack/data/database/database_helper.dart';
+import 'package:Fintrack/data/database/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 import 'ui/welcome.dart';
