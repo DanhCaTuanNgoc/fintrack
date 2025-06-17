@@ -45,6 +45,34 @@ class BooksNotifier extends StateNotifier<AsyncValue<List<Book>>> {
     }
   }
 
+  Future<void> updateBook(Book book, String newName) async {
+    try {
+      final repository = ref.read(bookRepositoryProvider);
+      await repository.updateBook(book, newName);
+      await loadBooks();
+
+      // // Cập nhật current book nếu book được edit là current book
+      // final currentBookState = ref.read(currentBookProvider);
+      // if (currentBookState.value?.id == book.id) {
+      //   final updatedBook = book.copyWith(name: newName);
+      //   ref.read(currentBookProvider.notifier).setCurrentBook(updatedBook);
+      // }
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  Future<void> deleteBook(Book book) async {
+    try {
+      final repository = ref.read(bookRepositoryProvider);
+      print("Đã bấm xóa " + book.name);
+      await repository.deleteBook(book);
+      await loadBooks();
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
   Future<void> deleteAllBooks() async {
     try {
       final repository = ref.read(bookRepositoryProvider);
@@ -121,14 +149,23 @@ class CurrentBookNotifier extends StateNotifier<AsyncValue<Book?>> {
     }
   }
 
-  Future<void> setCurrentBook(Book book) async {
+  Future<void> setCurrentBook(Book? book) async {
     try {
-      // Save to preferences first
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt(_currentBookIdKey, book.id!);
-      print("Saved current book into local variable !");
-      // Then update state
-      state = AsyncValue.data(book);
+
+      if (book == null) {
+        // Remove saved book ID from preferences
+        await prefs.remove(_currentBookIdKey);
+        print("Removed current book from local storage");
+        // Update state to null
+        state = const AsyncValue.data(null);
+      } else {
+        // Save to preferences first
+        await prefs.setInt(_currentBookIdKey, book.id!);
+        print("Saved current book into local variable !");
+        // Then update state
+        state = AsyncValue.data(book);
+      }
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }

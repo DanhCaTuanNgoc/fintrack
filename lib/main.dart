@@ -18,6 +18,12 @@ void main() async {
     debugPrint('${record.level.name}: ${record.message}');
   });
 
+  // Khóa orientation chỉ cho portrait mode (dọc)
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -30,6 +36,7 @@ void main() async {
   // Insert database ra terminal
   await DatabaseHelper.instance.showAllTables();
 
+  //Lưu vào biến local
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool hasVisited = prefs.getBool('hasVisited') ?? false;
 
@@ -49,17 +56,22 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key, required this.hasVisited});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Fintrack',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-        fontFamily: 'Roboto',
-        textTheme: GoogleFonts.robotoTextTheme(),
-        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+          textScaleFactor:
+              1.0), // Font chữ của thiết bị không ảnh hưởng đến ứng dụng
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Fintrack',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+          textTheme: GoogleFonts.robotoTextTheme(),
+          scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+        ),
+        home: hasVisited ? const HomePage() : const WelcomeScreen(),
       ),
-      home: hasVisited ? const HomePage() : const WelcomeScreen(),
     );
   }
 }

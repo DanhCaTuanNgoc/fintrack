@@ -534,10 +534,13 @@ class _BooksState extends ConsumerState<Books>
             body: Center(child: Text('Có lỗi xảy ra: $error')),
           ),
           data: (currentBook) {
-            if (currentBook == null) {
-              ref
-                  .read(currentBookProvider.notifier)
-                  .setCurrentBook(books.first);
+            if (currentBook == null ||
+                !books.any((book) => book.id == currentBook.id)) {
+              if (books.isNotEmpty) {
+                ref
+                    .read(currentBookProvider.notifier)
+                    .setCurrentBook(books.first);
+              }
               return _buildSkeletonLoading();
             }
 
@@ -599,7 +602,7 @@ class _BooksState extends ConsumerState<Books>
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () {
-                                _showBookListScreen(context, themeColor, books);
+                                _showBookListScreen(context, themeColor);
                               },
                               borderRadius: BorderRadius.circular(999),
                               child: Container(
@@ -1973,137 +1976,12 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  void _showBookListScreen(
-      BuildContext context, Color themeColor, List<Book> books) {
+  void _showBookListScreen(BuildContext context, Color themeColor) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: themeColor,
-            elevation: 0,
-            title: const Text(
-              'Danh sách sổ chi tiêu',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-          body: Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: books.length,
-                  itemBuilder: (context, index) {
-                    final book = books[index];
-                    final isCurrentBook =
-                        book.id == ref.read(currentBookProvider).value?.id;
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        leading: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: themeColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.book,
-                            color: themeColor,
-                            size: 24,
-                          ),
-                        ),
-                        title: Text(
-                          book.name,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        trailing: isCurrentBook
-                            ? Icon(
-                                Icons.check_circle,
-                                color: themeColor,
-                                size: 24,
-                              )
-                            : null,
-                        onTap: () {
-                          ref
-                              .read(currentBookProvider.notifier)
-                              .setCurrentBook(book);
-                          print(book.name);
-                          Navigator.pop(context);
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 4,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _showCreateBookModal(context, themeColor);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: themeColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      'Tạo sổ mới',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+        builder: (context) => BookListScreen(
+          themeColor: themeColor,
         ),
       ),
     );

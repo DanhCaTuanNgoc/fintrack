@@ -5,6 +5,7 @@ import '../books.dart';
 import '../../data/models/book.dart';
 import '../../providers/book_provider.dart';
 import '../../data/repositories/book_repository.dart';
+import '../../providers/book_provider.dart';
 
 class CreateBookModal extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -83,6 +84,17 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
 
         if (!mounted) return;
         Navigator.pop(context);
+
+        // Hiển thị thông báo cho người dùng
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Tạo sổ chi tiêu thành công',
+              style: TextStyle(fontSize: 15),
+            ),
+            backgroundColor: const Color(0xFF4CAF50),
+          ),
+        );
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
