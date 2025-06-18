@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/models/more/notification_item.dart';
 
 // Provider để quản lý trạng thái thông báo
 final notificationsProvider =
@@ -40,33 +41,5 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
       ...state.sublist(0, index),
       ...state.sublist(index + 1),
     ];
-  }
-}
-
-class NotificationItem {
-  final String title;
-  final String message;
-  final DateTime time;
-  final bool isRead;
-
-  NotificationItem({
-    required this.title,
-    required this.message,
-    required this.time,
-    this.isRead = false,
-  });
-
-  NotificationItem copyWith({
-    String? title,
-    String? message,
-    DateTime? time,
-    bool? isRead,
-  }) {
-    return NotificationItem(
-      title: title ?? this.title,
-      message: message ?? this.message,
-      time: time ?? this.time,
-      isRead: isRead ?? this.isRead,
-    );
   }
 }

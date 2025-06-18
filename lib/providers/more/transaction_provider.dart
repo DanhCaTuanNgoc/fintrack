@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/models/transaction.dart';
-import '../data/repositories/transaction_repository.dart';
-import 'currency_provider.dart';
-import './database_provider.dart';
+import '../../data/models/more/transaction.dart';
+import '../../data/repositories/more/transaction_repository.dart';
+import '../currency_provider.dart';
+import '../database_provider.dart';
 
 final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
   final dbHelper = ref.watch(databaseHelperProvider);

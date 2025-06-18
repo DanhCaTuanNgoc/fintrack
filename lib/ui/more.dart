@@ -4,7 +4,7 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
-import '../providers/transaction_provider.dart';
+import '../providers/more/transaction_provider.dart';
 import '../providers/theme_provider.dart';
 import 'more/notification.dart';
 import 'more/receipt_long.dart';
@@ -160,11 +160,19 @@ class _MoreState extends ConsumerState<More> {
             },
           ),
           _buildDivider(),
-          _buildSettingItem(
-            icon: Icons.notifications,
-            title: 'Thông báo',
-            onTap: () {
-              _showNotificationDialog();
+          Consumer(
+            builder: (context, ref, child) {
+              final notifications = ref.watch(notificationsProvider);
+              final unreadCount = notifications.where((n) => !n.isRead).length;
+
+              return _buildSettingItem(
+                icon: Icons.notifications,
+                title: 'Thông báo',
+                badge: unreadCount > 0 ? unreadCount.toString() : null,
+                onTap: () {
+                  _showNotificationDialog();
+                },
+              );
             },
           ),
         ],
@@ -183,6 +191,7 @@ class _MoreState extends ConsumerState<More> {
     required IconData icon,
     required String title,
     String? subtitle,
+    String? badge,
     required VoidCallback onTap,
   }) {
     return InkWell(
@@ -191,13 +200,37 @@ class _MoreState extends ConsumerState<More> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FA),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: const Color(0xFF2D3142), size: 24),
+            Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8F9FA),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: const Color(0xFF2D3142), size: 24),
+                ),
+                if (badge != null)
+                  Positioned(
+                    right: -4,
+                    top: -4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF4CAF50),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        badge,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -448,7 +481,7 @@ class _MoreState extends ConsumerState<More> {
   void _showPeriodicInvoiceDialog() {
     showDialog(
       context: context,
-      builder: (context) => const ReceiptLongScreen(),
+      builder: (context) => const ReceiptLong(),
     );
   }
 
