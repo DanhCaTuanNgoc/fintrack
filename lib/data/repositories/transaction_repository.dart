@@ -1,5 +1,5 @@
 import '/data/database/database_helper.dart';
-import '/data/models/transaction.dart';
+import '../models/more/transaction.dart';
 
 class TransactionRepository {
   final DatabaseHelper _databaseHelper;

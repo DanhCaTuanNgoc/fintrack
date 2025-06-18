@@ -1,4 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Quyền kết nối mạng - cần thiết cho background service -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Quyền đánh thức thiết bị - cho phép task chạy khi thiết bị đang ngủ -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!-- Quyền chạy sau khi khởi động lại - đảm bảo service vẫn hoạt động sau khi khởi động lại thiết bị -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    
     <application
         android:label="fintrack"
         android:name="${applicationName}"

@@ -9,10 +9,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/currency_provider.dart';
 import 'package:flutter/services.dart';
 import './ui/more.dart';
+import 'services/background_service.dart';
 
 void main() async {
+  // Đảm bảo Flutter binding đã được khởi tạo
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Khởi tạo background service
+  // Bước 1: Khởi tạo Workmanager và đăng ký callback
+  await BackgroundService.initialize();
+  // Bước 2: Đăng ký task kiểm tra hóa đơn định kỳ
+  await BackgroundService.registerPeriodicTask();
+
+  // Cấu hình logging
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     debugPrint('${record.level.name}: ${record.message}');

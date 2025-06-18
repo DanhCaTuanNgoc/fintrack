@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/models/transaction.dart';
+import '../../data/models/more/transaction.dart';
 import '../../data/models/book.dart';
 import '../../data/models/wallet.dart';
 import '../../providers/transaction_provider.dart';
@@ -47,13 +47,13 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Add Transaction',
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black87),
+        iconTheme: const IconThemeData(color: Colors.black87),
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
