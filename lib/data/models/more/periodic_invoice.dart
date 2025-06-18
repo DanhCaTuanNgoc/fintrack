@@ -118,6 +118,16 @@ class PeriodicInvoice {
             now.day > nextDue.day);
   }
 
+  // Kiểm tra hóa đơn sắp đến hạn (ví dụ trước 2 ngày)
+  bool isAlmostDue({int daysBefore = 2}) {
+    if (isPaid) return false;
+    final nextDue = nextDueDate ?? calculateNextDueDate();
+    final now = DateTime.now();
+    final diff =
+        nextDue.difference(DateTime(now.year, now.month, now.day)).inDays;
+    return diff > 0 && diff <= daysBefore;
+  }
+
   // Chuyển đổi đối tượng thành Map để lưu vào database
   Map<String, dynamic> toMap() {
     return {

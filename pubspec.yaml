@@ -33,8 +33,8 @@ dependencies:
   logging: ^1.2.0
   path_provider: ^2.1.2
   flutter_launcher_icons: ^0.13.1
-  workmanager: ^0.5.2
-  flutter_local_notifications: ^16.3.2
+  workmanager: ^0.6.0
+  flutter_local_notifications: ^19.2.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

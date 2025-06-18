@@ -353,4 +353,24 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
+
+  // Cập nhật trạng thái thanh toán của hóa đơn định kỳ
+  // id: id của hóa đơn
+  // isPaid: trạng thái đã thanh toán hay chưa
+  // lastPaidDate: ngày thanh toán gần nhất (tùy chọn)
+  // nextDueDate: ngày đến hạn tiếp theo (tùy chọn)
+  Future<int> updateInvoicePaidStatus(String id, bool isPaid,
+      {DateTime? lastPaidDate, DateTime? nextDueDate}) async {
+    final db = await database;
+    return await db.update(
+      'periodic_invoices',
+      {
+        'is_paid': isPaid ? 1 : 0,
+        'last_paid_date': lastPaidDate?.toIso8601String(),
+        'next_due_date': nextDueDate?.toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/more/periodic_invoice_provider.dart';
 import '../data/models/more/periodic_invoice.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../data/database/database_helper.dart';
 
 // Khởi tạo plugin thông báo
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -34,36 +35,61 @@ void callbackDispatcher() {
             final now = DateTime.now();
 
             // Duyệt qua từng hóa đơn để kiểm tra
+            const AndroidNotificationDetails androidPlatformChannelSpecifics =
+                AndroidNotificationDetails(
+              'periodic_invoices',
+              'Hóa đơn định kỳ',
+              channelDescription: 'Thông báo về hóa đơn định kỳ',
+              importance: Importance.max,
+              priority: Priority.high,
+            );
+            const NotificationDetails platformChannelSpecifics =
+                NotificationDetails(android: androidPlatformChannelSpecifics);
             for (final invoice in invoices) {
-              // Chỉ kiểm tra các hóa đơn chưa thanh toán và có ngày đến hạn
-              if (!invoice.isPaid && invoice.nextDueDate != null) {
-                final nextDue = invoice.nextDueDate!;
-                // Kiểm tra xem hóa đơn có đến hạn hoặc quá hạn không
-                final isDueOrOverdue = now.year > nextDue.year ||
-                    (now.year == nextDue.year && now.month > nextDue.month) ||
-                    (now.year == nextDue.year &&
-                        now.month == nextDue.month &&
-                        now.day >= nextDue.day);
+              final nextDue =
+                  invoice.nextDueDate ?? invoice.calculateNextDueDate();
+              final now = DateTime.now();
 
-                // Nếu đến hạn hoặc quá hạn, gửi thông báo
-                if (isDueOrOverdue) {
-                  const AndroidNotificationDetails
-                      androidPlatformChannelSpecifics =
-                      AndroidNotificationDetails(
-                    'periodic_invoices',
-                    'Hóa đơn định kỳ',
-                    channelDescription: 'Thông báo về hóa đơn định kỳ',
-                    importance: Importance.max,
-                    priority: Priority.high,
-                  );
-                  const NotificationDetails platformChannelSpecifics =
-                      NotificationDetails(
-                          android: androidPlatformChannelSpecifics);
-
+              // Hóa đơn chưa thanh toán
+              if (!invoice.isPaid) {
+                // Sắp đến hạn (trước 2 ngày)
+                final diff = nextDue
+                    .difference(DateTime(now.year, now.month, now.day))
+                    .inDays;
+                if (diff > 0 && diff <= 2) {
                   await flutterLocalNotificationsPlugin.show(
                     0,
-                    'Hóa đơn đến hạn',
+                    'Hóa đơn sắp đến hạn',
+                    'Hóa đơn ${invoice.name} sẽ đến hạn vào ${nextDue.day}/${nextDue.month}/${nextDue.year}',
+                    platformChannelSpecifics,
+                  );
+                }
+                // Đã đến hạn hoặc quá hạn
+                else if (now.isAfter(nextDue) ||
+                    (now.year == nextDue.year &&
+                        now.month == nextDue.month &&
+                        now.day == nextDue.day)) {
+                  await flutterLocalNotificationsPlugin.show(
+                    0,
+                    'Hóa đơn quá hạn',
                     'Hóa đơn ${invoice.name} đã đến hạn thanh toán',
+                    platformChannelSpecifics,
+                  );
+                }
+              }
+              // Hóa đơn đã thanh toán
+              else {
+                // Nếu đã đến hạn mới, chuyển về chưa thanh toán và gửi thông báo
+                if (now.isAfter(nextDue) ||
+                    (now.year == nextDue.year &&
+                        now.month == nextDue.month &&
+                        now.day == nextDue.day)) {
+                  await DatabaseHelper.instance
+                      .updateInvoicePaidStatus(invoice.id, false);
+                  await flutterLocalNotificationsPlugin.show(
+                    0,
+                    'Đến hạn thanh toán mới',
+                    'Hóa đơn ${invoice.name} đã đến hạn thanh toán mới',
                     platformChannelSpecifics,
                   );
                 }
