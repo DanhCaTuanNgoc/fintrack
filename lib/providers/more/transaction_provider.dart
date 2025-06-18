@@ -1,16 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-import '../data/database/database_helper.dart';
-=======
->>>>>>> develop
-import '../data/models/transaction.dart';
-=======
-import '../data/models/more/transaction.dart';
->>>>>>> Stashed changes
-import '../data/repositories/transaction_repository.dart';
-import 'currency_provider.dart';
-import './database_provider.dart';
+import '../../data/models/more/transaction.dart';
+import '../../data/repositories/transaction_repository.dart';
+import '../currency_provider.dart';
+import '../database_provider.dart';
 
 final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
   final dbHelper = ref.watch(databaseHelperProvider);

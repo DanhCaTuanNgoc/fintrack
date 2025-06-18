@@ -1,7 +1,12 @@
 import 'package:workmanager/workmanager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/providers_barrel.dart';
-import '../ui/more/receipt_long.dart';
+import '../providers/more/periodic_invoice_provider.dart';
+import '../data/models/more/periodic_invoice.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+// Khởi tạo plugin thông báo
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 // Hàm xử lý chính cho các tác vụ chạy ngầm
 // Được gọi bởi Workmanager khi có task cần thực thi
@@ -10,44 +15,68 @@ void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     switch (task) {
       case 'checkPeriodicInvoices':
-        // Tạo một container mới để sử dụng các providers
-        // Vì task chạy trong một isolate riêng biệt
-        final container = ProviderContainer();
         try {
-          // Lấy danh sách hóa đơn định kỳ từ provider
-          final invoices = container.read(periodicInvoicesProvider);
-          final now = DateTime.now();
+          // Khởi tạo thông báo
+          const AndroidInitializationSettings initializationSettingsAndroid =
+              AndroidInitializationSettings('@mipmap/ic_launcher');
+          const InitializationSettings initializationSettings =
+              InitializationSettings(android: initializationSettingsAndroid);
+          await flutterLocalNotificationsPlugin
+              .initialize(initializationSettings);
 
-          // Duyệt qua từng hóa đơn để kiểm tra
-          for (final invoice in invoices) {
-            // Chỉ kiểm tra các hóa đơn chưa thanh toán và có ngày đến hạn
-            if (!invoice.isPaid && invoice.nextDueDate != null) {
-              final nextDue = invoice.nextDueDate!;
-              // Kiểm tra xem hóa đơn có đến hạn hoặc quá hạn không
-              final isDueOrOverdue = now.year > nextDue.year ||
-                  (now.year == nextDue.year && now.month > nextDue.month) ||
-                  (now.year == nextDue.year &&
-                      now.month == nextDue.month &&
-                      now.day >= nextDue.day);
+          // Tạo một container mới để sử dụng các providers
+          // Vì task chạy trong một isolate riêng biệt
+          final container = ProviderContainer();
+          try {
+            // Lấy danh sách hóa đơn định kỳ từ provider
+            final invoices = container.read(periodicInvoicesProvider);
+            final now = DateTime.now();
 
-              // Nếu đến hạn hoặc quá hạn, gửi thông báo
-              if (isDueOrOverdue) {
-                container
-                    .read(notificationsProvider.notifier)
-                    .addInvoiceDueNotification(
-                      invoice.name,
-                      invoice.amount,
-                      nextDue,
-                    );
+            // Duyệt qua từng hóa đơn để kiểm tra
+            for (final invoice in invoices) {
+              // Chỉ kiểm tra các hóa đơn chưa thanh toán và có ngày đến hạn
+              if (!invoice.isPaid && invoice.nextDueDate != null) {
+                final nextDue = invoice.nextDueDate!;
+                // Kiểm tra xem hóa đơn có đến hạn hoặc quá hạn không
+                final isDueOrOverdue = now.year > nextDue.year ||
+                    (now.year == nextDue.year && now.month > nextDue.month) ||
+                    (now.year == nextDue.year &&
+                        now.month == nextDue.month &&
+                        now.day >= nextDue.day);
+
+                // Nếu đến hạn hoặc quá hạn, gửi thông báo
+                if (isDueOrOverdue) {
+                  const AndroidNotificationDetails
+                      androidPlatformChannelSpecifics =
+                      AndroidNotificationDetails(
+                    'periodic_invoices',
+                    'Hóa đơn định kỳ',
+                    channelDescription: 'Thông báo về hóa đơn định kỳ',
+                    importance: Importance.max,
+                    priority: Priority.high,
+                  );
+                  const NotificationDetails platformChannelSpecifics =
+                      NotificationDetails(
+                          android: androidPlatformChannelSpecifics);
+
+                  await flutterLocalNotificationsPlugin.show(
+                    0,
+                    'Hóa đơn đến hạn',
+                    'Hóa đơn ${invoice.name} đã đến hạn thanh toán',
+                    platformChannelSpecifics,
+                  );
+                }
               }
             }
+            return true; // Task thực hiện thành công
+          } catch (e) {
+            return false; // Task thực hiện thất bại
+          } finally {
+            // Luôn giải phóng container để tránh rò rỉ bộ nhớ
+            container.dispose();
           }
-          return true; // Task thực hiện thành công
         } catch (e) {
-          return false; // Task thực hiện thất bại
-        } finally {
-          // Luôn giải phóng container để tránh rò rỉ bộ nhớ
-          container.dispose();
+          return false;
         }
       default:
         return false; // Không xử lý task không xác định

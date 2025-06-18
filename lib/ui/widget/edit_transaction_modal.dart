@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-<<<<<<< HEAD
 import '../../data/models/more/transaction.dart';
-=======
-import '../../data/models/transaction.dart';
->>>>>>> develop
-import '../../providers/transaction_provider.dart';
+import '../../providers/more/transaction_provider.dart';
 import '../../providers/currency_provider.dart';
 import './number_pad.dart';
 import './type_button.dart';

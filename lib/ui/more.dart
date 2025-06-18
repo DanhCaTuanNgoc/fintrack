@@ -4,7 +4,7 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
-import '../providers/transaction_provider.dart';
+import '../providers/more/transaction_provider.dart';
 import '../providers/theme_provider.dart';
 import 'more/notification.dart';
 import 'more/receipt_long.dart';
