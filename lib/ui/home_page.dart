@@ -25,8 +25,8 @@ class _MyHomePageState extends ConsumerState<HomePage> {
 
   final List<Widget> _screens = [
     const Books(),
-    const Wallet(),
     const Charts(),
+    const Wallet(),
     const More(),
   ];
 
@@ -71,11 +71,11 @@ class _MyHomePageState extends ConsumerState<HomePage> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.book_outlined), label: 'Sổ'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.wallet_outlined), label: 'Ví'),
-            BottomNavigationBarItem(
                 icon: Icon(Icons.analytics_outlined), label: 'Phân tích'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.more_horiz_outlined), label: 'Thêm'),
+                icon: Icon(Icons.wallet_outlined), label: 'Ví'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.more_horiz_outlined), label: 'Cài đặt'),
           ],
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,

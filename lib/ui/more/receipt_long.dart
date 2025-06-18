@@ -5,9 +5,14 @@ import '../../data/database/database_helper.dart';
 import '../../providers/currency_provider.dart';
 import '../../providers/transaction_provider.dart';
 import '../../data/models/transaction.dart';
+<<<<<<< HEAD
 import '../../providers/notifications_provider.dart';
 import 'package:flutter/scheduler.dart';
 import '../../data/models/periodic_invoice.dart';
+=======
+import '../../providers/providers_barrel.dart';
+import 'package:flutter/scheduler.dart';
+>>>>>>> develop
 
 // Provider để quản lý danh sách hóa đơn định kỳ
 final periodicInvoicesProvider =
@@ -16,8 +21,171 @@ final periodicInvoicesProvider =
   return PeriodicInvoicesNotifier();
 });
 
+<<<<<<< HEAD
+=======
+class PeriodicInvoice {
+  final String id;
+  final String name;
+  final double amount;
+  final DateTime startDate;
+  final String frequency; // daily, weekly, monthly, yearly
+  final String category;
+  final String description;
+  final bool isPaid;
+  final DateTime? lastPaidDate;
+  final DateTime? nextDueDate;
+
+  PeriodicInvoice({
+    required this.id,
+    required this.name,
+    required this.amount,
+    required this.startDate,
+    required this.frequency,
+    required this.category,
+    required this.description,
+    this.isPaid = false,
+    this.lastPaidDate,
+    this.nextDueDate,
+  });
+
+  PeriodicInvoice copyWith({
+    String? id,
+    String? name,
+    double? amount,
+    DateTime? startDate,
+    String? frequency,
+    String? category,
+    String? description,
+    bool? isPaid,
+    DateTime? lastPaidDate,
+    DateTime? nextDueDate,
+  }) {
+    return PeriodicInvoice(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      amount: amount ?? this.amount,
+      startDate: startDate ?? this.startDate,
+      frequency: frequency ?? this.frequency,
+      category: category ?? this.category,
+      description: description ?? this.description,
+      isPaid: isPaid ?? this.isPaid,
+      lastPaidDate: lastPaidDate ?? this.lastPaidDate,
+      nextDueDate: nextDueDate ?? this.nextDueDate,
+    );
+  }
+
+  DateTime calculateNextDueDate() {
+    final now = DateTime.now();
+    if (lastPaidDate == null) {
+      return startDate;
+    }
+
+    switch (frequency) {
+      case 'daily':
+        // Ngày tiếp theo, bắt đầu từ 00:00
+        return DateTime(
+          lastPaidDate!.year,
+          lastPaidDate!.month,
+          lastPaidDate!.day + 1,
+        );
+      case 'weekly':
+        // Tuần tiếp theo, bắt đầu từ thứ 2
+        final daysUntilMonday = (8 - lastPaidDate!.weekday) % 7;
+        return DateTime(
+          lastPaidDate!.year,
+          lastPaidDate!.month,
+          lastPaidDate!.day + daysUntilMonday,
+        );
+      case 'monthly':
+        // Tháng tiếp theo, ngày 1
+        return DateTime(
+          lastPaidDate!.year,
+          lastPaidDate!.month + 1,
+          1,
+        );
+      case 'yearly':
+        // Năm tiếp theo, ngày 1 tháng 1
+        return DateTime(
+          lastPaidDate!.year + 1,
+          1,
+          1,
+        );
+      default:
+        return lastPaidDate!;
+    }
+  }
+
+  bool isOverdue() {
+    if (isPaid) return false;
+    final nextDue = nextDueDate ?? calculateNextDueDate();
+    final now = DateTime.now();
+
+    // So sánh chỉ ngày, tháng, năm
+    return now.year > nextDue.year ||
+        (now.year == nextDue.year && now.month > nextDue.month) ||
+        (now.year == nextDue.year &&
+            now.month == nextDue.month &&
+            now.day > nextDue.day);
+  }
+}
+
+>>>>>>> develop
 class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
-  PeriodicInvoicesNotifier() : super([]);
+  PeriodicInvoicesNotifier() : super([]) {
+    // Khởi tạo timer để kiểm tra và làm mới hóa đơn
+    _initializeAutoRenewal();
+  }
+
+  void _initializeAutoRenewal() {
+    // Kiểm tra mỗi giờ
+    Future.delayed(const Duration(seconds: 10), () {
+      _checkAndRenewInvoices();
+      _initializeAutoRenewal(); // Lặp lại
+    });
+  }
+
+  void _checkAndRenewInvoices() {
+    final now = DateTime.now();
+    state = state.map((invoice) {
+      if (invoice.isPaid && invoice.nextDueDate != null) {
+        final nextDue = invoice.nextDueDate!;
+
+        // Kiểm tra xem đã qua ngày đến hạn chưa
+        bool shouldRenew = false;
+        switch (invoice.frequency) {
+          case 'daily':
+            shouldRenew = now.day > nextDue.day ||
+                now.month > nextDue.month ||
+                now.year > nextDue.year;
+            break;
+          case 'weekly':
+            // Kiểm tra xem đã sang tuần mới chưa
+            shouldRenew = now.isAfter(nextDue) && now.weekday == 1; // Thứ 2
+            break;
+          case 'monthly':
+            // Kiểm tra xem đã sang tháng mới chưa
+            shouldRenew = now.month > nextDue.month || now.year > nextDue.year;
+            break;
+          case 'yearly':
+            // Kiểm tra xem đã sang năm mới chưa
+            shouldRenew = now.year > nextDue.year;
+            break;
+        }
+
+        if (shouldRenew) {
+          // Tạo hóa đơn mới
+          final newInvoice = invoice.copyWith(
+            isPaid: false,
+            lastPaidDate: null,
+            nextDueDate: invoice.calculateNextDueDate(),
+          );
+
+          return newInvoice;
+        }
+      }
+      return invoice;
+    }).toList();
+  }
 
   void addInvoice(PeriodicInvoice invoice) {
     final nextDueDate = invoice.calculateNextDueDate();

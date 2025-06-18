@@ -38,20 +38,21 @@ class BookRepository {
     return maps.map((map) => Book.fromMap(map)).toList();
   }
 
-  Future<bool> updateBook(Book book) async {
+  Future<bool> updateBook(Book book, String newName) async {
     final db = await _databaseHelper.database;
     final count = await db.update(
       'books',
-      book.toMap(),
+      {'name': newName},
       where: 'id = ?',
       whereArgs: [book.id],
     );
     return count > 0;
   }
 
-  Future<bool> deleteBook(int id) async {
+  Future<bool> deleteBook(Book book) async {
     final db = await _databaseHelper.database;
-    final count = await db.delete('books', where: 'id = ?', whereArgs: [id]);
+    final count =
+        await db.delete('books', where: 'id = ?', whereArgs: [book.id]);
     return count > 0;
   }
 

@@ -1,7 +1,5 @@
-
-
-import 'package:fintrack/data/database/database_helper.dart';
-import 'package:fintrack/data/models/wallet.dart';
+import 'package:Fintrack/data/database/database_helper.dart';
+import 'package:Fintrack/data/models/wallet.dart';
 
 class WalletRepository {
   final DatabaseHelper _databaseHelper;

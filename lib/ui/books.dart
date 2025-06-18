@@ -1,17 +1,11 @@
-import 'package:fintrack/providers/transaction_provider.dart';
-import 'package:fintrack/ui/widget/type_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../data/database/database_helper.dart';
-import 'widget/number_pad.dart';
-import '../data/models/book.dart';
-import '../data/repositories/book_repository.dart';
-import '../providers/book_provider.dart';
-import '../providers/currency_provider.dart';
-import '../providers/theme_provider.dart';
-import '../data/models/transaction.dart';
+import '../providers/providers_barrel.dart';
+import './widget/widget_barrel.dart';
+import '../data/models/models_barrel.dart';
 
 class Books extends ConsumerStatefulWidget {
   const Books({super.key});
@@ -69,6 +63,208 @@ class _BooksState extends ConsumerState<Books>
   late List<dynamic> _filteredTransactions = [];
   late double _dayExpense = 0.0;
 
+  // Add this field to the class
+  OverlayEntry? _overlayEntry;
+
+  Widget _buildSkeletonLoading() {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        elevation: 0,
+        toolbarHeight: 60,
+        title: Container(
+          width: 150,
+          height: 24,
+          decoration: BoxDecoration(
+            color: Colors.grey[400],
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            width: 100,
+            height: 36,
+            decoration: BoxDecoration(
+              color: Colors.grey[400],
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+          ),
+          child: Column(
+            children: [
+              // Header skeleton
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 22,
+                  horizontal: 20,
+                ),
+                margin: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildStatSkeleton(),
+                        _buildStatSkeleton(),
+                        _buildStatSkeleton(),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              // Transaction list skeleton
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(6),
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  width: 80,
+                                  height: 16,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                                const Spacer(),
+                                Container(
+                                  width: 100,
+                                  height: 16,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatSkeleton() {
+    return Container(
+      width: 100,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 60,
+            height: 12,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: 80,
+            height: 20,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   IconData _getIconFromEmoji(String emoji) {
     return _iconMapping[emoji] ?? Icons.category;
   }
@@ -91,6 +287,7 @@ class _BooksState extends ConsumerState<Books>
   @override
   void dispose() {
     _tabController.dispose();
+    _overlayEntry?.remove();
     super.dispose();
   }
 
@@ -105,50 +302,131 @@ class _BooksState extends ConsumerState<Books>
     });
   }
 
+  Widget _buildTransactionListSkeleton() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(6),
+      itemCount: 5,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Date header skeleton
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.grey.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 100,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      width: 120,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Transaction items skeleton
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Column(
+                  children: List.generate(
+                    3,
+                    (index) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Container(
+                              height: 16,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Container(
+                            width: 100,
+                            height: 16,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final books = ref.watch(booksProvider);
+    final currentBook = ref.watch(currentBookProvider);
     final transactions = ref.watch(transactionsProvider);
 
     // Lấy màu nền hiện tại
     final themeColor = ref.watch(themeColorProvider);
-
-    final totalAmount = transactions.when(
-      data: (transactionsList) => transactionsList.fold(
-        0.0,
-        (sum, transaction) => sum + transaction.amount,
-      ),
-      loading: () => 0.0,
-      error: (_, __) => 0.0,
-    );
-
-    final totalIncome = transactions.when(
-      data: (transactionsList) => transactionsList.fold(
-        0.0,
-        (sum, transaction) =>
-            transaction.type == 'income' ? sum + transaction.amount : sum,
-      ),
-      loading: () => 0.0,
-      error: (_, __) => 0.0,
-    );
-
-    final totalExpense = transactions.when(
-      data: (transactionsList) => transactionsList.fold(
-        0.0,
-        (sum, transaction) =>
-            transaction.type == 'expense' ? sum + transaction.amount : sum,
-      ),
-      loading: () => 0.0,
-      error: (_, __) => 0.0,
-    );
-
-    // Tính toán balance (thu nhập - chi tiêu)
-    final balance = totalIncome - totalExpense;
-    final isNegative = balance < 0;
-
     return books.when(
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () => _buildSkeletonLoading(),
       error: (error, stack) =>
           Scaffold(body: Center(child: Text('Có lỗi xảy ra: $error'))),
       data: (books) {
@@ -172,11 +450,11 @@ class _BooksState extends ConsumerState<Books>
               decoration: BoxDecoration(color: themeColor),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white, // Background color for the body
+                  color: Colors.white,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(22),
                     topRight: Radius.circular(22),
-                  ), // Rounded top-left and top-right corners
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.1),
@@ -193,18 +471,6 @@ class _BooksState extends ConsumerState<Books>
                       Container(
                         padding: const EdgeInsets.all(20),
                         margin: const EdgeInsets.all(16),
-                        // decoration: BoxDecoration(
-                        //   color: Colors.white,
-                        //   borderRadius: BorderRadius.circular(20),
-                        //   boxShadow: [
-                        //     BoxShadow(
-                        //       color: Colors.grey.withOpacity(0.1),
-                        //       spreadRadius: 1,
-                        //       blurRadius: 10,
-                        //       offset: const Offset(0, 2),
-                        //     ),
-                        //   ],
-                        // ),
                         child: Column(
                           children: [
                             Icon(
@@ -262,426 +528,576 @@ class _BooksState extends ConsumerState<Books>
           );
         }
 
-        return Scaffold(
-          backgroundColor: const Color(0xFFF8F9FA),
-          appBar: AppBar(
-            backgroundColor: themeColor,
-            elevation: 0,
-            toolbarHeight: 60,
-            title: Row(
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 0),
-                        child: Text(
-                          books.first.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                            color: Colors.white,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Material(
-                        color: Colors.transparent, // để không che nền
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _isExpanded = !_isExpanded;
-                            });
-                          },
-                          borderRadius:
-                              BorderRadius.circular(999), // ripple bo tròn
-                          child: Container(
-                            width: 36,
-                            height: 36,
-                            alignment: Alignment.center,
-                            child: const Icon(
-                              Icons.arrow_drop_down,
-                              size: 30,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      _buildTabButton('Hóa đơn', 0, themeColor,
-                          icon: Icons.receipt),
-                      const SizedBox(width: 8),
-                      _buildTabButton('Lịch', 1, themeColor,
-                          icon: Icons.calendar_today),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+        return currentBook.when(
+          loading: () => _buildSkeletonLoading(),
+          error: (error, stack) => Scaffold(
+            body: Center(child: Text('Có lỗi xảy ra: $error')),
           ),
-          body: Container(
-            decoration: BoxDecoration(
-              color: themeColor,
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white, // Background color for the body
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(22),
-                  topRight: Radius.circular(22),
-                ), // Rounded top-left and top-right corners
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 4,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
+          data: (currentBook) {
+            if (currentBook == null ||
+                !books.any((book) => book.id == currentBook.id)) {
+              if (books.isNotEmpty) {
+                ref
+                    .read(currentBookProvider.notifier)
+                    .setCurrentBook(books.first);
+              }
+              return _buildSkeletonLoading();
+            }
+
+            // Lọc transactions theo currentBook
+            final filteredTransactions = transactions.when(
+              data: (transactionsList) => transactionsList
+                  .where((transaction) => transaction.bookId == currentBook.id)
+                  .toList(),
+              loading: () => [],
+              error: (_, __) => [],
+            );
+
+            final totalAmount = filteredTransactions.fold(
+              0.0,
+              (sum, transaction) => sum + transaction.amount,
+            );
+
+            final totalIncome = filteredTransactions.fold(
+              0.0,
+              (sum, transaction) =>
+                  transaction.type == 'income' ? sum + transaction.amount : sum,
+            );
+
+            final totalExpense = filteredTransactions.fold(
+              0.0,
+              (sum, transaction) => transaction.type == 'expense'
+                  ? sum + transaction.amount
+                  : sum,
+            );
+
+            // Tính toán balance (thu nhập - chi tiêu)
+            final balance = totalIncome - totalExpense;
+            final isNegative = balance < 0;
+
+            return Scaffold(
+              backgroundColor: const Color(0xFFF8F9FA),
+              appBar: AppBar(
+                backgroundColor: themeColor,
+                elevation: 0,
+                toolbarHeight: 60,
+                title: Row(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 5),
+                            child: Text(
+                              currentBook.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                _showBookListScreen(context, themeColor);
+                              },
+                              borderRadius: BorderRadius.circular(999),
+                              child: Container(
+                                width: 35,
+                                height: 37,
+                                alignment: Alignment.center,
+                                child: const Icon(
+                                  Icons.arrow_right_rounded,
+                                  size: 35,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TabButton(
+                            label: 'Hóa đơn',
+                            index: 0,
+                            selectedIndex: _selectedTabIndex,
+                            themeColor: themeColor,
+                            icon: Icons.receipt,
+                            onTap: (i) {
+                              _tabController.animateTo(i);
+                              setState(() {
+                                _selectedTabIndex = i;
+                              });
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          TabButton(
+                            label: 'Lịch',
+                            index: 1,
+                            selectedIndex: _selectedTabIndex,
+                            themeColor: themeColor,
+                            icon: Icons.calendar_today,
+                            onTap: (i) {
+                              _tabController.animateTo(i);
+                              setState(() {
+                                _selectedTabIndex = i;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: TabBarView(
-                controller: _tabController,
-                physics: const NeverScrollableScrollPhysics(), // Disable swipe
-                children: [
-                  // Tab Hóa đơn
-                  Column(
+              body: Container(
+                decoration: BoxDecoration(color: themeColor),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(22),
+                      topRight: Radius.circular(22),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  child: TabBarView(
+                    controller: _tabController,
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
-                      // Header với thông tin tổng quan
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 22,
-                          horizontal: 20,
-                        ),
-                        margin: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(
-                                  0.2), // Increased opacity for stronger shadow
-                              spreadRadius:
-                                  2, // Increased spread for more coverage
-                              blurRadius:
-                                  8, // Increased blur for a softer, more pronounced effect
-                              offset: const Offset(0,
-                                  4), // Increased vertical offset for greater elevation
+                      // Tab Hóa đơn
+                      Column(
+                        children: [
+                          // Header với thông tin tổng quan
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 22,
+                              horizontal: 20,
                             ),
-                            BoxShadow(
-                              color: Colors.grey
-                                  .withOpacity(0.1), // Additional subtle shadow
-                              spreadRadius: 1,
-                              blurRadius: 2,
-                              offset: const Offset(0, 2),
+                            margin: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  spreadRadius: 2,
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child: Column(
                               children: [
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
+                                    Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () async {
+                                            final now = DateTime.now();
+                                            final defaultStart = now.subtract(
+                                                const Duration(days: 29));
+                                            final defaultEnd = now;
+                                            final picked =
+                                                await showDateRangePicker(
+                                              context: context,
+                                              firstDate: DateTime(2020),
+                                              lastDate: DateTime(2030),
+                                              initialDateRange:
+                                                  (_startDate != null &&
+                                                          _endDate != null)
+                                                      ? DateTimeRange(
+                                                          start: _startDate!,
+                                                          end: _endDate!)
+                                                      : DateTimeRange(
+                                                          start: defaultStart,
+                                                          end: defaultEnd,
+                                                        ),
+                                              builder: (context, child) {
+                                                return Theme(
+                                                  data: Theme.of(context)
+                                                      .copyWith(
+                                                    colorScheme:
+                                                        ColorScheme.light(
+                                                      primary: themeColor,
+                                                      onPrimary: Colors.white,
+                                                      onSurface: themeColor,
+                                                    ),
+                                                    textButtonTheme:
+                                                        TextButtonThemeData(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        foregroundColor:
+                                                            themeColor,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  child: child!,
+                                                );
+                                              },
+                                            );
+
+                                            if (picked != null) {
+                                              setState(() {
+                                                _startDate = picked.start;
+                                                _endDate = picked.end;
+                                              });
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16, vertical: 10),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: Colors.grey.shade300,
+                                                width: 1.2,
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.1),
+                                                  blurRadius: 6,
+                                                  offset: const Offset(0, 3),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(Icons.calendar_today,
+                                                    size: 18,
+                                                    color: themeColor),
+                                                const SizedBox(width: 8),
+                                                Builder(
+                                                  builder: (context) {
+                                                    final now = DateTime.now();
+                                                    final defaultStart =
+                                                        now.subtract(
+                                                            const Duration(
+                                                                days: 29));
+                                                    final defaultEnd = now;
+                                                    final displayStart =
+                                                        _startDate ??
+                                                            defaultStart;
+                                                    final displayEnd =
+                                                        _endDate ?? defaultEnd;
+                                                    final isDefault =
+                                                        _startDate == null &&
+                                                            _endDate == null;
+                                                    return Text(
+                                                      isDefault
+                                                          ? '${DateFormat('dd/MM/yyyy').format(defaultStart)} - ${DateFormat('dd/MM/yyyy').format(defaultEnd)}'
+                                                          : '${DateFormat('dd/MM/yyyy').format(displayStart)} - ${DateFormat('dd/MM/yyyy').format(displayEnd)}',
+                                                      style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color:
+                                                            Color(0xFF2D3142),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                     IconButton(
                                       icon: Icon(
-                                        Icons.calendar_month,
-                                        color: themeColor,
+                                        _isAmountVisible
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: Colors.grey[600],
                                         size: 24,
                                       ),
                                       onPressed: () {
-                                        // Handle previous date range
+                                        setState(() {
+                                          _isAmountVisible = !_isAmountVisible;
+                                        });
                                       },
                                     ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        final picked =
-                                            await showDateRangePicker(
-                                          context: context,
-                                          firstDate: DateTime(2020),
-                                          lastDate: DateTime(2030),
-                                          initialDateRange:
-                                              _startDate != null &&
-                                                      _endDate != null
-                                                  ? DateTimeRange(
-                                                      start: _startDate!,
-                                                      end: _endDate!)
-                                                  : null,
-                                        );
-                                        if (picked != null) {
-                                          setState(() {
-                                            _startDate = picked.start;
-                                            _endDate = picked.end;
-                                          });
-                                        }
-                                      },
-                                      child: Text(
-                                        _startDate != null && _endDate != null
-                                            ? '${DateFormat('dd/MM/yyyy').format(_startDate!)} - ${DateFormat('dd/MM/yyyy').format(_endDate!)}'
-                                            : 'Lọc khoảng thời gian',
-                                        style: TextStyle(
-                                          color: Colors.grey[800],
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                // Stats row
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 110,
+                                        ),
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: StatItem(
+                                            title: 'Toàn bộ',
+                                            amount: balance.abs().toString(),
+                                            textColor: isNegative
+                                                ? const Color(0xFFFF5252)
+                                                : const Color(0xFF4CAF50),
+                                            showNegative: isNegative,
+                                            isAmountVisible: _isAmountVisible,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Container(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 110,
+                                        ),
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: StatItem(
+                                            title: 'Thu nhập',
+                                            amount: totalIncome.toString(),
+                                            textColor: const Color(0xFF4CAF50),
+                                            isAmountVisible: _isAmountVisible,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Container(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 110,
+                                        ),
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: StatItem(
+                                            title: 'Chi tiêu',
+                                            amount: totalExpense.toString(),
+                                            textColor: const Color(0xFFFF5252),
+                                            isAmountVisible: _isAmountVisible,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                IconButton(
-                                  icon: Icon(
-                                    _isAmountVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: Colors.grey[600],
-                                    size: 24,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isAmountVisible = !_isAmountVisible;
-                                    });
-                                  },
-                                ),
                               ],
                             ),
-                            const SizedBox(height: 16),
-                            // Stats row
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 110,
-                                    ),
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: _buildStatItem(
-                                        'Toàn bộ',
-                                        balance.abs().toString(),
-                                        isNegative
-                                            ? const Color(0xFFFF5252)
-                                            : const Color(0xFF4CAF50),
-                                        showNegative: isNegative,
+                          ),
+                          // Danh sách các đầu mục chi tiêu
+                          Expanded(
+                            child: transactions.when(
+                              loading: () => _buildTransactionListSkeleton(),
+                              error: (error, stack) =>
+                                  Center(child: Text('Error: $error')),
+                              data: (allTransactions) {
+                                // Lọc transactions theo currentBook
+                                final transactionsList = allTransactions
+                                    .where((t) => t.bookId == currentBook.id)
+                                    .toList();
+
+                                // Lọc theo khoảng thời gian
+                                final filteredTransactions =
+                                    (_startDate != null && _endDate != null)
+                                        ? transactionsList.where((transaction) {
+                                            final date = transaction.date!;
+                                            return !date
+                                                    .isBefore(_startDate!) &&
+                                                !date.isAfter(_endDate!);
+                                          }).toList()
+                                        : transactionsList;
+
+                                if (filteredTransactions.isEmpty) {
+                                  return Center(
+                                    child: Text(
+                                      'Hiện chưa có chi tiêu',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[600],
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Container(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 110,
-                                    ),
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: _buildStatItem(
-                                        'Thu nhập',
-                                        totalIncome.toString(),
-                                        const Color(0xFF4CAF50),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Container(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 110,
-                                    ),
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: _buildStatItem(
-                                        'Chi tiêu',
-                                        totalExpense.toString(),
-                                        const Color(0xFFFF5252),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Danh sách các đầu mục chi tiêu
-                      Expanded(
-                        child: transactions.when(
-                          loading: () =>
-                              const Center(child: CircularProgressIndicator()),
-                          error: (error, stack) =>
-                              Center(child: Text('Error: $error')),
-                          data: (transactionsList) {
-                            // Lọc theo khoảng thời gian
-                            final filteredTransactions =
-                                (_startDate != null && _endDate != null)
-                                    ? transactionsList.where((transaction) {
-                                        final date = transaction.date!;
-                                        return !date.isBefore(_startDate!) &&
-                                            !date.isAfter(_endDate!);
-                                      }).toList()
-                                    : transactionsList;
+                                  );
+                                }
 
-                            // Nhóm giao dịch theo ngày
-                            final groupedTransactions =
-                                <String, List<dynamic>>{};
-                            final dailyExpenses = <String, double>{};
+                                // Nhóm giao dịch theo ngày
+                                final groupedTransactions =
+                                    <String, List<dynamic>>{};
+                                final dailyExpenses = <String, double>{};
 
-                            for (var transaction in filteredTransactions) {
-                              final dateKey = DateFormat(
-                                'dd/MM/yyyy',
-                              ).format(transaction.date!);
-                              if (!groupedTransactions.containsKey(dateKey)) {
-                                groupedTransactions[dateKey] = [];
-                                dailyExpenses[dateKey] = 0;
-                              }
-                              groupedTransactions[dateKey]!.add(transaction);
-                              if (transaction.type == 'expense') {
-                                dailyExpenses[dateKey] =
-                                    (dailyExpenses[dateKey] ?? 0) +
-                                        transaction.amount;
-                              }
-                            }
-
-                            return ListView.builder(
-                              padding: const EdgeInsets.all(6),
-                              itemCount: groupedTransactions.length,
-                              itemBuilder: (context, index) {
-                                final dateKey =
-                                    groupedTransactions.keys.elementAt(
-                                  index,
-                                );
-                                final transactions =
-                                    groupedTransactions[dateKey]!;
-                                final dayExpense = dailyExpenses[dateKey] ?? 0;
-
-                                // Tính tổng thu nhập trong ngày
-                                double dayIncome = 0;
-                                for (var transaction in transactions) {
-                                  if (transaction.type == 'income') {
-                                    dayIncome += transaction.amount;
+                                for (var transaction in filteredTransactions) {
+                                  final dateKey = DateFormat('dd/MM/yyyy')
+                                      .format(transaction.date!);
+                                  if (!groupedTransactions
+                                      .containsKey(dateKey)) {
+                                    groupedTransactions[dateKey] = [];
+                                    dailyExpenses[dateKey] = 0;
+                                  }
+                                  groupedTransactions[dateKey]!
+                                      .add(transaction);
+                                  if (transaction.type == 'expense') {
+                                    dailyExpenses[dateKey] =
+                                        (dailyExpenses[dateKey] ?? 0) +
+                                            transaction.amount;
                                   }
                                 }
 
-                                // Tính tổng theo ngày (thu - chi)
-                                final dayTotal = dayIncome - dayExpense;
+                                return ListView.builder(
+                                  padding: const EdgeInsets.all(6),
+                                  itemCount: groupedTransactions.length,
+                                  itemBuilder: (context, index) {
+                                    final dateKey = groupedTransactions.keys
+                                        .elementAt(index);
+                                    final transactions =
+                                        groupedTransactions[dateKey]!;
+                                    final dayExpense =
+                                        dailyExpenses[dateKey] ?? 0;
 
-                                return _buildExpenseItem(
-                                    dateKey: dateKey,
-                                    transactions: transactions,
-                                    dayExpense: dayTotal,
-                                    themeColor: themeColor);
+                                    // Tính tổng thu nhập trong ngày
+                                    double dayIncome = 0;
+                                    for (var transaction in transactions) {
+                                      if (transaction.type == 'income') {
+                                        dayIncome += transaction.amount;
+                                      }
+                                    }
+
+                                    // Tính tổng theo ngày (thu - chi)
+                                    final dayTotal = dayIncome - dayExpense;
+
+                                    return _buildExpenseItem(
+                                        dateKey: dateKey,
+                                        transactions: transactions,
+                                        dayExpense: dayTotal,
+                                        themeColor: themeColor);
+                                  },
+                                );
                               },
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  // Tab Lịch
-                  Column(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(
-                                  0.2), // Increased opacity for stronger shadow
-                              spreadRadius:
-                                  2, // Increased spread for more coverage
-                              blurRadius:
-                                  8, // Increased blur for a softer, more pronounced effect
-                              offset: const Offset(0,
-                                  4), // Increased vertical offset for greater elevation
-                            ),
-                            BoxShadow(
-                              color: Colors.grey
-                                  .withOpacity(0.1), // Additional subtle shadow
-                              spreadRadius: 1,
-                              blurRadius: 2,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: TableCalendar(
-                          firstDay: DateTime.utc(2020, 1, 1),
-                          lastDay: DateTime.utc(2030, 12, 31),
-                          focusedDay: _focusedDay,
-                          selectedDayPredicate: (day) {
-                            return isSameDay(_selectedDay, day);
-                          },
-                          calendarFormat: _calendarFormat,
-                          onFormatChanged: (format) {
-                            setState(() {
-                              _calendarFormat = format;
-                            });
-                          },
-                          onDaySelected: (selectedDay, focusedDay) {
-                            setState(() {
-                              _selectedDay = selectedDay;
-                              _focusedDay = focusedDay;
-                              // Chuyển đổi selectedDay thành định dạng DB để lọc
-                              final selectedDateStr =
-                                  DateFormat('yyyy-MM-dd').format(selectedDay) +
-                                      'T00:00:00.000';
-                              if (_events.containsKey(selectedDay)) {
-                                final event = _events[selectedDay]![
-                                    0]; // Lấy sự kiện đầu tiên
-                                _filteredTransactions =
-                                    event['transactions']?.where((t) {
-                                          return t['date'] ==
-                                              selectedDateStr; // So sánh với định dạng DB
-                                        }).toList() ??
-                                        [];
-                                _dayExpense = _filteredTransactions.fold(
-                                    0.0,
-                                    (sum, t) =>
-                                        sum +
-                                        (t['type'] == 'expense'
-                                            ? -t['amount']
-                                            : t['amount']));
-                              } else {
-                                _filteredTransactions = [];
-                                _dayExpense = 0.0;
-                              }
-                            });
-                          },
-                          calendarStyle: CalendarStyle(
-                            selectedDecoration: BoxDecoration(
-                              color: themeColor,
-                              shape: BoxShape.circle,
-                            ),
-                            markerDecoration: BoxDecoration(
-                              color: themeColor,
-                              shape: BoxShape.circle,
                             ),
                           ),
-                          headerStyle: const HeaderStyle(
-                            formatButtonVisible: false,
-                            titleCentered: true,
-                          ),
-                        ),
+                        ],
                       ),
-                      Expanded(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: 1, // Chỉ hiển thị một mục cho ngày đã chọn
-                          itemBuilder: (context, index) {
-                            return transactions.when(
+                      // Tab Lịch
+                      Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  spreadRadius: 2,
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: TableCalendar(
+                              firstDay: DateTime.utc(2020, 1, 1),
+                              lastDay: DateTime.utc(2030, 12, 31),
+                              focusedDay: _focusedDay,
+                              selectedDayPredicate: (day) {
+                                return isSameDay(_selectedDay, day);
+                              },
+                              calendarFormat: _calendarFormat,
+                              onFormatChanged: (format) {
+                                setState(() {
+                                  _calendarFormat = format;
+                                });
+                              },
+                              onDaySelected: (selectedDay, focusedDay) {
+                                setState(() {
+                                  _selectedDay = selectedDay;
+                                  _focusedDay = focusedDay;
+                                  // Chuyển đổi selectedDay thành định dạng DB để lọc
+                                  final selectedDateStr =
+                                      DateFormat('yyyy-MM-dd')
+                                              .format(selectedDay) +
+                                          'T00:00:00.000';
+                                  if (_events.containsKey(selectedDay)) {
+                                    final event = _events[selectedDay]![
+                                        0]; // Lấy sự kiện đầu tiên
+                                    _filteredTransactions =
+                                        event['transactions']?.where((t) {
+                                              return t['date'] ==
+                                                  selectedDateStr; // So sánh với định dạng DB
+                                            }).toList() ??
+                                            [];
+                                    _dayExpense = _filteredTransactions.fold(
+                                        0.0,
+                                        (sum, t) =>
+                                            sum +
+                                            (t['type'] == 'expense'
+                                                ? -t['amount']
+                                                : t['amount']));
+                                  } else {
+                                    _filteredTransactions = [];
+                                    _dayExpense = 0.0;
+                                  }
+                                });
+                              },
+                              calendarStyle: CalendarStyle(
+                                selectedDecoration: BoxDecoration(
+                                  color: themeColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                markerDecoration: BoxDecoration(
+                                  color: themeColor,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              headerStyle: const HeaderStyle(
+                                formatButtonVisible: false,
+                                titleCentered: true,
+                              ),
+                            ),
+                          ),
+                          IntrinsicHeight(
+                            child: transactions.when(
+                              loading: () => _buildTransactionListSkeleton(),
+                              error: (error, stack) =>
+                                  Center(child: Text('Error: $error')),
                               data: (allTransactions) {
+                                // Lọc transactions theo currentBook
                                 final transactionsByDate = allTransactions
-                                    .where(
-                                        (t) => isSameDay(t.date, _selectedDay))
+                                    .where((t) =>
+                                        t.bookId == currentBook.id &&
+                                        isSameDay(t.date, _selectedDay))
                                     .toList();
+
+                                if (transactionsByDate.isEmpty) {
+                                  return Center(
+                                    child: Text(
+                                      'Hiện chưa có chi tiêu',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[600],
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  );
+                                }
+
                                 final dayExpense =
                                     transactionsByDate.fold<double>(
                                   0.0,
@@ -695,94 +1111,26 @@ class _BooksState extends ConsumerState<Books>
                                   themeColor: themeColor,
                                 );
                               },
-                              loading: () => const Center(
-                                  child: CircularProgressIndicator()),
-                              error: (e, _) => Center(child: Text('Lỗi: $e')),
-                            );
-                          },
-                        ),
+                            ),
+                          )
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              _showAddExpenseModal(
-                  context, books.first, themeColor); // Pass current book
-            },
-            backgroundColor: themeColor,
-            elevation: 4,
-            child: const Icon(Icons.add, size: 30, color: Colors.white),
-          ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  _showAddExpenseModal(context, currentBook, themeColor);
+                },
+                backgroundColor: themeColor,
+                elevation: 4,
+                child: const Icon(Icons.add, size: 30, color: Colors.white),
+              ),
+            );
+          },
         );
       },
-    );
-  }
-
-  Widget _buildTimeRangeButton(String text, {bool isSelected = false}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF6C63FF) : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: isSelected ? Colors.white : Colors.grey[600],
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatItem(
-    String title,
-    String amount,
-    Color textColor, {
-    bool showNegative = false,
-  }) {
-    final numberFormat = NumberFormat('#,###');
-    final amountValue =
-        double.tryParse(amount.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
-
-    // Lấy đơn vị tiền tệ hiện tại
-    final currencyType = ref.watch(currencyProvider);
-
-    return Container(
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            _isAmountVisible
-                ? '${showNegative ? '-' : ''}${formatCurrency(amountValue, currencyType)}'
-                : '•••••',
-            style: TextStyle(
-              color: textColor,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
     );
   }
 
@@ -793,6 +1141,21 @@ class _BooksState extends ConsumerState<Books>
       required Color themeColor}) {
     final isExpanded = _expandedDays[dateKey] ?? false;
     final numberFormat = NumberFormat('#,###');
+
+    final date = DateFormat('dd/MM/yy').parse(dateKey);
+    final weekdayNumber = date.weekday;
+    const weekdayMap = {
+      1: 'Th 2',
+      2: 'Th 3',
+      3: 'Th 4',
+      4: 'Th 5',
+      5: 'Th 6',
+      6: 'Th 7',
+      7: 'CN',
+    };
+
+    final formattedDate =
+        '${weekdayMap[weekdayNumber]}, ${DateFormat('dd/MM').format(date)}';
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -855,9 +1218,9 @@ class _BooksState extends ConsumerState<Books>
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    dateKey,
+                    formattedDate,
                     style: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 13.5,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -888,44 +1251,50 @@ class _BooksState extends ConsumerState<Books>
                     horizontal: 16,
                     vertical: 12,
                   ),
-                  child: Row(
-                    children: [
-                      // Icon từ category
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(8),
+                  child: InkWell(
+                    onTap: () {
+                      _showTransactionDetailModal(
+                          context, transaction, themeColor);
+                    },
+                    child: Row(
+                      children: [
+                        // Icon từ category
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: bgColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            _getIconFromEmoji(category['icon'] ?? '🏷️'),
+                            color: themeColor,
+                            size: 20,
+                          ),
                         ),
-                        child: Icon(
-                          _getIconFromEmoji(category['icon'] ?? '🏷️'),
-                          color: themeColor,
-                          size: 20,
+                        const SizedBox(width: 12),
+                        // Thông tin giao dịch
+                        Expanded(
+                          child: Text(
+                            transaction.note,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Thông tin giao dịch
-                      Expanded(
-                        child: Text(
-                          transaction.note,
-                          style: const TextStyle(
+                        // Số tiền
+                        Text(
+                          '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
+                          style: TextStyle(
+                            color: transaction.type == 'expense'
+                                ? Colors.red
+                                : Colors.green,
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                      // Số tiền
-                      Text(
-                        '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
-                        style: TextStyle(
-                          color: transaction.type == 'expense'
-                              ? Colors.red
-                              : Colors.green,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               }).toList(),
@@ -946,8 +1315,25 @@ class _BooksState extends ConsumerState<Books>
     required double dayExpense,
     required Color themeColor,
   }) {
+    final date = DateFormat('dd/MM/yy').parse(dateKey);
+
+    final weekdayNumber = date.weekday;
+
+    const weekdayMap = {
+      1: 'Th 2',
+      2: 'Th 3',
+      3: 'Th 4',
+      4: 'Th 5',
+      5: 'Th 6',
+      6: 'Th 7',
+      7: 'CN',
+    };
+
+    final formattedDate =
+        '${weekdayMap[weekdayNumber]}, ${DateFormat('dd/MM').format(date)}';
+
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -989,9 +1375,9 @@ class _BooksState extends ConsumerState<Books>
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  dateKey,
+                  formattedDate,
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 13.5,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1024,41 +1410,47 @@ class _BooksState extends ConsumerState<Books>
                     horizontal: 16,
                     vertical: 12,
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(8),
+                  child: InkWell(
+                    onTap: () {
+                      _showTransactionDetailModal(
+                          context, transaction, themeColor);
+                    },
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: bgColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            _getIconFromEmoji(category['icon'] ?? '🏷️'),
+                            color: themeColor,
+                            size: 20,
+                          ),
                         ),
-                        child: Icon(
-                          _getIconFromEmoji(category['icon'] ?? '🏷️'),
-                          color: themeColor,
-                          size: 20,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            transaction.note,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          transaction.note,
-                          style: const TextStyle(
+                        Text(
+                          '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
+                          style: TextStyle(
+                            color: transaction.type == 'expense'
+                                ? Colors.red
+                                : Colors.green,
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                      Text(
-                        '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
-                        style: TextStyle(
-                          color: transaction.type == 'expense'
-                              ? Colors.red
-                              : Colors.green,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
@@ -1076,351 +1468,476 @@ class _BooksState extends ConsumerState<Books>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(top: 12, bottom: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Thêm giao dịch',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2D3142),
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                TypeButton(
-                                    text: 'Chi tiêu',
-                                    isSelected: _isExpense == true,
-                                    onTap: () {
-                                      setState(() {
-                                        _isExpense = true;
-                                        _selectedCategory = null;
-                                      });
-                                    },
-                                    themeColor: themeColor),
-                                const SizedBox(width: 8),
-                                TypeButton(
-                                  text: 'Thu nhập',
-                                  isSelected: _isExpense == false,
-                                  themeColor: themeColor,
-                                  onTap: () {
-                                    setState(() {
-                                      _isExpense = false;
-                                      _selectedCategory = null;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Ghi chú',
-                            labelStyle: TextStyle(
-                              color: themeColor,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          onChanged: (value) => _note = value,
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                _amount.isEmpty
-                                    ? '0 ${ref.watch(currencyProvider).symbol}'
-                                    : '$_amount ${ref.watch(currencyProvider).symbol}',
-                                style: const TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2D3142),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              NumberPad(
-                                onNumberTap: (number) {
-                                  setState(() {
-                                    _amount += number;
-                                  });
-                                },
-                                onBackspaceTap: () {
-                                  setState(() {
-                                    if (_amount.isNotEmpty) {
-                                      _amount = _amount.substring(
-                                        0,
-                                        _amount.length - 1,
-                                      );
-                                    }
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        DropdownButtonFormField<String>(
-                          value: _selectedCategory,
-                          decoration: InputDecoration(
-                            labelText: 'Danh mục',
-                            labelStyle: TextStyle(
-                              color: themeColor,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          items: (_isExpense
-                                  ? _expenseCategories
-                                  : _incomeCategories)
-                              .map<DropdownMenuItem<String>>(
-                                (category) => DropdownMenuItem<String>(
-                                  value: category['name'],
-                                  child: Row(
-                                    children: [
-                                      Text(category['icon']),
-                                      const SizedBox(width: 8),
-                                      Text(category['name']),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedCategory = value;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (_amount.isNotEmpty &&
-                                  _selectedCategory != null) {
-                                final transactionNotifier = ref.read(
-                                  transactionsProvider.notifier,
-                                );
-
-                                // Get category ID from selected category name
-                                final selectedCategoryData = _isExpense
-                                    ? _expenseCategories.firstWhere(
-                                        (cat) =>
-                                            cat['name'] == _selectedCategory,
-                                      )
-                                    : _incomeCategories.firstWhere(
-                                        (cat) =>
-                                            cat['name'] == _selectedCategory,
-                                      );
-
-                                await transactionNotifier.createTransaction(
-                                  amount: double.parse(_amount),
-                                  note: _note,
-                                  type: _isExpense ? 'expense' : 'income',
-                                  categoryId: selectedCategoryData['id'],
-                                  bookId: currentBook.id ??
-                                      0, // Add null check with default value
-                                  userId: 1,
-                                );
-
-                                if (mounted) {
-                                  Navigator.pop(context);
-                                }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: themeColor,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: const Text(
-                              'Thêm',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _showCreateBookModal(BuildContext context, Color themeColor) {
-    final _formKey = GlobalKey<FormState>();
-    final _bookNameController = TextEditingController();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled:
-          true, // Giữ nguyên để modal chiếm toàn màn hình nếu cần
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context)
-                .viewInsets
-                .bottom, // Điều chỉnh padding dựa trên bàn phím
-          ),
-          child: SingleChildScrollView(
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
                       width: 40,
                       height: 4,
-                      margin: const EdgeInsets.only(bottom: 20),
+                      margin: const EdgeInsets.only(top: 12, bottom: 20),
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                    const Text(
-                      'Tạo sổ chi tiêu mới',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D3142),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Form(
-                      key: _formKey,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
                         children: [
-                          TextFormField(
-                            controller: _bookNameController,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Thêm giao dịch',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2D3142),
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  TypeButton(
+                                      text: 'Chi tiêu',
+                                      isSelected: _isExpense == true,
+                                      onTap: () {
+                                        setState(() {
+                                          _isExpense = true;
+                                          _selectedCategory = null;
+                                        });
+                                      },
+                                      themeColor: themeColor),
+                                  const SizedBox(width: 8),
+                                  TypeButton(
+                                    text: 'Thu nhập',
+                                    isSelected: _isExpense == false,
+                                    themeColor: themeColor,
+                                    onTap: () {
+                                      setState(() {
+                                        _isExpense = false;
+                                        _selectedCategory = null;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 18),
+                          TextField(
                             decoration: InputDecoration(
-                              labelText: 'Tên sổ chi tiêu',
+                              labelText: 'Ghi chú',
+                              labelStyle: TextStyle(
+                                color: themeColor,
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: themeColor,
+                                ),
                               ),
-                              prefixIcon: const Icon(Icons.book),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: themeColor,
+                                  width: 2,
+                                ),
+                              ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Vui lòng nhập tên sổ chi tiêu';
-                              }
-                              return null;
+                            onChanged: (value) => _note = value,
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(9),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  _amount.isEmpty
+                                      ? '0 ${ref.watch(currencyProvider).symbol}'
+                                      : '${formatCurrency(double.tryParse(_amount) ?? 0, ref.watch(currencyProvider))}',
+                                  style: const TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF2D3142),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                NumberPad(
+                                  onNumberTap: (number) {
+                                    setState(() {
+                                      _amount += number;
+                                    });
+                                  },
+                                  onBackspaceTap: () {
+                                    setState(() {
+                                      if (_amount.isNotEmpty) {
+                                        _amount = _amount.substring(
+                                          0,
+                                          _amount.length - 1,
+                                        );
+                                      }
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField<String>(
+                            value: _selectedCategory,
+                            decoration: InputDecoration(
+                              labelText: 'Danh mục',
+                              labelStyle: TextStyle(
+                                color: themeColor,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: themeColor,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: themeColor,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            items: (_isExpense
+                                    ? _expenseCategories
+                                    : _incomeCategories)
+                                .map<DropdownMenuItem<String>>(
+                                  (category) => DropdownMenuItem<String>(
+                                    value: category['name'],
+                                    child: Row(
+                                      children: [
+                                        Text(category['icon']),
+                                        const SizedBox(width: 8),
+                                        Text(category['name']),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedCategory = value;
+                              });
                             },
                           ),
+                          const SizedBox(height: 24),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                if (_amount.isNotEmpty &&
+                                    _selectedCategory != null) {
+                                  final transactionNotifier = ref.read(
+                                    transactionsProvider.notifier,
+                                  );
+
+                                  // Get category ID from selected category name
+                                  final selectedCategoryData = _isExpense
+                                      ? _expenseCategories.firstWhere(
+                                          (cat) =>
+                                              cat['name'] == _selectedCategory,
+                                        )
+                                      : _incomeCategories.firstWhere(
+                                          (cat) =>
+                                              cat['name'] == _selectedCategory,
+                                        );
+
+                                  await transactionNotifier.createTransaction(
+                                    amount: double.parse(_amount),
+                                    note: _note,
+                                    type: _isExpense ? 'expense' : 'income',
+                                    categoryId: selectedCategoryData['id'],
+                                    bookId: currentBook.id ?? 0,
+                                    userId: 1,
+                                  );
+
+                                  if (mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: themeColor,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: const Text(
+                                'Thêm',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            try {
-                              final book = Book(
-                                name: _bookNameController.text,
-                                balance: 0.0,
-                                userId: 1, // TODO: Get current user ID
-                              );
-                              await ref
-                                  .read(booksProvider.notifier)
-                                  .createBook(_bookNameController.text);
-                              Navigator.pop(context);
-                            } catch (e) {
-                              // TODO: Show error message
-                              print('Error creating book: $e');
-                            }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: themeColor,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Tạo sổ',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  void _showTransactionDetailModal(
+      BuildContext context, Transaction transaction, Color themeColor) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(
+          child: SingleChildScrollView(
+            child: Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(top: 12, bottom: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        children: [
+                          // Transaction Type and Amount
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: transaction.type == 'expense'
+                                      ? Colors.red.withOpacity(0.1)
+                                      : Colors.green.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  transaction.type == 'expense'
+                                      ? 'Chi tiêu'
+                                      : 'Thu nhập',
+                                  style: TextStyle(
+                                    color: transaction.type == 'expense'
+                                        ? Colors.red
+                                        : Colors.green,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                '${transaction.type == 'expense' ? '-' : '+'}${formatCurrency(transaction.amount, ref.watch(currencyProvider))}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: transaction.type == 'expense'
+                                      ? Colors.red
+                                      : Colors.green,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          // Category
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: themeColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  _getIconFromEmoji(_categories.firstWhere(
+                                        (cat) =>
+                                            cat['id'] == transaction.categoryId,
+                                        orElse: () => {'icon': '🏷️'},
+                                      )['icon'] ??
+                                      '🏷️'),
+                                  color: themeColor,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                _categories.firstWhere(
+                                      (cat) =>
+                                          cat['id'] == transaction.categoryId,
+                                      orElse: () => {'name': 'Không xác định'},
+                                    )['name'] ??
+                                    'Không xác định',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          // Note
+                          if (transaction.note.isNotEmpty) ...[
+                            const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Ghi chú',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                transaction.note,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 24),
+                          // Date
+                          Row(
+                            children: [
+                              Icon(Icons.calendar_today,
+                                  size: 20, color: Colors.grey[600]),
+                              const SizedBox(width: 8),
+                              Text(
+                                DateFormat('dd/MM/yyyy')
+                                    .format(transaction.date!),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 32),
+                          // Action Buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    final transactionNotifier =
+                                        ref.read(transactionsProvider.notifier);
+                                    await transactionNotifier
+                                        .deleteTransaction(transaction.id!);
+                                    // Thông báo cho người dùng
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Xóa thành công',
+                                        ),
+                                        backgroundColor:
+                                            const Color(0xFF4CAF50),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                    if (mounted) {
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: const Text(
+                                    'Xóa',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    _showEditTransactionModal(
+                                        context, transaction, themeColor);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueAccent,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: const Text(
+                                    'Chỉnh sửa',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1431,62 +1948,40 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  Widget _buildTabButton(String label, int index, Color themeColor,
-      {IconData? icon}) {
-    final isSelected = _selectedTabIndex == index;
+  void _showEditTransactionModal(
+    BuildContext context,
+    Transaction transaction,
+    Color themeColor,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => EditTransactionModal(
+        transaction: transaction,
+        themeColor: themeColor,
+        categories: _categories,
+        expenseCategories: _expenseCategories,
+        incomeCategories: _incomeCategories,
+      ),
+    );
+  }
 
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          _tabController.animateTo(index);
-          setState(() {
-            _selectedTabIndex = index;
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.white : themeColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected
-                  ? Colors.grey.shade300
-                  : themeColor, // Border for both states
-              width: 1.5, // Slightly thicker border for emphasis
-            ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: themeColor.withOpacity(0.2),
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ]
-                : [],
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (icon != null)
-                  Icon(
-                    icon,
-                    color: isSelected ? const Color(0xFF2D3142) : Colors.white,
-                    size: 16,
-                  ),
-                if (icon != null) const SizedBox(width: 4),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: isSelected ? const Color(0xFF2D3142) : Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
+  void _showCreateBookModal(BuildContext context, Color themeColor) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CreateBookModal(themeColor: themeColor),
+    );
+  }
+
+  void _showBookListScreen(BuildContext context, Color themeColor) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BookListScreen(
+          themeColor: themeColor,
         ),
       ),
     );

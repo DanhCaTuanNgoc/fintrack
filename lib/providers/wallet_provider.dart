@@ -1,13 +1,8 @@
-
-import 'package:fintrack/data/database/database_helper.dart';
-import 'package:fintrack/data/models/wallet.dart';
-import 'package:fintrack/data/repositories/wallet_repository.dart';
+import 'package:Fintrack/data/models/wallet.dart';
+import 'package:Fintrack/data/repositories/wallet_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-final databaseHelperProvider = Provider<DatabaseHelper>((ref) {
-  return DatabaseHelper.instance;
-});
+import './database_provider.dart';
 
 final walletRepositoryProvider = Provider<WalletRepository>((ref) {
   final dbHelper = ref.watch(databaseHelperProvider);
@@ -16,8 +11,8 @@ final walletRepositoryProvider = Provider<WalletRepository>((ref) {
 
 final walletsProvider =
     StateNotifierProvider<WalletsNotifier, AsyncValue<List<Wallet>>>((ref) {
-      return WalletsNotifier(ref);
-    });
+  return WalletsNotifier(ref);
+});
 
 class WalletsNotifier extends StateNotifier<AsyncValue<List<Wallet>>> {
   WalletsNotifier(this.ref) : super(const AsyncValue.loading()) {
@@ -39,7 +34,11 @@ class WalletsNotifier extends StateNotifier<AsyncValue<List<Wallet>>> {
   Future<void> createWallet(String name) async {
     try {
       final repository = ref.read(walletRepositoryProvider);
-      final wallet = Wallet(nameBalance: name, walletBalance: 0.0, type: 'defaultType', userId: 1);
+      final wallet = Wallet(
+          nameBalance: name,
+          walletBalance: 0.0,
+          type: 'defaultType',
+          userId: 1);
       await repository.createWallet(wallet);
       await loadWallets();
     } catch (e, stack) {
