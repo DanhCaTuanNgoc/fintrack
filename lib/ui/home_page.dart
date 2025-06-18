@@ -5,6 +5,7 @@ import 'books.dart';
 import 'wallet.dart';
 import 'charts.dart';
 import 'more.dart';
+import 'extra_features_screen.dart';
 import '../providers/theme_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -26,7 +27,8 @@ class _MyHomePageState extends ConsumerState<HomePage> {
   final List<Widget> _screens = [
     const Books(),
     const Charts(),
-    const Wallet(),
+    // const Wallet(),
+    const ExtraFeaturesScreen(),
     const More(),
   ];
 
@@ -73,9 +75,9 @@ class _MyHomePageState extends ConsumerState<HomePage> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.analytics_outlined), label: 'Phân tích'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.wallet_outlined), label: 'Ví'),
+                icon: Icon(Icons.more_horiz_outlined), label: 'Tiện ích'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.more_horiz_outlined), label: 'Cài đặt'),
+                icon: Icon(Icons.settings_outlined), label: 'Cài đặt'),
           ],
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,

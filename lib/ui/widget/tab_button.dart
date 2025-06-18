@@ -23,48 +23,94 @@ class TabButton extends StatelessWidget {
     final isSelected = selectedIndex == index;
 
     return Expanded(
-      child: GestureDetector(
-        onTap: () => onTap(index),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.white : themeColor,
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: isSelected ? Colors.grey.shade300 : themeColor,
-              width: 1.5,
-            ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: themeColor.withOpacity(0.2),
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onTap(index),
+          borderRadius: BorderRadius.circular(25),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
+            decoration: BoxDecoration(
+              gradient: isSelected
+                  ? LinearGradient(
+                      colors: [
+                        Colors.white,
+                        Colors.grey.shade50,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : LinearGradient(
+                      colors: [
+                        themeColor,
+                        themeColor.withOpacity(0.8),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ]
-                : [],
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (icon != null)
-                  Icon(
-                    icon,
-                    color: isSelected ? const Color(0xFF2D3142) : Colors.white,
-                    size: 16,
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: isSelected
+                    ? themeColor.withOpacity(0.3)
+                    : Colors.transparent,
+                width: 2,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: themeColor.withOpacity(0.15),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                        spreadRadius: 2,
+                      ),
+                      BoxShadow(
+                        color: Colors.white.withOpacity(0.8),
+                        blurRadius: 1,
+                        offset: const Offset(0, -1),
+                      ),
+                    ]
+                  : [
+                      BoxShadow(
+                        color: themeColor.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+            ),
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null)
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      child: Icon(
+                        icon,
+                        color: isSelected ? themeColor : Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  if (icon != null)
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: isSelected ? 8 : 6,
+                      child: const SizedBox(),
+                    ),
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 200),
+                    style: TextStyle(
+                      color: isSelected ? themeColor : Colors.white,
+                      fontSize: isSelected ? 13 : 12,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                    child: Text(label),
                   ),
-                if (icon != null) const SizedBox(width: 4),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: isSelected ? const Color(0xFF2D3142) : Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

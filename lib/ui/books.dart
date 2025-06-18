@@ -302,120 +302,120 @@ class _BooksState extends ConsumerState<Books>
     });
   }
 
-  Widget _buildTransactionListSkeleton() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(6),
-      itemCount: 5,
-      itemBuilder: (context, index) {
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              // Date header skeleton
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.grey.withOpacity(0.1),
-                      width: 1,
-                    ),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 100,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    const Spacer(),
-                    Container(
-                      width: 120,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Transaction items skeleton
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Column(
-                  children: List.generate(
-                    3,
-                    (index) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              height: 16,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Container(
-                            width: 100,
-                            height: 16,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  // Widget _buildTransactionListSkeleton() {
+  //   return ListView.builder(
+  //     padding: const EdgeInsets.all(6),
+  //     itemCount: 5,
+  //     itemBuilder: (context, index) {
+  //       return Container(
+  //         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+  //         decoration: BoxDecoration(
+  //           color: Colors.white,
+  //           borderRadius: BorderRadius.circular(12),
+  //           boxShadow: [
+  //             BoxShadow(
+  //               color: Colors.grey.withOpacity(0.2),
+  //               spreadRadius: 2,
+  //               blurRadius: 8,
+  //               offset: const Offset(0, 4),
+  //             ),
+  //           ],
+  //         ),
+  //         child: Column(
+  //           children: [
+  //             // Date header skeleton
+  //             Container(
+  //               padding:
+  //                   const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+  //               decoration: BoxDecoration(
+  //                 border: Border(
+  //                   bottom: BorderSide(
+  //                     color: Colors.grey.withOpacity(0.1),
+  //                     width: 1,
+  //                   ),
+  //                 ),
+  //               ),
+  //               child: Row(
+  //                 children: [
+  //                   Container(
+  //                     width: 24,
+  //                     height: 24,
+  //                     decoration: BoxDecoration(
+  //                       color: Colors.grey[200],
+  //                       borderRadius: BorderRadius.circular(4),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(width: 8),
+  //                   Container(
+  //                     width: 100,
+  //                     height: 16,
+  //                     decoration: BoxDecoration(
+  //                       color: Colors.grey[200],
+  //                       borderRadius: BorderRadius.circular(4),
+  //                     ),
+  //                   ),
+  //                   const Spacer(),
+  //                   Container(
+  //                     width: 120,
+  //                     height: 16,
+  //                     decoration: BoxDecoration(
+  //                       color: Colors.grey[200],
+  //                       borderRadius: BorderRadius.circular(4),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             // Transaction items skeleton
+  //             Container(
+  //               padding:
+  //                   const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+  //               child: Column(
+  //                 children: List.generate(
+  //                   3,
+  //                   (index) => Padding(
+  //                     padding: const EdgeInsets.only(bottom: 12),
+  //                     child: Row(
+  //                       children: [
+  //                         Container(
+  //                           width: 40,
+  //                           height: 40,
+  //                           decoration: BoxDecoration(
+  //                             color: Colors.grey[200],
+  //                             borderRadius: BorderRadius.circular(8),
+  //                           ),
+  //                         ),
+  //                         const SizedBox(width: 12),
+  //                         Expanded(
+  //                           child: Container(
+  //                             height: 16,
+  //                             decoration: BoxDecoration(
+  //                               color: Colors.grey[200],
+  //                               borderRadius: BorderRadius.circular(4),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         const SizedBox(width: 12),
+  //                         Container(
+  //                           width: 100,
+  //                           height: 16,
+  //                           decoration: BoxDecoration(
+  //                             color: Colors.grey[200],
+  //                             borderRadius: BorderRadius.circular(4),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -583,19 +583,23 @@ class _BooksState extends ConsumerState<Books>
                 toolbarHeight: 60,
                 title: Row(
                   children: [
-                    Expanded(
+                    Flexible(
+                      flex: 2,
                       child: Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5),
-                            child: Text(
-                              currentBook.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22,
-                                color: Colors.white,
+                          Flexible(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 5),
+                              child: Text(
+                                currentBook.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 22,
+                                  color: Colors.white,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           Material(
@@ -620,7 +624,8 @@ class _BooksState extends ConsumerState<Books>
                         ],
                       ),
                     ),
-                    Expanded(
+                    Flexible(
+                      flex: 2,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -637,7 +642,6 @@ class _BooksState extends ConsumerState<Books>
                               });
                             },
                           ),
-                          const SizedBox(width: 8),
                           TabButton(
                             label: 'Lịch',
                             index: 1,
@@ -906,7 +910,7 @@ class _BooksState extends ConsumerState<Books>
                           // Danh sách các đầu mục chi tiêu
                           Expanded(
                             child: transactions.when(
-                              loading: () => _buildTransactionListSkeleton(),
+                              loading: () => const TransactionListSkeleton(),
                               error: (error, stack) =>
                                   Center(child: Text('Error: $error')),
                               data: (allTransactions) {
@@ -919,7 +923,7 @@ class _BooksState extends ConsumerState<Books>
                                 final filteredTransactions =
                                     (_startDate != null && _endDate != null)
                                         ? transactionsList.where((transaction) {
-                                            final date = transaction.date!;
+                                            final date = transaction.date;
                                             return !date
                                                     .isBefore(_startDate!) &&
                                                 !date.isAfter(_endDate!);
@@ -1074,7 +1078,7 @@ class _BooksState extends ConsumerState<Books>
                           ),
                           IntrinsicHeight(
                             child: transactions.when(
-                              loading: () => _buildTransactionListSkeleton(),
+                              loading: () => const TransactionListSkeleton(),
                               error: (error, stack) =>
                                   Center(child: Text('Error: $error')),
                               data: (allTransactions) {
@@ -1336,21 +1340,24 @@ class _BooksState extends ConsumerState<Books>
       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 2,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+        // // boxShadow: [
+        // //   BoxShadow(
+        // //     color: Colors.grey.withOpacity(0.2),
+        // //     spreadRadius: 2,
+        // //     blurRadius: 8,
+        // //     offset: const Offset(0, 4),
+        // //   ),
+        // //   BoxShadow(
+        // //     color: Colors.grey.withOpacity(0.1),
+        // //     spreadRadius: 1,
+        // //     blurRadius: 2,
+        // //     offset: const Offset(0, 2),
+        // //   ),
+        // ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1377,7 +1384,7 @@ class _BooksState extends ConsumerState<Books>
                 Text(
                   formattedDate,
                   style: const TextStyle(
-                    fontSize: 13.5,
+                    fontSize: 15,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1392,7 +1399,7 @@ class _BooksState extends ConsumerState<Books>
 
           // ListView cho transaction details
           SizedBox(
-            height: 230, // 👈 tùy chỉnh chiều cao cuộn
+            height: 240, // 👈 tùy chỉnh chiều cao cuộn
             child: ListView.builder(
               padding: const EdgeInsets.only(bottom: 8),
               itemCount: transactions.length,
@@ -1669,6 +1676,11 @@ class _BooksState extends ConsumerState<Books>
                                     bookId: currentBook.id ?? 0,
                                     userId: 1,
                                   );
+
+                                  setState(() {
+                                    _selectedCategory = null;
+                                    _amount = 'null';
+                                  });
 
                                   if (mounted) {
                                     Navigator.pop(context);

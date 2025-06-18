@@ -554,7 +554,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             'Phân tích chi tiêu',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 18.5,
+              fontSize: 22,
               color: Color.fromARGB(255, 255, 255, 255),
             ),
           ),

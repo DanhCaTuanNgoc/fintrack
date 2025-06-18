@@ -170,9 +170,9 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                           if (value == null || value.isEmpty) {
                             return 'Vui lòng nhập tên sổ chi tiêu';
                           }
-                          if (value.trim().length < 3) {
-                            return 'Tên sổ phải có ít nhất 3 ký tự';
-                          }
+                          // if (value.trim().length < 3) {
+                          //   return 'Tên sổ phải có ít nhất 3 ký tự';
+                          // }
                           return null;
                         },
                       ),

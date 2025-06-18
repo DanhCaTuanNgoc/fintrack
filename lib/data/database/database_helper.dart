@@ -85,6 +85,44 @@ class DatabaseHelper {
       )
     ''');
 
+    // Bảng Savings Goals
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS savings_goals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        description TEXT,
+        target_amount REAL NOT NULL,
+        current_amount REAL DEFAULT 0,
+        type TEXT CHECK(type IN ('flexible', 'periodic')),
+        book_id INTEGER,
+        user_id INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        target_date TIMESTAMP,
+        periodic_amount REAL,
+        periodic_frequency TEXT,
+        is_active INTEGER DEFAULT 1,
+        FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE SET NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )
+    ''');
+
+    // Bảng Recurring Bills
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS recurring_bills (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        amount REAL NOT NULL,
+        day_of_month INTEGER NOT NULL,
+        category TEXT NOT NULL,
+        note TEXT,
+        is_active INTEGER DEFAULT 1,
+        book_id INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_paid_date TIMESTAMP,
+        FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
+      )
+    ''');
+
     // Thêm một số category mặc định
     await _insertDefaultCategories(db);
   }

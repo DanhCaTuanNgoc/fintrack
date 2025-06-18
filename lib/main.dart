@@ -8,7 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/currency_provider.dart';
 import 'package:flutter/services.dart';
-import './ui/more.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

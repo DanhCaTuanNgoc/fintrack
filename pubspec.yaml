@@ -103,7 +103,8 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
   assets:
-    - assets/images/splash.png # Đường dẫn đến hình ảnh splash
+    - assets/images/splashscreen.png # Đường dẫn đến hình ảnh splash
+    - assets/images/icon_white_final.png # Đường đẫn đến hình ảnh icon
 
 # Thêm cấu hình flutter_native_splash ở đây (ngoài phần flutter)
 flutter_native_splash:
@@ -123,9 +124,11 @@ flutter_native_splash:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/icon.png"
+  image_path: "assets/images/icon_white_final.png"  # Đảm bảo file icon có kích thước 1024x1024
   min_sdk_android: 21 # android min sdk min:16, default 21
   remove_alpha_ios: true
+  adaptive_icon_background: "#ffffff"  # Background cho adaptive icon trên Android
+  adaptive_icon_foreground: "assets/images/icon_white_final.png"  # Foreground cho adaptive icon
   web:
     generate: false
   windows:
