@@ -10,18 +10,17 @@ final notificationsProvider =
 });
 
 class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
-  NotificationsNotifier()
-      : super([
-          NotificationItem(
-            title: 'Cập nhật ứng dụng',
-            message: 'Phiên bản mới của ứng dụng đã sẵn sàng',
-            time: DateTime.now().subtract(const Duration(days: 1)),
-            isRead: true,
-          ),
-        ]);
+  NotificationsNotifier() : super([]) {
+    _loadFromDb();
+  }
 
-  void addInvoiceDueNotification(
-      String invoiceName, double amount, DateTime dueDate, String invoiceId) {
+  Future<void> _loadFromDb() async {
+    final data = await DatabaseHelper.instance.getAllNotifications();
+    state = data.map((e) => NotificationItem.fromMap(e)).toList();
+  }
+
+  Future<void> addInvoiceDueNotification(String invoiceName, double amount,
+      DateTime dueDate, String invoiceId) async {
     // Check if a similar notification for this invoice and due date already exists and is unread
     NotificationItem? existingNotification;
     for (var item in state) {
@@ -35,11 +34,9 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
         break;
       }
     }
-
     if (existingNotification != null) {
       return; // Do not add duplicate notification
     }
-
     final notification = NotificationItem(
       title: 'Hóa đơn đến hạn',
       message:
@@ -49,83 +46,44 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
       invoiceId: invoiceId,
       invoiceDueDate: dueDate,
     );
-    state = [notification, ...state];
+    await DatabaseHelper.instance.insertNotification(notification.toMap());
+    await _loadFromDb();
   }
 
-  void markAllAsRead() {
-    state = state.map((notification) {
-      return notification.copyWith(isRead: true);
-    }).toList();
-  }
-
-  void markAsRead(int index) {
-    state = [
-      ...state.sublist(0, index),
-      state[index].copyWith(isRead: true),
-      ...state.sublist(index + 1),
-    ];
-  }
-
-  void deleteNotification(int index) {
-    state = [
-      ...state.sublist(0, index),
-      ...state.sublist(index + 1),
-    ];
-  }
-}
-
-class NotificationScreen extends ConsumerStatefulWidget {
-  const NotificationScreen({Key? key}) : super(key: key);
-
-  @override
-  ConsumerState<NotificationScreen> createState() => _NotificationScreenState();
-}
-
-class _NotificationScreenState extends ConsumerState<NotificationScreen> {
-  List<NotificationItem> _notifications = [];
-  bool _loading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadNotifications();
-  }
-
-  Future<void> _loadNotifications() async {
-    final data = await DatabaseHelper.instance.getAllNotifications();
-    setState(() {
-      _notifications = data.map((e) => NotificationItem.fromMap(e)).toList();
-      _loading = false;
-    });
-  }
-
-  Future<void> _markAllAsRead() async {
-    for (final n in _notifications) {
+  Future<void> markAllAsRead() async {
+    for (final n in state) {
       if (!n.isRead && n.id != null) {
         await DatabaseHelper.instance.updateNotificationRead(n.id!, true);
       }
     }
-    await _loadNotifications();
+    await _loadFromDb();
   }
 
-  Future<void> _markAsRead(int index) async {
-    final n = _notifications[index];
+  Future<void> markAsRead(int index) async {
+    final n = state[index];
     if (!n.isRead && n.id != null) {
       await DatabaseHelper.instance.updateNotificationRead(n.id!, true);
-      await _loadNotifications();
+      await _loadFromDb();
     }
   }
 
-  Future<void> _deleteNotification(int index) async {
-    final n = _notifications[index];
+  Future<void> deleteNotification(int index) async {
+    final n = state[index];
     if (n.id != null) {
       await DatabaseHelper.instance.deleteNotification(n.id!);
-      await _loadNotifications();
+      await _loadFromDb();
     }
   }
+}
+
+class NotificationScreen extends ConsumerWidget {
+  const NotificationScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifications = ref.watch(notificationsProvider);
+    final notifier = ref.read(notificationsProvider.notifier);
+    final loading = notifications.isEmpty;
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -142,14 +100,14 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.done_all, color: Color(0xFF2D3142)),
-            onPressed: _markAllAsRead,
+            onPressed: () => notifier.markAllAsRead(),
             tooltip: 'Đánh dấu tất cả đã đọc',
           ),
         ],
       ),
-      body: _loading
+      body: loading
           ? const Center(child: CircularProgressIndicator())
-          : _notifications.isEmpty
+          : notifications.isEmpty
               ? const Center(
                   child: Text(
                     'Không có thông báo nào',
@@ -161,13 +119,13 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                 )
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: _notifications.length,
+                  itemCount: notifications.length,
                   itemBuilder: (context, index) {
-                    final notification = _notifications[index];
+                    final notification = notifications[index];
                     return NotificationTile(
                       notification: notification,
-                      onTap: () => _markAsRead(index),
-                      onDelete: () => _deleteNotification(index),
+                      onTap: () => notifier.markAsRead(index),
+                      onDelete: () => notifier.deleteNotification(index),
                     );
                   },
                 ),
