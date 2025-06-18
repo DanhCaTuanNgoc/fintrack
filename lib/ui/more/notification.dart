@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/database/database_helper.dart';
+import '../../data/models/more/notification_item.dart';
 
 // Provider để quản lý trạng thái thông báo
 final notificationsProvider =
@@ -72,49 +74,58 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
   }
 }
 
-class NotificationItem {
-  final String title;
-  final String message;
-  final DateTime time;
-  final bool isRead;
-  final String? invoiceId;
-  final DateTime? invoiceDueDate;
-
-  NotificationItem({
-    required this.title,
-    required this.message,
-    required this.time,
-    this.isRead = false,
-    this.invoiceId,
-    this.invoiceDueDate,
-  });
-
-  NotificationItem copyWith({
-    String? title,
-    String? message,
-    DateTime? time,
-    bool? isRead,
-    String? invoiceId,
-    DateTime? invoiceDueDate,
-  }) {
-    return NotificationItem(
-      title: title ?? this.title,
-      message: message ?? this.message,
-      time: time ?? this.time,
-      isRead: isRead ?? this.isRead,
-      invoiceId: invoiceId ?? this.invoiceId,
-      invoiceDueDate: invoiceDueDate ?? this.invoiceDueDate,
-    );
-  }
-}
-
-class NotificationScreen extends ConsumerWidget {
+class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final notifications = ref.watch(notificationsProvider);
+  ConsumerState<NotificationScreen> createState() => _NotificationScreenState();
+}
 
+class _NotificationScreenState extends ConsumerState<NotificationScreen> {
+  List<NotificationItem> _notifications = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotifications();
+  }
+
+  Future<void> _loadNotifications() async {
+    final data = await DatabaseHelper.instance.getAllNotifications();
+    setState(() {
+      _notifications = data.map((e) => NotificationItem.fromMap(e)).toList();
+      _loading = false;
+    });
+  }
+
+  Future<void> _markAllAsRead() async {
+    for (final n in _notifications) {
+      if (!n.isRead && n.id != null) {
+        await DatabaseHelper.instance.updateNotificationRead(n.id!, true);
+      }
+    }
+    await _loadNotifications();
+  }
+
+  Future<void> _markAsRead(int index) async {
+    final n = _notifications[index];
+    if (!n.isRead && n.id != null) {
+      await DatabaseHelper.instance.updateNotificationRead(n.id!, true);
+      await _loadNotifications();
+    }
+  }
+
+  Future<void> _deleteNotification(int index) async {
+    final n = _notifications[index];
+    if (n.id != null) {
+      await DatabaseHelper.instance.deleteNotification(n.id!);
+      await _loadNotifications();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -131,41 +142,35 @@ class NotificationScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.done_all, color: Color(0xFF2D3142)),
-            onPressed: () {
-              ref.read(notificationsProvider.notifier).markAllAsRead();
-            },
+            onPressed: _markAllAsRead,
             tooltip: 'Đánh dấu tất cả đã đọc',
           ),
         ],
       ),
-      body: notifications.isEmpty
-          ? const Center(
-              child: Text(
-                'Không có thông báo nào',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF2D3142),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _notifications.isEmpty
+              ? const Center(
+                  child: Text(
+                    'Không có thông báo nào',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF2D3142),
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _notifications.length,
+                  itemBuilder: (context, index) {
+                    final notification = _notifications[index];
+                    return NotificationTile(
+                      notification: notification,
+                      onTap: () => _markAsRead(index),
+                      onDelete: () => _deleteNotification(index),
+                    );
+                  },
                 ),
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return NotificationTile(
-                  notification: notification,
-                  onTap: () {
-                    ref.read(notificationsProvider.notifier).markAsRead(index);
-                  },
-                  onDelete: () {
-                    ref
-                        .read(notificationsProvider.notifier)
-                        .deleteNotification(index);
-                  },
-                );
-              },
-            ),
     );
   }
 }

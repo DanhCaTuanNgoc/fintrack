@@ -22,8 +22,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
   void initState() {
     super.initState();
     _loadCategories();
-    // Delay the notification check until after the build phase
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    // Khi truy cập ReceiptLong, tự động làm mới trạng thái hóa đơn định kỳ
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await _refreshPeriodicInvoices();
       _checkAndNotifyInvoices();
     });
   }
@@ -59,12 +60,49 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     }
   }
 
+  // Hàm làm mới trạng thái hóa đơn định kỳ nếu đã đến hạn
+  Future<void> _refreshPeriodicInvoices() async {
+    final invoices = await ref.read(periodicInvoicesProvider.future);
+    final now = DateTime.now();
+    for (final invoice in invoices) {
+      final nextDue = invoice.nextDueDate ?? invoice.calculateNextDueDate();
+      // Nếu hóa đơn đã thanh toán và đã đến hạn mới thì chuyển về chưa thanh toán và cập nhật nextDueDate
+      if (invoice.isPaid &&
+          (now.isAfter(nextDue) ||
+              (now.year == nextDue.year &&
+                  now.month == nextDue.month &&
+                  now.day == nextDue.day))) {
+        await DatabaseHelper.instance.updateInvoicePaidStatus(
+          invoice.id,
+          false,
+          lastPaidDate: null,
+          nextDueDate: invoice.calculateNextDueDate(),
+        );
+      }
+    }
+    // Làm mới lại provider để cập nhật UI
+    ref.invalidate(periodicInvoicesProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Lấy danh sách hóa đơn định kỳ từ provider
     final invoices = ref.watch(periodicInvoicesProvider);
-
-    // Kiểm tra và thông báo hóa đơn đến hạn
-    // _checkAndNotifyInvoices(); // REMOVED FROM HERE
+    final now = DateTime.now();
+    // Lọc các hóa đơn vừa làm mới: chưa thanh toán và đã đến hạn
+    final refreshedInvoices = invoices.valueOrNull?.where((invoice) {
+      final nextDue = invoice.nextDueDate ?? invoice.calculateNextDueDate();
+      return !invoice.isPaid &&
+          (now.isAfter(nextDue) ||
+              (now.year == nextDue.year &&
+                  now.month == nextDue.month &&
+                  now.day == nextDue.day));
+    }).toList();
+    // Lọc các hóa đơn còn lại
+    final otherInvoices = invoices.valueOrNull
+        ?.where((invoice) =>
+            refreshedInvoices == null || !refreshedInvoices.contains(invoice))
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -92,17 +130,29 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                       ),
                     ),
                   )
-                : ListView.builder(
+                : ListView(
                     padding: const EdgeInsets.all(16),
-                    itemCount: invoices.valueOrNull?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      final invoice = invoices.valueOrNull?[index];
-                      return _buildInvoiceCard(context, invoice!);
-                    },
+                    children: [
+                      // Hiển thị section hóa đơn vừa làm mới
+                      if (refreshedInvoices != null &&
+                          refreshedInvoices.isNotEmpty) ...[
+                        // Duyệt và hiển thị từng hóa đơn vừa làm mới
+                        ...refreshedInvoices.map(
+                            (invoice) => _buildInvoiceCard(context, invoice)),
+                        const Divider(height: 32),
+                      ],
+                      // Hiển thị các hóa đơn còn lại
+                      if (otherInvoices != null &&
+                          otherInvoices.isNotEmpty) ...[
+                        ...otherInvoices.map(
+                            (invoice) => _buildInvoiceCard(context, invoice)),
+                      ],
+                    ],
                   ),
           ),
         ],
       ),
+      // Nút thêm hóa đơn mới
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddInvoiceDialog(context),
         backgroundColor: const Color(0xFF6C63FF),

@@ -32,7 +32,6 @@ void callbackDispatcher() {
             // Lấy danh sách hóa đơn định kỳ từ provider (FutureProvider)
             final invoices =
                 await container.read(periodicInvoicesProvider.future);
-            final now = DateTime.now();
 
             // Duyệt qua từng hóa đơn để kiểm tra
             const AndroidNotificationDetails androidPlatformChannelSpecifics =
@@ -63,6 +62,16 @@ void callbackDispatcher() {
                     'Hóa đơn ${invoice.name} sẽ đến hạn vào ${nextDue.day}/${nextDue.month}/${nextDue.year}',
                     platformChannelSpecifics,
                   );
+                  // Lưu thông báo vào database
+                  await DatabaseHelper.instance.insertNotification({
+                    'title': 'Hóa đơn sắp đến hạn',
+                    'message':
+                        'Hóa đơn ${invoice.name} sẽ đến hạn vào ${nextDue.day}/${nextDue.month}/${nextDue.year}',
+                    'time': DateTime.now().toIso8601String(),
+                    'is_read': 0,
+                    'invoice_id': invoice.id,
+                    'invoice_due_date': nextDue.toIso8601String(),
+                  });
                 }
                 // Đã đến hạn hoặc quá hạn
                 else if (now.isAfter(nextDue) ||
@@ -75,6 +84,15 @@ void callbackDispatcher() {
                     'Hóa đơn ${invoice.name} đã đến hạn thanh toán',
                     platformChannelSpecifics,
                   );
+                  // Lưu thông báo vào database
+                  await DatabaseHelper.instance.insertNotification({
+                    'title': 'Hóa đơn quá hạn',
+                    'message': 'Hóa đơn ${invoice.name} đã đến hạn thanh toán',
+                    'time': DateTime.now().toIso8601String(),
+                    'is_read': 0,
+                    'invoice_id': invoice.id,
+                    'invoice_due_date': nextDue.toIso8601String(),
+                  });
                 }
               }
               // Hóa đơn đã thanh toán
@@ -84,14 +102,25 @@ void callbackDispatcher() {
                     (now.year == nextDue.year &&
                         now.month == nextDue.month &&
                         now.day == nextDue.day)) {
-                  await DatabaseHelper.instance
-                      .updateInvoicePaidStatus(invoice.id, false);
+                  await DatabaseHelper.instance.updateInvoicePaidStatus(
+                      invoice.id, false,
+                      lastPaidDate: null, nextDueDate: null);
                   await flutterLocalNotificationsPlugin.show(
                     0,
                     'Đến hạn thanh toán mới',
                     'Hóa đơn ${invoice.name} đã đến hạn thanh toán mới',
                     platformChannelSpecifics,
                   );
+                  // Lưu thông báo vào database
+                  await DatabaseHelper.instance.insertNotification({
+                    'title': 'Đến hạn thanh toán mới',
+                    'message':
+                        'Hóa đơn ${invoice.name} đã đến hạn thanh toán mới',
+                    'time': DateTime.now().toIso8601String(),
+                    'is_read': 0,
+                    'invoice_id': invoice.id,
+                    'invoice_due_date': nextDue.toIso8601String(),
+                  });
                 }
               }
             }

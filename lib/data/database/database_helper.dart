@@ -101,6 +101,19 @@ class DatabaseHelper {
       )
     ''');
 
+    // Bảng Notifications
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        time TEXT NOT NULL,
+        is_read INTEGER NOT NULL,
+        invoice_id TEXT,
+        invoice_due_date TEXT
+      )
+    ''');
+
     // Thêm một số category mặc định
     await _insertDefaultCategories(db);
   }
@@ -372,5 +385,34 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  // Thêm một thông báo mới vào bảng notifications
+  Future<int> insertNotification(Map<String, dynamic> notification) async {
+    final db = await database;
+    return await db.insert('notifications', notification);
+  }
+
+  // Lấy toàn bộ danh sách thông báo
+  Future<List<Map<String, dynamic>>> getAllNotifications() async {
+    final db = await database;
+    return await db.query('notifications', orderBy: 'time DESC');
+  }
+
+  // Cập nhật trạng thái đã đọc của thông báo
+  Future<int> updateNotificationRead(int id, bool isRead) async {
+    final db = await database;
+    return await db.update(
+      'notifications',
+      {'is_read': isRead ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // Xóa một thông báo
+  Future<int> deleteNotification(int id) async {
+    final db = await database;
+    return await db.delete('notifications', where: 'id = ?', whereArgs: [id]);
   }
 }
