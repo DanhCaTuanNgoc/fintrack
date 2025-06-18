@@ -481,7 +481,7 @@ class _MoreState extends ConsumerState<More> {
   void _showPeriodicInvoiceDialog() {
     showDialog(
       context: context,
-      builder: (context) => const ReceiptLongScreen(),
+      builder: (context) => const ReceiptLong(),
     );
   }
 

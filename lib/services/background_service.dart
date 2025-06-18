@@ -28,8 +28,9 @@ void callbackDispatcher() {
           // Vì task chạy trong một isolate riêng biệt
           final container = ProviderContainer();
           try {
-            // Lấy danh sách hóa đơn định kỳ từ provider
-            final invoices = container.read(periodicInvoicesProvider);
+            // Lấy danh sách hóa đơn định kỳ từ provider (FutureProvider)
+            final invoices =
+                await container.read(periodicInvoicesProvider.future);
             final now = DateTime.now();
 
             // Duyệt qua từng hóa đơn để kiểm tra

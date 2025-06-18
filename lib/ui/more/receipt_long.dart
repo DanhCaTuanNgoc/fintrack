@@ -1,59 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import '../../data/database/database_helper.dart';
-import '../../providers/currency_provider.dart';
-import '../../providers/more/transaction_provider.dart';
-import '../../data/models/more/transaction.dart';
 import '../../providers/providers_barrel.dart';
 import 'package:flutter/scheduler.dart';
 import '../../data/models/more/periodic_invoice.dart';
+import '../../providers/more/periodic_invoice_provider.dart';
+import 'package:intl/intl.dart';
 
-// Provider để quản lý danh sách hóa đơn định kỳ
-final periodicInvoicesProvider =
-    StateNotifierProvider<PeriodicInvoicesNotifier, List<PeriodicInvoice>>(
-        (ref) {
-  return PeriodicInvoicesNotifier();
-});
-
-class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
-  PeriodicInvoicesNotifier() : super([]);
-
-  void addInvoice(PeriodicInvoice invoice) {
-    final nextDueDate = invoice.calculateNextDueDate();
-    state = [...state, invoice.copyWith(nextDueDate: nextDueDate)];
-  }
-
-  void removeInvoice(String id) {
-    state = state.where((invoice) => invoice.id != id).toList();
-  }
-
-  void markAsPaid(String id) {
-    state = state.map((invoice) {
-      if (invoice.id == id) {
-        final nextDueDate = invoice.calculateNextDueDate();
-        return invoice.copyWith(
-          isPaid: true,
-          lastPaidDate: DateTime.now(),
-          nextDueDate: nextDueDate,
-        );
-      }
-      return invoice;
-    }).toList();
-  }
-}
-
-class ReceiptLongScreen extends ConsumerStatefulWidget {
-  const ReceiptLongScreen({super.key});
+class ReceiptLong extends ConsumerStatefulWidget {
+  const ReceiptLong({super.key});
 
   @override
-  ConsumerState<ReceiptLongScreen> createState() => _ReceiptLongScreenState();
+  ConsumerState<ReceiptLong> createState() => _ReceiptLongState();
 }
 
-class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
+class _ReceiptLongState extends ConsumerState<ReceiptLong> {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
-  List<Map<String, dynamic>> _expenseCategories = [];
-  String? _selectedCategory;
+  List<Map<String, dynamic>> receipLong = [];
 
   @override
   void initState() {
@@ -68,12 +31,12 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
   Future<void> _loadCategories() async {
     final expenseCats = await _dbHelper.getCategoriesByType('expense');
     setState(() {
-      _expenseCategories = expenseCats;
+      receipLong = expenseCats;
     });
   }
 
-  void _checkAndNotifyInvoices() {
-    final invoices = ref.read(periodicInvoicesProvider);
+  void _checkAndNotifyInvoices() async {
+    final invoices = await ref.read(periodicInvoicesProvider.future);
     final now = DateTime.now();
 
     for (final invoice in invoices) {
@@ -119,7 +82,7 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
       body: Column(
         children: [
           Expanded(
-            child: invoices.isEmpty
+            child: invoices.valueOrNull?.isEmpty ?? true
                 ? const Center(
                     child: Text(
                       'Chưa có hóa đơn định kỳ nào',
@@ -131,10 +94,10 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: invoices.length,
+                    itemCount: invoices.valueOrNull?.length ?? 0,
                     itemBuilder: (context, index) {
-                      final invoice = invoices[index];
-                      return _buildInvoiceCard(context, invoice);
+                      final invoice = invoices.valueOrNull?[index];
+                      return _buildInvoiceCard(context, invoice!);
                     },
                   ),
           ),
@@ -179,7 +142,7 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
                       ElevatedButton(
                         onPressed: () async {
                           // Lấy category ID từ tên danh mục
-                          final categoryData = _expenseCategories.firstWhere(
+                          final categoryData = receipLong.firstWhere(
                             (cat) => cat['name'] == invoice.category,
                           );
 
@@ -198,9 +161,7 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
                           );
 
                           // Đánh dấu hóa đơn đã thanh toán
-                          ref
-                              .read(periodicInvoicesProvider.notifier)
-                              .markAsPaid(invoice.id);
+                          await markPeriodicInvoiceAsPaid(invoice.id, ref);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -240,9 +201,7 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    ref
-                                        .read(periodicInvoicesProvider.notifier)
-                                        .removeInvoice(invoice.id);
+                                    removePeriodicInvoice(invoice.id, ref);
                                     Navigator.of(context).pop();
                                   },
                                   child: const Text(
@@ -468,7 +427,7 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
                               ),
                             ),
                           ),
-                          items: _expenseCategories
+                          items: receipLong
                               .map<DropdownMenuItem<String>>(
                                 (category) => DropdownMenuItem<String>(
                                   value: category['name'],
@@ -516,7 +475,7 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               // Kiểm tra dữ liệu đầu vào
                               if (nameController.text.trim().isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -554,7 +513,7 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
                                 amount = double.parse(
                                     amountController.text.replaceAll(',', ''));
                                 if (amount <= 0) {
-                                  throw FormatException(
+                                  throw const FormatException(
                                       'Số tiền phải lớn hơn 0');
                                 }
                               } catch (e) {
@@ -581,9 +540,7 @@ class _ReceiptLongScreenState extends ConsumerState<ReceiptLongScreen> {
                                       descriptionController.text.trim(),
                                 );
 
-                                ref
-                                    .read(periodicInvoicesProvider.notifier)
-                                    .addInvoice(newInvoice);
+                                await addPeriodicInvoice(newInvoice, ref);
                                 Navigator.pop(context);
 
                                 // Thông báo thành công

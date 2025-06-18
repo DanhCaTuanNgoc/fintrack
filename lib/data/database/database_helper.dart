@@ -85,6 +85,22 @@ class DatabaseHelper {
       )
     ''');
 
+    // Bảng Periodic Invoices
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS periodic_invoices (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        amount REAL NOT NULL,
+        start_date TEXT NOT NULL,
+        frequency TEXT NOT NULL,
+        category TEXT NOT NULL,
+        description TEXT,
+        is_paid INTEGER NOT NULL,
+        last_paid_date TEXT,
+        next_due_date TEXT
+      )
+    ''');
+
     // Thêm một số category mặc định
     await _insertDefaultCategories(db);
   }
@@ -293,4 +309,48 @@ class DatabaseHelper {
   //       });
   //     }
   //   }
+
+  // Thêm một hóa đơn định kỳ mới vào bảng periodic_invoices
+  // invoice: Map chứa thông tin hóa đơn (id, name, amount, ...)
+  // Trả về id của bản ghi vừa thêm (hoặc ghi đè nếu trùng id)
+  Future<int> insertPeriodicInvoice(Map<String, dynamic> invoice) async {
+    final db = await database;
+    return await db.insert(
+      'periodic_invoices',
+      invoice,
+      conflictAlgorithm: ConflictAlgorithm.replace, // Nếu trùng id thì ghi đè
+    );
+  }
+
+  // Lấy toàn bộ danh sách hóa đơn định kỳ từ bảng periodic_invoices
+  // Trả về List<Map> chứa các bản ghi
+  Future<List<Map<String, dynamic>>> getAllPeriodicInvoices() async {
+    final db = await database;
+    return await db.query('periodic_invoices');
+  }
+
+  // Cập nhật thông tin một hóa đơn định kỳ dựa trên id
+  // invoice: Map chứa thông tin hóa đơn (phải có trường 'id')
+  // Trả về số bản ghi đã được cập nhật (thường là 1)
+  Future<int> updatePeriodicInvoice(Map<String, dynamic> invoice) async {
+    final db = await database;
+    return await db.update(
+      'periodic_invoices',
+      invoice,
+      where: 'id = ?',
+      whereArgs: [invoice['id']],
+    );
+  }
+
+  // Xóa một hóa đơn định kỳ khỏi bảng periodic_invoices dựa trên id
+  // id: id của hóa đơn cần xóa
+  // Trả về số bản ghi đã bị xóa (thường là 1)
+  Future<int> deletePeriodicInvoice(String id) async {
+    final db = await database;
+    return await db.delete(
+      'periodic_invoices',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }

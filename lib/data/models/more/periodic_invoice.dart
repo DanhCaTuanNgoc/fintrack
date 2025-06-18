@@ -117,4 +117,40 @@ class PeriodicInvoice {
             now.month == nextDue.month &&
             now.day > nextDue.day);
   }
+
+  // Chuyển đổi đối tượng thành Map để lưu vào database
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'amount': amount,
+      'start_date': startDate.toIso8601String(),
+      'frequency': frequency,
+      'category': category,
+      'description': description,
+      'is_paid': isPaid ? 1 : 0,
+      'last_paid_date': lastPaidDate?.toIso8601String(),
+      'next_due_date': nextDueDate?.toIso8601String(),
+    };
+  }
+
+  // Tạo đối tượng từ Map lấy ra từ database
+  factory PeriodicInvoice.fromMap(Map<String, dynamic> map) {
+    return PeriodicInvoice(
+      id: map['id'],
+      name: map['name'],
+      amount: map['amount'],
+      startDate: DateTime.parse(map['start_date']),
+      frequency: map['frequency'],
+      category: map['category'],
+      description: map['description'],
+      isPaid: map['is_paid'] == 1,
+      lastPaidDate: map['last_paid_date'] != null
+          ? DateTime.tryParse(map['last_paid_date'])
+          : null,
+      nextDueDate: map['next_due_date'] != null
+          ? DateTime.tryParse(map['next_due_date'])
+          : null,
+    );
+  }
 }
