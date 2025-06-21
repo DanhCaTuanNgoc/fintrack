@@ -8,12 +8,57 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/currency_provider.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:io';
 
 import 'services/background_service.dart';
 
 void main() async {
   // Đảm bảo Flutter binding đã được khởi tạo
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Khởi tạo thông báo và yêu cầu quyền
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // Tạo notification channel
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'periodic_invoices',
+    'Hóa đơn định kỳ',
+    description: 'Thông báo về hóa đơn định kỳ',
+    importance: Importance.max,
+    playSound: true,
+    enableVibration: true,
+    enableLights: true,
+  );
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  // Yêu cầu quyền thông báo trên Android 13+
+  if (Platform.isAndroid) {
+    final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+
+    final bool? grantedNotificationPermission =
+        await androidImplementation?.requestNotificationsPermission();
+
+    if (grantedNotificationPermission == true) {
+      print('✅ Quyền thông báo đã được cấp');
+    } else {
+      print('❌ Quyền thông báo bị từ chối');
+    }
+  }
 
   // Khởi tạo background service
   // Bước 1: Khởi tạo Workmanager và đăng ký callback

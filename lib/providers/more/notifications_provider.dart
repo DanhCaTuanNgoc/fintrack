@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/database/database_helper.dart';
 import '../../data/models/more/notification_item.dart';
 
 // Provider để quản lý trạng thái thông báo
@@ -8,38 +9,73 @@ final notificationsProvider =
 });
 
 class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
-  NotificationsNotifier() : super([]);
+  NotificationsNotifier() : super([]) {
+    _loadFromDb();
+  }
 
-  void addInvoiceDueNotification(
-      String invoiceName, double amount, DateTime dueDate) {
+  Future<void> _loadFromDb() async {
+    final data = await DatabaseHelper.instance.getAllNotifications();
+    state = data.map((e) => NotificationItem.fromMap(e)).toList();
+  }
+
+  // Phương thức để làm mới dữ liệu
+  Future<void> refresh() async {
+    await _loadFromDb();
+  }
+
+  Future<void> addInvoiceDueNotification(String invoiceName, double amount,
+      DateTime dueDate, String invoiceId) async {
+    // Check if a similar notification for this invoice and due date already exists and is unread
+    NotificationItem? existingNotification;
+    for (var item in state) {
+      if (item.invoiceId == invoiceId &&
+          item.invoiceDueDate != null &&
+          DateTime(item.invoiceDueDate!.year, item.invoiceDueDate!.month,
+                  item.invoiceDueDate!.day) ==
+              DateTime(dueDate.year, dueDate.month, dueDate.day) &&
+          !item.isRead) {
+        existingNotification = item;
+        break;
+      }
+    }
+    if (existingNotification != null) {
+      return; // Do not add duplicate notification
+    }
     final notification = NotificationItem(
       title: 'Hóa đơn đến hạn',
       message:
           'Hóa đơn "$invoiceName" với số tiền ${amount.toStringAsFixed(0)}đ đã đến hạn thanh toán',
       time: DateTime.now(),
       isRead: false,
+      invoiceId: invoiceId,
+      invoiceDueDate: dueDate,
     );
-    state = [notification, ...state];
+    await DatabaseHelper.instance.insertNotification(notification.toMap());
+    await _loadFromDb();
   }
 
-  void markAllAsRead() {
-    state = state.map((notification) {
-      return notification.copyWith(isRead: true);
-    }).toList();
+  Future<void> markAllAsRead() async {
+    for (final n in state) {
+      if (!n.isRead && n.id != null) {
+        await DatabaseHelper.instance.updateNotificationRead(n.id!, true);
+      }
+    }
+    await _loadFromDb();
   }
 
-  void markAsRead(int index) {
-    state = [
-      ...state.sublist(0, index),
-      state[index].copyWith(isRead: true),
-      ...state.sublist(index + 1),
-    ];
+  Future<void> markAsRead(int index) async {
+    final n = state[index];
+    if (!n.isRead && n.id != null) {
+      await DatabaseHelper.instance.updateNotificationRead(n.id!, true);
+      await _loadFromDb();
+    }
   }
 
-  void deleteNotification(int index) {
-    state = [
-      ...state.sublist(0, index),
-      ...state.sublist(index + 1),
-    ];
+  Future<void> deleteNotification(int index) async {
+    final n = state[index];
+    if (n.id != null) {
+      await DatabaseHelper.instance.deleteNotification(n.id!);
+      await _loadFromDb();
+    }
   }
 }

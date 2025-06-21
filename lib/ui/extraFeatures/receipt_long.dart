@@ -4,7 +4,6 @@ import '../../data/database/database_helper.dart';
 import '../../providers/providers_barrel.dart';
 import 'package:flutter/scheduler.dart';
 import '../../data/models/more/periodic_invoice.dart';
-import '../../providers/more/periodic_invoice_provider.dart';
 import 'package:intl/intl.dart';
 
 class ReceiptLong extends ConsumerStatefulWidget {
@@ -25,7 +24,6 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     // Khi truy cập ReceiptLong, tự động làm mới trạng thái hóa đơn định kỳ
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await _refreshPeriodicInvoices();
-      _checkAndNotifyInvoices();
     });
   }
 
@@ -36,52 +34,10 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     });
   }
 
-  void _checkAndNotifyInvoices() async {
-    final invoices = await ref.read(periodicInvoicesProvider.future);
-    final now = DateTime.now();
-
-    for (final invoice in invoices) {
-      if (!invoice.isPaid && invoice.nextDueDate != null) {
-        final nextDue = invoice.nextDueDate!;
-        final isDueOrOverdue = now.year > nextDue.year ||
-            (now.year == nextDue.year && now.month > nextDue.month) ||
-            (now.year == nextDue.year &&
-                now.month == nextDue.month &&
-                now.day >= nextDue.day);
-
-        if (isDueOrOverdue) {
-          ref.read(notificationsProvider.notifier).addInvoiceDueNotification(
-                invoice.name,
-                invoice.amount,
-                nextDue,
-              );
-        }
-      }
-    }
-  }
-
   // Hàm làm mới trạng thái hóa đơn định kỳ nếu đã đến hạn
   Future<void> _refreshPeriodicInvoices() async {
-    final invoices = await ref.read(periodicInvoicesProvider.future);
-    final now = DateTime.now();
-    for (final invoice in invoices) {
-      final nextDue = invoice.nextDueDate ?? invoice.calculateNextDueDate();
-      // Nếu hóa đơn đã thanh toán và đã đến hạn mới thì chuyển về chưa thanh toán và cập nhật nextDueDate
-      if (invoice.isPaid &&
-          (now.isAfter(nextDue) ||
-              (now.year == nextDue.year &&
-                  now.month == nextDue.month &&
-                  now.day == nextDue.day))) {
-        await DatabaseHelper.instance.updateInvoicePaidStatus(
-          invoice.id,
-          false,
-          lastPaidDate: null,
-          nextDueDate: invoice.calculateNextDueDate(),
-        );
-      }
-    }
-    // Làm mới lại provider để cập nhật UI
-    ref.invalidate(periodicInvoicesProvider);
+    final notifier = ref.read(periodicInvoicesProvider.notifier);
+    await notifier.refreshPeriodicInvoices();
   }
 
   @override
@@ -90,7 +46,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     final invoices = ref.watch(periodicInvoicesProvider);
     final now = DateTime.now();
     // Lọc các hóa đơn vừa làm mới: chưa thanh toán và đã đến hạn
-    final refreshedInvoices = invoices.valueOrNull?.where((invoice) {
+    final refreshedInvoices = invoices.where((invoice) {
       final nextDue = invoice.nextDueDate ?? invoice.calculateNextDueDate();
       return !invoice.isPaid &&
           (now.isAfter(nextDue) ||
@@ -99,9 +55,8 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                   now.day == nextDue.day));
     }).toList();
     // Lọc các hóa đơn còn lại
-    final otherInvoices = invoices.valueOrNull
-        ?.where((invoice) =>
-            refreshedInvoices == null || !refreshedInvoices.contains(invoice))
+    final otherInvoices = invoices
+        .where((invoice) => !refreshedInvoices.contains(invoice))
         .toList();
     final themeColor = ref.watch(themeColorProvider);
     return Scaffold(
@@ -129,7 +84,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
       body: Column(
         children: [
           Expanded(
-            child: invoices.valueOrNull?.isEmpty ?? true
+            child: invoices.isEmpty
                 ? const Center(
                     child: Text(
                       'Chưa có hóa đơn định kỳ nào',
@@ -143,16 +98,14 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                     padding: const EdgeInsets.all(16),
                     children: [
                       // Hiển thị section hóa đơn vừa làm mới
-                      if (refreshedInvoices != null &&
-                          refreshedInvoices.isNotEmpty) ...[
+                      if (refreshedInvoices.isNotEmpty) ...[
                         // Duyệt và hiển thị từng hóa đơn vừa làm mới
                         ...refreshedInvoices.map(
                             (invoice) => _buildInvoiceCard(context, invoice)),
                         const Divider(height: 32),
                       ],
                       // Hiển thị các hóa đơn còn lại
-                      if (otherInvoices != null &&
-                          otherInvoices.isNotEmpty) ...[
+                      if (otherInvoices.isNotEmpty) ...[
                         ...otherInvoices.map(
                             (invoice) => _buildInvoiceCard(context, invoice)),
                       ],
@@ -220,7 +173,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           );
 
                           // Đánh dấu hóa đơn đã thanh toán
-                          await markPeriodicInvoiceAsPaid(invoice.id, ref);
+                          await ref
+                              .read(periodicInvoicesProvider.notifier)
+                              .markPeriodicInvoiceAsPaid(invoice.id);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -260,7 +215,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    removePeriodicInvoice(invoice.id, ref);
+                                    ref
+                                        .read(periodicInvoicesProvider.notifier)
+                                        .removePeriodicInvoice(invoice.id);
                                     Navigator.of(context).pop();
                                   },
                                   child: const Text(
@@ -599,7 +556,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                       descriptionController.text.trim(),
                                 );
 
-                                await addPeriodicInvoice(newInvoice, ref);
+                                await ref
+                                    .read(periodicInvoicesProvider.notifier)
+                                    .addPeriodicInvoice(newInvoice);
                                 Navigator.pop(context);
 
                                 // Thông báo thành công
