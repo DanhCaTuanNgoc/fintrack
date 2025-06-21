@@ -96,7 +96,7 @@ class SavingsGoal {
       isActive: map['is_active'] == 1,
     );
   }
-
+  
   // Helper methods
   double get progressPercentage =>
       targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0;
@@ -105,6 +105,4 @@ class SavingsGoal {
 
   bool get isCompleted => currentAmount >= targetAmount;
 
-  String get progressText =>
-      '${currentAmount.toStringAsFixed(0)} / ${targetAmount.toStringAsFixed(0)}';
 }

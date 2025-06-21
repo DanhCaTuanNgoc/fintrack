@@ -11,3 +11,5 @@ export './transaction_detail_modal.dart';
 export './add_transaction_modal.dart';
 export './calendar_expense_item.dart';
 export './expense_item.dart';
+export './add_flexible_saving_goal.dart';
+export './update_flexible_saving_goal.dart';

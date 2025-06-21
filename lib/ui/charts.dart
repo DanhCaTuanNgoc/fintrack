@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../data/database/database_helper.dart';
 import '../ui/more.dart';
 import '../providers/providers_barrel.dart';
+import './widget/widget_barrel.dart';
 
 class Charts extends ConsumerStatefulWidget {
   const Charts({super.key});
@@ -87,8 +88,63 @@ class _ChartsState extends ConsumerState<Charts>
         error: (error, stack) => Center(child: Text('Error: $error')),
         data: (book) {
           if (book == null) {
-            return const Center(
-              child: Text('Vui lòng chọn một sổ để xem phân tích'),
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.book,
+                          size: 64,
+                          color: themeColor,
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Chưa có sổ chi tiêu nào',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2D3142),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Hãy tạo sổ chi tiêu đầu tiên của bạn',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            _showCreateBookModal(context, themeColor);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: themeColor,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 16,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Tạo sổ chi tiêu',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             );
           }
           return Container(
@@ -194,6 +250,15 @@ class _ChartsState extends ConsumerState<Charts>
           );
         },
       ),
+    );
+  }
+
+  void _showCreateBookModal(BuildContext context, Color themeColor) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CreateBookModal(themeColor: themeColor),
     );
   }
 
@@ -333,6 +398,9 @@ class _ChartsState extends ConsumerState<Charts>
         return Column(
           children: [
             _buildPieChart(_categoryExpenses, currencyType, true),
+            const SizedBox(
+              height: 20,
+            ),
             if (_categoryExpenses.isEmpty)
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -447,6 +515,9 @@ class _ChartsState extends ConsumerState<Charts>
         return Column(
           children: [
             _buildPieChart(_categoryIncomes, currencyType, false),
+            const SizedBox(
+              height: 20,
+            ),
             if (_categoryIncomes.isEmpty)
               Padding(
                 padding: const EdgeInsets.all(16.0),
