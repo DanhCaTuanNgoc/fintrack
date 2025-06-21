@@ -61,7 +61,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.done_all, color: Color(0xFF2D3142)),
-            onPressed: _markAllAsRead,
+            onPressed: () => notifier.markAllAsRead(),
             tooltip: 'Đánh dấu tất cả đã đọc',
           ),
         ],
