@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <!-- Quyền chạy sau khi khởi động lại - đảm bảo service vẫn hoạt động sau khi khởi động lại thiết bị -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Quyền thông báo - cần thiết để hiển thị thông báo -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- Quyền rung - cho phép thông báo rung -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
     
     <application
         android:label="fintrack"

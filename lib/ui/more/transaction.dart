@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/models/more/transaction.dart';
 import '../../data/models/book.dart';
-import '../../data/models/wallet.dart';
 import '../../providers/more/transaction_provider.dart';
 import '../../providers/currency_provider.dart';
 import '../more.dart'; // Import để lấy backgroundColorProvider
