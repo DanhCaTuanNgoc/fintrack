@@ -17,7 +17,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   int _currentPage = 0;
-
+  final String _accountNameController = "";
   @override
   void initState() {
     super.initState();
@@ -65,10 +65,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   onNext: () => _changePage(3),
                   onBack: () => _changePage(1),
                 ),
-                CreateWalletPage(
-                  onNext: () => _changePage(4),
-                  onBack: () => _changePage(2),
-                ),
                 GetStartedPage(
                   onGetStarted: () {
                     Navigator.pushReplacement(
@@ -94,7 +90,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       ),
                     );
                   },
-                  onBack: () => _changePage(3),
+                  onBack: () => _changePage(2),
                 ),
               ],
             ),
@@ -481,142 +477,151 @@ class _CreateBookPageState extends State<CreateBookPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  child: SlidePageContent(
-                    children: [
-                      Text(
-                        'Tạo sổ chi tiêu',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.headlineMedium?.copyWith(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _bookNameController,
-                        style: const TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                          labelText: 'Tên sổ chi tiêu',
-                          labelStyle: const TextStyle(color: Colors.black54),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: const BorderSide(color: Colors.black),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: const BorderSide(color: Colors.black54),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: const BorderSide(color: Colors.black),
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.book,
-                            color: Colors.black54,
-                          ),
+    return GestureDetector(
+      onTap: () {
+        // Dismiss keyboard when tapping outside
+        FocusScope.of(context).unfocus();
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: SlidePageContent(
+                      children: [
+                        Text(
+                          'Tạo sổ chi tiêu',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.headlineMedium?.copyWith(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Vui lòng nhập tên sổ chi tiêu';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _bookNameController,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                            labelText: 'Tên sổ chi tiêu',
+                            labelStyle: const TextStyle(color: Colors.black54),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: const BorderSide(color: Colors.black),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide:
+                                  const BorderSide(color: Colors.black54),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: const BorderSide(color: Colors.black),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.book,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Vui lòng nhập tên sổ chi tiêu';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: widget.onBack,
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: widget.onBack,
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: Text(
+                        'Quay lại',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
                       ),
                     ),
-                    child: Text(
-                      'Quay lại',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          widget.onNext();
-                        },
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            widget.onNext();
+                          },
+                          style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: Text(
+                            'Bỏ qua',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: Colors.black54),
                           ),
                         ),
-                        child: Text(
-                          'Bỏ qua',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: Colors.black54),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            try {
-                              final book = Book(
-                                name: _bookNameController.text,
-                                balance: 0.0,
-                                userId: 1,
-                              );
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              try {
+                                final book = Book(
+                                  name: _bookNameController.text,
+                                  balance: 0.0,
+                                  userId: 1,
+                                );
 
-                              await _bookRepository.createBook(book);
-                              widget.onNext();
-                            } catch (e) {
-                              print('Error creating book: $e');
+                                await _bookRepository.createBook(book);
+                                FocusScope.of(context).unfocus();
+                                widget.onNext();
+                              } catch (e) {
+                                print('Error creating book: $e');
+                              }
                             }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: 0,
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                          child: const Text(
+                            'Tiếp tục',
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          elevation: 0,
                         ),
-                        child: const Text(
-                          'Tiếp tục',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -645,7 +650,6 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
 
   @override
   void dispose() {
-    _accountNameController.dispose();
     _balanceController.dispose();
     super.dispose();
   }

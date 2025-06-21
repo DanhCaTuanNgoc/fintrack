@@ -116,23 +116,31 @@ class DatabaseHelper {
 
     // Bảng Savings Goals
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS savings_goals (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        description TEXT,
-        target_amount REAL NOT NULL,
-        current_amount REAL DEFAULT 0,
-        type TEXT CHECK(type IN ('flexible', 'periodic')),
-        book_id INTEGER,
-        user_id INTEGER,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        target_date TIMESTAMP,
-        periodic_amount REAL,
-        periodic_frequency TEXT,
-        is_active INTEGER DEFAULT 1,
-        FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE SET NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-      )
+    CREATE TABLE IF NOT EXISTS savings_goals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      target_amount REAL NOT NULL,
+      current_amount REAL DEFAULT 0,
+      type TEXT CHECK(type IN ('flexible', 'periodic')) NOT NULL,
+      periodic_amount REAL,                         -- Chỉ dùng nếu type = periodic
+      periodic_frequency TEXT CHECK(periodic_frequency IN ('daily', 'weekly', 'monthly')),
+      started_date TIMESTAMP,                       -- Ngày bắt đầu tiết kiệm
+      target_date TIMESTAMP,                        -- Ngày mong muốn đạt mục tiêu
+      next_reminder_date TIMESTAMP,                -- Dùng để nhắc lần tiếp theo
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      is_active INTEGER DEFAULT 1
+    )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS savings_transactions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          goal_id INTEGER NOT NULL,
+          amount REAL NOT NULL,
+          note TEXT,
+          saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (goal_id) REFERENCES savings_goals(id) ON DELETE CASCADE
+      );
     ''');
 
     // Bảng Recurring Bills
