@@ -38,6 +38,7 @@ class SavingsGoalsNotifier
       state.whenData((goals) {
         state = AsyncValue.data([newGoal, ...goals]);
       });
+      print("add successfully");
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

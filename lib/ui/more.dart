@@ -7,7 +7,7 @@ import '../providers/currency_provider.dart';
 import '../providers/more/transaction_provider.dart';
 import '../providers/theme_provider.dart';
 import 'more/notification.dart';
-import 'more/receipt_long.dart';
+import 'extraFeatures/receipt_long.dart';
 
 // 🔀 Danh sách các màu chủ đạo có thể chọn
 final List<Color> primaryVariants = [
@@ -149,14 +149,6 @@ class _MoreState extends ConsumerState<More> {
             subtitle: _themeColorNames[_currentColorIndex!],
             onTap: () {
               _showBackgroundColorDialog();
-            },
-          ),
-          _buildDivider(),
-          _buildSettingItem(
-            icon: Icons.receipt_long,
-            title: 'Hóa đơn định kì',
-            onTap: () {
-              _showPeriodicInvoiceDialog();
             },
           ),
           _buildDivider(),
@@ -475,13 +467,6 @@ class _MoreState extends ConsumerState<More> {
           ],
         ),
       ),
-    );
-  }
-
-  void _showPeriodicInvoiceDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => const ReceiptLong(),
     );
   }
 

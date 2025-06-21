@@ -103,7 +103,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
         ?.where((invoice) =>
             refreshedInvoices == null || !refreshedInvoices.contains(invoice))
         .toList();
-
+    final themeColor = ref.watch(themeColorProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -111,11 +111,20 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
-            color: Color(0xFF2D3142),
+            color: Color.fromARGB(255, 255, 255, 255),
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: themeColor,
         elevation: 0,
+        leading: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(30),
+            onTap: () => Navigator.pop(context),
+            child: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+        ),
+        titleSpacing: 0,
       ),
       body: Column(
         children: [

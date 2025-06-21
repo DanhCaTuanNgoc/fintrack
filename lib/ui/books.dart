@@ -302,126 +302,12 @@ class _BooksState extends ConsumerState<Books>
     });
   }
 
-  // Widget _buildTransactionListSkeleton() {
-  //   return ListView.builder(
-  //     padding: const EdgeInsets.all(6),
-  //     itemCount: 5,
-  //     itemBuilder: (context, index) {
-  //       return Container(
-  //         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-  //         decoration: BoxDecoration(
-  //           color: Colors.white,
-  //           borderRadius: BorderRadius.circular(12),
-  //           boxShadow: [
-  //             BoxShadow(
-  //               color: Colors.grey.withOpacity(0.2),
-  //               spreadRadius: 2,
-  //               blurRadius: 8,
-  //               offset: const Offset(0, 4),
-  //             ),
-  //           ],
-  //         ),
-  //         child: Column(
-  //           children: [
-  //             // Date header skeleton
-  //             Container(
-  //               padding:
-  //                   const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-  //               decoration: BoxDecoration(
-  //                 border: Border(
-  //                   bottom: BorderSide(
-  //                     color: Colors.grey.withOpacity(0.1),
-  //                     width: 1,
-  //                   ),
-  //                 ),
-  //               ),
-  //               child: Row(
-  //                 children: [
-  //                   Container(
-  //                     width: 24,
-  //                     height: 24,
-  //                     decoration: BoxDecoration(
-  //                       color: Colors.grey[200],
-  //                       borderRadius: BorderRadius.circular(4),
-  //                     ),
-  //                   ),
-  //                   const SizedBox(width: 8),
-  //                   Container(
-  //                     width: 100,
-  //                     height: 16,
-  //                     decoration: BoxDecoration(
-  //                       color: Colors.grey[200],
-  //                       borderRadius: BorderRadius.circular(4),
-  //                     ),
-  //                   ),
-  //                   const Spacer(),
-  //                   Container(
-  //                     width: 120,
-  //                     height: 16,
-  //                     decoration: BoxDecoration(
-  //                       color: Colors.grey[200],
-  //                       borderRadius: BorderRadius.circular(4),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //             // Transaction items skeleton
-  //             Container(
-  //               padding:
-  //                   const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-  //               child: Column(
-  //                 children: List.generate(
-  //                   3,
-  //                   (index) => Padding(
-  //                     padding: const EdgeInsets.only(bottom: 12),
-  //                     child: Row(
-  //                       children: [
-  //                         Container(
-  //                           width: 40,
-  //                           height: 40,
-  //                           decoration: BoxDecoration(
-  //                             color: Colors.grey[200],
-  //                             borderRadius: BorderRadius.circular(8),
-  //                           ),
-  //                         ),
-  //                         const SizedBox(width: 12),
-  //                         Expanded(
-  //                           child: Container(
-  //                             height: 16,
-  //                             decoration: BoxDecoration(
-  //                               color: Colors.grey[200],
-  //                               borderRadius: BorderRadius.circular(4),
-  //                             ),
-  //                           ),
-  //                         ),
-  //                         const SizedBox(width: 12),
-  //                         Container(
-  //                           width: 100,
-  //                           height: 16,
-  //                           decoration: BoxDecoration(
-  //                             color: Colors.grey[200],
-  //                             borderRadius: BorderRadius.circular(4),
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     final books = ref.watch(booksProvider);
     final currentBook = ref.watch(currentBookProvider);
     final transactions = ref.watch(transactionsProvider);
+    final currencySymbol = ref.watch(currencyProvider);
 
     // Lấy màu nền hiện tại
     final themeColor = ref.watch(themeColorProvider);
@@ -987,11 +873,19 @@ class _BooksState extends ConsumerState<Books>
                                     // Tính tổng theo ngày (thu - chi)
                                     final dayTotal = dayIncome - dayExpense;
 
-                                    return _buildExpenseItem(
-                                        dateKey: dateKey,
-                                        transactions: transactions,
-                                        dayExpense: dayTotal,
-                                        themeColor: themeColor);
+                                    return ExpenseItem(
+                                      dateKey: dateKey,
+                                      transactions: transactions,
+                                      dayExpense: dayExpense,
+                                      themeColor: themeColor,
+                                      categories: _categories,
+                                      isAmountVisible: _isAmountVisible,
+                                      currencySymbol: currencySymbol,
+                                      onTransactionTap: (transaction) {
+                                        _showTransactionDetailModal(
+                                            context, transaction, themeColor);
+                                      },
+                                    );
                                   },
                                 );
                               },
@@ -1105,14 +999,25 @@ class _BooksState extends ConsumerState<Books>
                                 final dayExpense =
                                     transactionsByDate.fold<double>(
                                   0.0,
-                                  (sum, t) => sum + t.amount,
+                                  (sum, t) =>
+                                      sum +
+                                      (t.type == 'expense'
+                                          ? -t.amount
+                                          : t.amount),
                                 );
-                                return _buildExpenseItemForCalendar(
+
+                                return CalendarExpenseItem(
                                   dateKey: DateFormat('dd/MM/yyyy')
                                       .format(_selectedDay),
                                   transactions: transactionsByDate,
                                   dayExpense: dayExpense,
                                   themeColor: themeColor,
+                                  isAmountVisible: _isAmountVisible,
+                                  categories: _categories,
+                                  onTapTransaction: (transaction) {
+                                    _showTransactionDetailModal(
+                                        context, transaction, themeColor);
+                                  },
                                 );
                               },
                             ),
@@ -1138,825 +1043,45 @@ class _BooksState extends ConsumerState<Books>
     );
   }
 
-  Widget _buildExpenseItem(
-      {required String dateKey,
-      required List<dynamic> transactions,
-      required double dayExpense,
-      required Color themeColor}) {
-    final isExpanded = _expandedDays[dateKey] ?? false;
-    final numberFormat = NumberFormat('#,###');
-
-    final date = DateFormat('dd/MM/yy').parse(dateKey);
-    final weekdayNumber = date.weekday;
-    const weekdayMap = {
-      1: 'Th 2',
-      2: 'Th 3',
-      3: 'Th 4',
-      4: 'Th 5',
-      5: 'Th 6',
-      6: 'Th 7',
-      7: 'CN',
-    };
-
-    final formattedDate =
-        '${weekdayMap[weekdayNumber]}, ${DateFormat('dd/MM').format(date)}';
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey
-                .withOpacity(0.2), // Increased opacity for stronger shadow
-            spreadRadius: 2, // Increased spread for more coverage
-            blurRadius:
-                8, // Increased blur for a softer, more pronounced effect
-            offset: const Offset(
-                0, 4), // Increased vertical offset for greater elevation
-          ),
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1), // Additional subtle shadow
-            spreadRadius: 1,
-            blurRadius: 2,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Header ngày
-          InkWell(
-            onTap: () {
-              setState(() {
-                _expandedDays[dateKey] = !isExpanded;
-              });
-            },
-            splashFactory: NoSplash.splashFactory,
-            hoverColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                border: isExpanded
-                    ? Border(
-                        bottom: BorderSide(
-                          color: Colors.grey.withOpacity(0.1),
-                          width: 1,
-                        ),
-                      )
-                    : null,
-              ),
-              child: Row(
-                children: [
-                  AnimatedRotation(
-                    turns: isExpanded ? 0.25 : 0,
-                    duration: const Duration(milliseconds: 200),
-                    child: Icon(
-                      Icons.keyboard_arrow_right,
-                      color: themeColor,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    formattedDate,
-                    style: const TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    'Tổng: ${_isAmountVisible ? (dayExpense >= 0 ? '+' : '-') + formatCurrency(dayExpense.abs(), ref.watch(currencyProvider)) : '•••••'}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Danh sách giao dịch
-          AnimatedCrossFade(
-            firstChild: const SizedBox(height: 0),
-            secondChild: Column(
-              children: transactions.map((transaction) {
-                // Tìm category tương ứng
-                final category = _categories.firstWhere(
-                  (cat) => cat['id'] == transaction.categoryId,
-                  orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
-                );
-
-                final bgColor = themeColor.withOpacity(0.1);
-
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      _showTransactionDetailModal(
-                          context, transaction, themeColor);
-                    },
-                    child: Row(
-                      children: [
-                        // Icon từ category
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: bgColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            _getIconFromEmoji(category['icon'] ?? '🏷️'),
-                            color: themeColor,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        // Thông tin giao dịch
-                        Expanded(
-                          child: Text(
-                            transaction.note,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        // Số tiền
-                        Text(
-                          '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
-                          style: TextStyle(
-                            color: transaction.type == 'expense'
-                                ? Colors.red
-                                : Colors.green,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            crossFadeState: isExpanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 200),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExpenseItemForCalendar({
-    required String dateKey,
-    required List<Transaction> transactions,
-    required double dayExpense,
-    required Color themeColor,
-  }) {
-    final date = DateFormat('dd/MM/yy').parse(dateKey);
-
-    final weekdayNumber = date.weekday;
-
-    const weekdayMap = {
-      1: 'Th 2',
-      2: 'Th 3',
-      3: 'Th 4',
-      4: 'Th 5',
-      5: 'Th 6',
-      6: 'Th 7',
-      7: 'CN',
-    };
-
-    final formattedDate =
-        '${weekdayMap[weekdayNumber]}, ${DateFormat('dd/MM').format(date)}';
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(12),
-          topRight: Radius.circular(12),
-        ),
-        // // boxShadow: [
-        // //   BoxShadow(
-        // //     color: Colors.grey.withOpacity(0.2),
-        // //     spreadRadius: 2,
-        // //     blurRadius: 8,
-        // //     offset: const Offset(0, 4),
-        // //   ),
-        // //   BoxShadow(
-        // //     color: Colors.grey.withOpacity(0.1),
-        // //     spreadRadius: 1,
-        // //     blurRadius: 2,
-        // //     offset: const Offset(0, 2),
-        // //   ),
-        // ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 🔒 HEADER CỐ ĐỊNH
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.grey.withOpacity(0.1),
-                  width: 1,
-                ),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.calendar_today,
-                  color: themeColor,
-                  size: 24,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  formattedDate,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  'Tổng: ${_isAmountVisible ? (dayExpense >= 0 ? '+' : '-') + formatCurrency(dayExpense.abs(), ref.watch(currencyProvider)) : '•••••'}',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-
-          // ListView cho transaction details
-          SizedBox(
-            height: 240, // 👈 tùy chỉnh chiều cao cuộn
-            child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 8),
-              itemCount: transactions.length,
-              itemBuilder: (context, index) {
-                final transaction = transactions[index];
-                final category = _categories.firstWhere(
-                  (cat) => cat['id'] == transaction.categoryId,
-                  orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
-                );
-
-                final bgColor = themeColor.withOpacity(0.1);
-
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      _showTransactionDetailModal(
-                          context, transaction, themeColor);
-                    },
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: bgColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            _getIconFromEmoji(category['icon'] ?? '🏷️'),
-                            color: themeColor,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            transaction.note,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          '${transaction.type == 'expense' ? '-' : '+'}${_isAmountVisible ? formatCurrency(transaction.amount, ref.watch(currencyProvider)) : '•••••'}',
-                          style: TextStyle(
-                            color: transaction.type == 'expense'
-                                ? Colors.red
-                                : Colors.green,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showAddExpenseModal(
-      BuildContext context, Book currentBook, Color themeColor) {
+    BuildContext context,
+    Book currentBook,
+    Color themeColor,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: StatefulBuilder(
-            builder: (context, setState) {
-              return Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(top: 12, bottom: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Thêm giao dịch',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2D3142),
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  TypeButton(
-                                      text: 'Chi tiêu',
-                                      isSelected: _isExpense == true,
-                                      onTap: () {
-                                        setState(() {
-                                          _isExpense = true;
-                                          _selectedCategory = null;
-                                        });
-                                      },
-                                      themeColor: themeColor),
-                                  const SizedBox(width: 8),
-                                  TypeButton(
-                                    text: 'Thu nhập',
-                                    isSelected: _isExpense == false,
-                                    themeColor: themeColor,
-                                    onTap: () {
-                                      setState(() {
-                                        _isExpense = false;
-                                        _selectedCategory = null;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 18),
-                          TextField(
-                            decoration: InputDecoration(
-                              labelText: 'Ghi chú',
-                              labelStyle: TextStyle(
-                                color: themeColor,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: themeColor,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: themeColor,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                            onChanged: (value) => _note = value,
-                          ),
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.all(9),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  _amount.isEmpty
-                                      ? '0 ${ref.watch(currencyProvider).symbol}'
-                                      : '${formatCurrency(double.tryParse(_amount) ?? 0, ref.watch(currencyProvider))}',
-                                  style: const TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF2D3142),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                NumberPad(
-                                  onNumberTap: (number) {
-                                    setState(() {
-                                      _amount += number;
-                                    });
-                                  },
-                                  onBackspaceTap: () {
-                                    setState(() {
-                                      if (_amount.isNotEmpty) {
-                                        _amount = _amount.substring(
-                                          0,
-                                          _amount.length - 1,
-                                        );
-                                      }
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          DropdownButtonFormField<String>(
-                            value: _selectedCategory,
-                            decoration: InputDecoration(
-                              labelText: 'Danh mục',
-                              labelStyle: TextStyle(
-                                color: themeColor,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: themeColor,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: themeColor,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                            items: (_isExpense
-                                    ? _expenseCategories
-                                    : _incomeCategories)
-                                .map<DropdownMenuItem<String>>(
-                                  (category) => DropdownMenuItem<String>(
-                                    value: category['name'],
-                                    child: Row(
-                                      children: [
-                                        Text(category['icon']),
-                                        const SizedBox(width: 8),
-                                        Text(category['name']),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedCategory = value;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 24),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                if (_amount.isNotEmpty &&
-                                    _selectedCategory != null) {
-                                  final transactionNotifier = ref.read(
-                                    transactionsProvider.notifier,
-                                  );
-
-                                  // Get category ID from selected category name
-                                  final selectedCategoryData = _isExpense
-                                      ? _expenseCategories.firstWhere(
-                                          (cat) =>
-                                              cat['name'] == _selectedCategory,
-                                        )
-                                      : _incomeCategories.firstWhere(
-                                          (cat) =>
-                                              cat['name'] == _selectedCategory,
-                                        );
-
-                                  await transactionNotifier.createTransaction(
-                                    amount: double.parse(_amount),
-                                    note: _note,
-                                    type: _isExpense ? 'expense' : 'income',
-                                    categoryId: selectedCategoryData['id'],
-                                    bookId: currentBook.id ?? 0,
-                                    userId: 1,
-                                  );
-
-                                  setState(() {
-                                    _selectedCategory = null;
-                                    _amount = 'null';
-                                  });
-
-                                  if (mounted) {
-                                    Navigator.pop(context);
-                                  }
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: themeColor,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: const Text(
-                                'Thêm',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+        return AddTransactionModal(
+          currentBook: currentBook,
+          themeColor: themeColor,
+          initialIsExpense: true,
+          expenseCategories: _expenseCategories,
+          incomeCategories: _incomeCategories,
         );
       },
     );
   }
 
   void _showTransactionDetailModal(
-      BuildContext context, Transaction transaction, Color themeColor) {
+    BuildContext context,
+    Transaction transaction,
+    Color themeColor,
+  ) {
     showDialog(
       context: context,
-      builder: (context) {
-        return Center(
-          child: SingleChildScrollView(
-            child: Dialog(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              insetPadding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(top: 12, bottom: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        children: [
-                          // Transaction Type and Amount
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: transaction.type == 'expense'
-                                      ? Colors.red.withOpacity(0.1)
-                                      : Colors.green.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  transaction.type == 'expense'
-                                      ? 'Chi tiêu'
-                                      : 'Thu nhập',
-                                  style: TextStyle(
-                                    color: transaction.type == 'expense'
-                                        ? Colors.red
-                                        : Colors.green,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                '${transaction.type == 'expense' ? '-' : '+'}${formatCurrency(transaction.amount, ref.watch(currencyProvider))}',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: transaction.type == 'expense'
-                                      ? Colors.red
-                                      : Colors.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-                          // Category
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: themeColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(
-                                  _getIconFromEmoji(_categories.firstWhere(
-                                        (cat) =>
-                                            cat['id'] == transaction.categoryId,
-                                        orElse: () => {'icon': '🏷️'},
-                                      )['icon'] ??
-                                      '🏷️'),
-                                  color: themeColor,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                _categories.firstWhere(
-                                      (cat) =>
-                                          cat['id'] == transaction.categoryId,
-                                      orElse: () => {'name': 'Không xác định'},
-                                    )['name'] ??
-                                    'Không xác định',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          // Note
-                          if (transaction.note.isNotEmpty) ...[
-                            const Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Ghi chú',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                transaction.note,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: 24),
-                          // Date
-                          Row(
-                            children: [
-                              Icon(Icons.calendar_today,
-                                  size: 20, color: Colors.grey[600]),
-                              const SizedBox(width: 8),
-                              Text(
-                                DateFormat('dd/MM/yyyy')
-                                    .format(transaction.date!),
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 32),
-                          // Action Buttons
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    final transactionNotifier =
-                                        ref.read(transactionsProvider.notifier);
-                                    await transactionNotifier
-                                        .deleteTransaction(transaction.id!);
-                                    // Thông báo cho người dùng
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Xóa thành công',
-                                        ),
-                                        backgroundColor:
-                                            const Color(0xFF4CAF50),
-                                        duration: const Duration(seconds: 2),
-                                      ),
-                                    );
-                                    if (mounted) {
-                                      Navigator.pop(context);
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 14),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  child: const Text(
-                                    'Xóa',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _showEditTransactionModal(
-                                        context, transaction, themeColor);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blueAccent,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 14),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  child: const Text(
-                                    'Chỉnh sửa',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+      builder: (context) => Center(
+        child: SingleChildScrollView(
+          child: TransactionDetailModal(
+            transaction: transaction,
+            themeColor: themeColor,
+            categories: _categories,
+            onEdit: () =>
+                _showEditTransactionModal(context, transaction, themeColor),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
