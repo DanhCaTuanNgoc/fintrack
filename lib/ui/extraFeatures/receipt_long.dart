@@ -16,15 +16,35 @@ class ReceiptLong extends ConsumerStatefulWidget {
 class _ReceiptLongState extends ConsumerState<ReceiptLong> {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   List<Map<String, dynamic>> receipLong = [];
+  List<Map<String, dynamic>> books = [];
+  Map<String, dynamic>? selectedBook;
+
+  // State cho bộ lọc
+  int? _selectedBookFilterId;
+  String? _selectedCategoryFilter;
+  final TextEditingController _minAmountController = TextEditingController();
+  final TextEditingController _maxAmountController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _loadCategories();
+    _loadBooks();
     // Khi truy cập ReceiptLong, tự động làm mới trạng thái hóa đơn định kỳ
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await _refreshPeriodicInvoices();
     });
+
+    // Thêm listener để tự động lọc khi người dùng nhập
+    _minAmountController.addListener(() => setState(() {}));
+    _maxAmountController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _minAmountController.dispose();
+    _maxAmountController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadCategories() async {
@@ -34,31 +54,55 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     });
   }
 
+  Future<void> _loadBooks() async {
+    final userBooks = await _dbHelper.getBooksByUser(1); // user ID = 1
+    setState(() {
+      books = userBooks;
+      if (books.isNotEmpty) {
+        selectedBook = books.first;
+      }
+    });
+  }
+
   // Hàm làm mới trạng thái hóa đơn định kỳ nếu đã đến hạn
   Future<void> _refreshPeriodicInvoices() async {
     final notifier = ref.read(periodicInvoicesProvider.notifier);
     await notifier.refreshPeriodicInvoices();
   }
 
+  void _clearFilters() {
+    setState(() {
+      _selectedBookFilterId = null;
+      _selectedCategoryFilter = null;
+      _minAmountController.clear();
+      _maxAmountController.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Lấy danh sách hóa đơn định kỳ từ provider
-    final invoices = ref.watch(periodicInvoicesProvider);
-    final now = DateTime.now();
-    // Lọc các hóa đơn vừa làm mới: chưa thanh toán và đã đến hạn
-    final refreshedInvoices = invoices.where((invoice) {
-      final nextDue = invoice.nextDueDate ?? invoice.calculateNextDueDate();
-      return !invoice.isPaid &&
-          (now.isAfter(nextDue) ||
-              (now.year == nextDue.year &&
-                  now.month == nextDue.month &&
-                  now.day == nextDue.day));
-    }).toList();
-    // Lọc các hóa đơn còn lại
-    final otherInvoices = invoices
-        .where((invoice) => !refreshedInvoices.contains(invoice))
-        .toList();
+    final allInvoices = ref.watch(periodicInvoicesProvider);
     final themeColor = ref.watch(themeColorProvider);
+
+    // Áp dụng bộ lọc
+    final filteredInvoices = allInvoices.where((invoice) {
+      // Lọc theo sổ
+      final bookMatch = _selectedBookFilterId == null ||
+          invoice.bookId == _selectedBookFilterId;
+
+      // Lọc theo danh mục
+      final categoryMatch = _selectedCategoryFilter == null ||
+          invoice.category == _selectedCategoryFilter;
+
+      // Lọc theo khoản tiền
+      final minAmount = double.tryParse(_minAmountController.text);
+      final maxAmount = double.tryParse(_maxAmountController.text);
+      final amountMatch = (minAmount == null || invoice.amount >= minAmount) &&
+          (maxAmount == null || invoice.amount <= maxAmount);
+
+      return bookMatch && categoryMatch && amountMatch;
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -83,8 +127,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
       ),
       body: Column(
         children: [
+          _buildFilterBar(),
           Expanded(
-            child: invoices.isEmpty
+            child: filteredInvoices.isEmpty
                 ? const Center(
                     child: Text(
                       'Chưa có hóa đơn định kỳ nào',
@@ -98,16 +143,11 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                     padding: const EdgeInsets.all(16),
                     children: [
                       // Hiển thị section hóa đơn vừa làm mới
-                      if (refreshedInvoices.isNotEmpty) ...[
+                      if (filteredInvoices.isNotEmpty) ...[
                         // Duyệt và hiển thị từng hóa đơn vừa làm mới
-                        ...refreshedInvoices.map(
+                        ...filteredInvoices.map(
                             (invoice) => _buildInvoiceCard(context, invoice)),
                         const Divider(height: 32),
-                      ],
-                      // Hiển thị các hóa đơn còn lại
-                      if (otherInvoices.isNotEmpty) ...[
-                        ...otherInvoices.map(
-                            (invoice) => _buildInvoiceCard(context, invoice)),
                       ],
                     ],
                   ),
@@ -123,9 +163,96 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     );
   }
 
+  Widget _buildFilterBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: ExpansionTile(
+        title: const Text('Bộ lọc'),
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: DropdownButtonFormField<int>(
+                  value: _selectedBookFilterId,
+                  decoration: const InputDecoration(labelText: 'Sổ chi tiêu'),
+                  items: books
+                      .map<DropdownMenuItem<int>>((book) => DropdownMenuItem(
+                            value: book['id'],
+                            child: Text(book['name']),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedBookFilterId = value;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  value: _selectedCategoryFilter,
+                  decoration: const InputDecoration(labelText: 'Danh mục'),
+                  items: receipLong
+                      .map<DropdownMenuItem<String>>(
+                          (category) => DropdownMenuItem(
+                                value: category['name'],
+                                child: Text(category['name']),
+                              ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCategoryFilter = value;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _minAmountController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Tối thiểu'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: TextField(
+                  controller: _maxAmountController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Tối đa'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _clearFilters,
+            child: const Text('Xóa bộ lọc'),
+          )
+        ],
+      ),
+    );
+  }
+
   Widget _buildInvoiceCard(BuildContext context, PeriodicInvoice invoice) {
     final isOverdue = invoice.isOverdue();
     final nextDueDate = invoice.nextDueDate ?? invoice.calculateNextDueDate();
+
+    // Tìm tên sổ chi tiêu dựa trên bookId
+    String bookName = 'Chưa có sổ';
+    if (invoice.bookId != null && books.isNotEmpty) {
+      try {
+        final book = books.firstWhere((b) => b['id'] == invoice.bookId);
+        bookName = book['name'];
+      } catch (e) {
+        bookName = 'Sổ không tồn tại';
+      }
+    }
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -139,13 +266,17 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  invoice.name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3142),
+                Expanded(
+                  child: Text(
+                    '$bookName: ${invoice.name}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2D3142),
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Row(
@@ -153,29 +284,52 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                     if (!invoice.isPaid)
                       ElevatedButton(
                         onPressed: () async {
-                          // Lấy category ID từ tên danh mục
-                          final categoryData = receipLong.firstWhere(
-                            (cat) => cat['name'] == invoice.category,
-                          );
+                          try {
+                            // Lấy category ID từ tên danh mục
+                            final categoryData = receipLong.firstWhere(
+                              (cat) => cat['name'] == invoice.category,
+                            );
 
-                          // Tạo giao dịch mới
-                          final transactionNotifier = ref.read(
-                            transactionsProvider.notifier,
-                          );
+                            // Sử dụng bookId từ hóa đơn
+                            final bookId = invoice.bookId ??
+                                1; // fallback nếu không có bookId
 
-                          await transactionNotifier.createTransaction(
-                            amount: invoice.amount,
-                            note: 'Thanh toán ${invoice.name}',
-                            type: 'expense',
-                            categoryId: categoryData['id'],
-                            bookId: 1,
-                            userId: 1,
-                          );
+                            // Tạo giao dịch mới
+                            final transactionNotifier = ref.read(
+                              transactionsProvider.notifier,
+                            );
 
-                          // Đánh dấu hóa đơn đã thanh toán
-                          await ref
-                              .read(periodicInvoicesProvider.notifier)
-                              .markPeriodicInvoiceAsPaid(invoice.id);
+                            await transactionNotifier.createTransaction(
+                              amount: invoice.amount,
+                              note: 'Thanh toán ${invoice.name}',
+                              type: 'expense',
+                              categoryId: categoryData['id'],
+                              bookId: bookId,
+                              userId: 1,
+                            );
+
+                            // Đánh dấu hóa đơn đã thanh toán
+                            await ref
+                                .read(periodicInvoicesProvider.notifier)
+                                .markPeriodicInvoiceAsPaid(invoice.id);
+
+                            // Thông báo thành công
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Đã thanh toán ${invoice.name}'),
+                                backgroundColor: Colors.green,
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content:
+                                    Text('Lỗi khi thanh toán: ${e.toString()}'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -297,6 +451,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     final descriptionController = TextEditingController();
     String selectedFrequency = 'monthly';
     String? selectedCategory;
+    Map<String, dynamic>? selectedBookForInvoice = selectedBook;
 
     showModalBottomSheet(
       context: context,
@@ -464,6 +619,45 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           },
                         ),
                         const SizedBox(height: 16),
+                        DropdownButtonFormField<int>(
+                          value: selectedBookForInvoice?['id'],
+                          decoration: InputDecoration(
+                            labelText: 'Sổ chi tiêu',
+                            labelStyle: const TextStyle(
+                              color: Color(0xFF6C63FF),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF6C63FF),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF6C63FF),
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          items: books
+                              .map<DropdownMenuItem<int>>(
+                                (book) => DropdownMenuItem<int>(
+                                  value: book['id'],
+                                  child: Text(book['name']),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setModalState(() {
+                                selectedBookForInvoice =
+                                    books.firstWhere((b) => b['id'] == value);
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 16),
                         TextField(
                           controller: descriptionController,
                           decoration: InputDecoration(
@@ -523,6 +717,16 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                 return;
                               }
 
+                              if (selectedBookForInvoice == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Vui lòng chọn sổ chi tiêu'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
                               // Parse số tiền
                               double amount;
                               try {
@@ -554,6 +758,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                   category: selectedCategory!,
                                   description:
                                       descriptionController.text.trim(),
+                                  bookId: selectedBookForInvoice!['id'],
                                 );
 
                                 await ref
@@ -563,9 +768,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
 
                                 // Thông báo thành công
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                     content: Text(
-                                        'Đã thêm hóa đơn định kỳ thành công'),
+                                        'Đã thêm hóa đơn định kỳ thành công vào sổ ${selectedBookForInvoice!['name']}'),
                                     backgroundColor: Colors.green,
                                   ),
                                 );

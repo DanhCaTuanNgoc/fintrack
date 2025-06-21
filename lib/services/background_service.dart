@@ -88,8 +88,6 @@ void callbackDispatcher() {
           );
           final NotificationDetails platformChannelSpecifics =
               NotificationDetails(android: androidPlatformChannelSpecifics);
-
-          int notificationCount = 0;
           for (final invoice in invoices) {
             final nextDue =
                 invoice.nextDueDate ?? invoice.calculateNextDueDate();
@@ -122,7 +120,6 @@ void callbackDispatcher() {
                   'invoice_id': invoice.id,
                   'invoice_due_date': nextDue.toIso8601String(),
                 });
-                notificationCount++;
               }
               // Đã đến hạn hoặc quá hạn
               else if (now.isAfter(nextDue) ||
@@ -148,7 +145,13 @@ void callbackDispatcher() {
                   'invoice_id': invoice.id,
                   'invoice_due_date': nextDue.toIso8601String(),
                 });
-                notificationCount++;
+
+                // Cập nhật trạng thái hóa đơn thành quá hạn
+                await DatabaseHelper.instance.updateInvoicePaidStatus(
+                  invoice.id!,
+                  false, // isPaid = false (chưa thanh toán)
+                  nextDueDate: nextDue, // cập nhật ngày đến hạn
+                );
               }
             }
             // Hóa đơn đã thanh toán - chỉ tạo thông báo, không cập nhật trạng thái
@@ -178,7 +181,13 @@ void callbackDispatcher() {
                   'invoice_id': invoice.id,
                   'invoice_due_date': nextDue.toIso8601String(),
                 });
-                notificationCount++;
+
+                // Cập nhật trạng thái hóa đơn thành chưa thanh toán khi đến hạn mới
+                await DatabaseHelper.instance.updateInvoicePaidStatus(
+                  invoice.id!,
+                  false, // isPaid = false (chưa thanh toán)
+                  nextDueDate: nextDue, // giữ nguyên ngày đến hạn
+                );
               }
             }
           }

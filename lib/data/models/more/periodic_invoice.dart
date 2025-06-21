@@ -20,6 +20,8 @@ class PeriodicInvoice {
   final DateTime? lastPaidDate;
   // Ngày đến hạn tiếp theo
   final DateTime? nextDueDate;
+  // ID của sổ chi tiêu để lưu giao dịch
+  final int? bookId;
 
   // Constructor với các tham số bắt buộc và tùy chọn
   PeriodicInvoice({
@@ -33,6 +35,7 @@ class PeriodicInvoice {
     this.isPaid = false,
     this.lastPaidDate,
     this.nextDueDate,
+    this.bookId,
   });
 
   // Phương thức tạo bản sao với các thuộc tính có thể thay đổi
@@ -47,6 +50,7 @@ class PeriodicInvoice {
     bool? isPaid,
     DateTime? lastPaidDate,
     DateTime? nextDueDate,
+    int? bookId,
   }) {
     return PeriodicInvoice(
       id: id ?? this.id,
@@ -59,6 +63,7 @@ class PeriodicInvoice {
       isPaid: isPaid ?? this.isPaid,
       lastPaidDate: lastPaidDate ?? this.lastPaidDate,
       nextDueDate: nextDueDate ?? this.nextDueDate,
+      bookId: bookId ?? this.bookId,
     );
   }
 
@@ -141,6 +146,7 @@ class PeriodicInvoice {
       'is_paid': isPaid ? 1 : 0,
       'last_paid_date': lastPaidDate?.toIso8601String(),
       'next_due_date': nextDueDate?.toIso8601String(),
+      'book_id': bookId,
     };
   }
 
@@ -161,6 +167,7 @@ class PeriodicInvoice {
       nextDueDate: map['next_due_date'] != null
           ? DateTime.tryParse(map['next_due_date'])
           : null,
+      bookId: map['book_id'],
     );
   }
 }

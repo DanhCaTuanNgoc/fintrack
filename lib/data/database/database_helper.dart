@@ -97,7 +97,9 @@ class DatabaseHelper {
         description TEXT,
         is_paid INTEGER NOT NULL,
         last_paid_date TEXT,
-        next_due_date TEXT
+        next_due_date TEXT,
+        book_id INTEGER,
+        FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE SET NULL
       )
     ''');
 
