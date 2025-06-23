@@ -69,7 +69,7 @@ class PeriodicInvoice {
 
   // Tính toán ngày đến hạn tiếp theo dựa trên tần suất
   DateTime calculateNextDueDate() {
-    final now = DateTime.now();
+
     if (lastPaidDate == null) {
       return startDate;
     }

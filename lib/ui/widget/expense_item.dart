@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../data/models/models_barrel.dart'; // nếu có
 import '../../providers/providers_barrel.dart';
 
 class ExpenseItem extends StatefulWidget {

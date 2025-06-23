@@ -2,20 +2,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/models/savings_transaction.dart';
 import '../data/repositories/savings_transaction.dart';
 
-final savingsTransactionRepositoryProvider = Provider((ref) => SavingsTransactionRepository());
+final savingsTransactionRepositoryProvider =
+    Provider((ref) => SavingsTransactionRepository());
 
-final savingsTransactionsProvider = StateNotifierProvider.family<SavingsTransactionsNotifier, List<SavingsTransaction>, int>(
+final savingsTransactionsProvider = StateNotifierProvider.family<
+    SavingsTransactionsNotifier, List<SavingsTransaction>, int>(
   (ref, goalId) => SavingsTransactionsNotifier(
     repository: ref.read(savingsTransactionRepositoryProvider),
     goalId: goalId,
   ),
 );
 
-class SavingsTransactionsNotifier extends StateNotifier<List<SavingsTransaction>> {
+class SavingsTransactionsNotifier
+    extends StateNotifier<List<SavingsTransaction>> {
   final SavingsTransactionRepository repository;
   final int goalId;
 
-  SavingsTransactionsNotifier({required this.repository, required this.goalId}) : super([]) {
+  SavingsTransactionsNotifier({required this.repository, required this.goalId})
+      : super([]) {
     loadTransactions();
   }
 

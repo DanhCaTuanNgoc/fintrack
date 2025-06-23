@@ -53,11 +53,14 @@ class SavingsGoalsNotifier
         where: 'id = ?',
         whereArgs: [goal.id],
       );
+
+      // Cập nhật state với dữ liệu mới
       state.whenData((goals) {
-        state = AsyncValue.data(
-          goals.map((g) => g.id == goal.id ? goal : g).toList(),
-        );
+        final updatedGoals =
+            goals.map((g) => g.id == goal.id ? goal : g).toList();
+        state = AsyncValue.data(updatedGoals);
       });
+
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

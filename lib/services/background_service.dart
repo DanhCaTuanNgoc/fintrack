@@ -1,6 +1,4 @@
 import 'package:workmanager/workmanager.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/more/periodic_invoice_provider.dart';
 import '../data/models/more/periodic_invoice.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../data/database/database_helper.dart';
@@ -68,8 +66,14 @@ void callbackDispatcher() {
             playSound: true,
             enableLights: true,
             icon: '@mipmap/ic_launcher',
+<<<<<<< HEAD
             largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
             color: Color(0xFF6C63FF),
+=======
+            largeIcon:
+                const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+            color: const Color(0xFF6C63FF),
+>>>>>>> develop
             category: AndroidNotificationCategory.reminder,
             visibility: NotificationVisibility.public,
             autoCancel: true,
@@ -82,12 +86,21 @@ void callbackDispatcher() {
             indeterminate: false,
             onlyAlertOnce: false,
             vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
+<<<<<<< HEAD
             ledColor: Color(0xFF6C63FF),
+=======
+            ledColor: const Color(0xFF6C63FF),
+>>>>>>> develop
             ledOnMs: 1000,
             ledOffMs: 500,
           );
           final NotificationDetails platformChannelSpecifics =
               NotificationDetails(android: androidPlatformChannelSpecifics);
+<<<<<<< HEAD
+=======
+
+          int notificationCount = 0;
+>>>>>>> develop
           for (final invoice in invoices) {
             final nextDue =
                 invoice.nextDueDate ?? invoice.calculateNextDueDate();
@@ -120,6 +133,10 @@ void callbackDispatcher() {
                   'invoice_id': invoice.id,
                   'invoice_due_date': nextDue.toIso8601String(),
                 });
+<<<<<<< HEAD
+=======
+                notificationCount++;
+>>>>>>> develop
               }
               // Đã đến hạn hoặc quá hạn
               else if (now.isAfter(nextDue) ||
@@ -145,6 +162,7 @@ void callbackDispatcher() {
                   'invoice_id': invoice.id,
                   'invoice_due_date': nextDue.toIso8601String(),
                 });
+<<<<<<< HEAD
 
                 // Cập nhật trạng thái hóa đơn thành quá hạn
                 await DatabaseHelper.instance.updateInvoicePaidStatus(
@@ -152,6 +170,9 @@ void callbackDispatcher() {
                   false, // isPaid = false (chưa thanh toán)
                   nextDueDate: nextDue, // cập nhật ngày đến hạn
                 );
+=======
+                notificationCount++;
+>>>>>>> develop
               }
             }
             // Hóa đơn đã thanh toán - chỉ tạo thông báo, không cập nhật trạng thái
@@ -181,6 +202,7 @@ void callbackDispatcher() {
                   'invoice_id': invoice.id,
                   'invoice_due_date': nextDue.toIso8601String(),
                 });
+<<<<<<< HEAD
 
                 // Cập nhật trạng thái hóa đơn thành chưa thanh toán khi đến hạn mới
                 await DatabaseHelper.instance.updateInvoicePaidStatus(
@@ -188,6 +210,9 @@ void callbackDispatcher() {
                   false, // isPaid = false (chưa thanh toán)
                   nextDueDate: nextDue, // giữ nguyên ngày đến hạn
                 );
+=======
+                notificationCount++;
+>>>>>>> develop
               }
             }
           }

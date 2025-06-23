@@ -103,8 +103,15 @@ class SavingsGoal {
 
   double get remainingAmount => targetAmount - currentAmount;
 
-  bool get isCompleted => currentAmount >= targetAmount;
-
-  String get progressText =>
-      '${currentAmount.toStringAsFixed(0)} / ${targetAmount.toStringAsFixed(0)}';
+  bool get isCompleted {
+    final now = DateTime.now();
+    if (currentAmount >= targetAmount) {
+      if (targetDate == null ||
+          now.isBefore(targetDate!) ||
+          now.isAtSameMomentAs(targetDate!)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

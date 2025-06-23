@@ -35,8 +35,6 @@ class BooksNotifier extends StateNotifier<AsyncValue<List<Book>>> {
   Future<void> createBook(String name) async {
     try {
       final repository = ref.read(bookRepositoryProvider);
-      // Lấy danh sách book hiện tại để kiểm tra trùng tên
-      final books = await repository.getBooks();
       final book = Book(name: name, balance: 0.0, userId: 1);
       await repository.createBook(book);
       await loadBooks();
@@ -50,13 +48,6 @@ class BooksNotifier extends StateNotifier<AsyncValue<List<Book>>> {
       final repository = ref.read(bookRepositoryProvider);
       await repository.updateBook(book, newName);
       await loadBooks();
-
-      // // Cập nhật current book nếu book được edit là current book
-      // final currentBookState = ref.read(currentBookProvider);
-      // if (currentBookState.value?.id == book.id) {
-      //   final updatedBook = book.copyWith(name: newName);
-      //   ref.read(currentBookProvider.notifier).setCurrentBook(updatedBook);
-      // }
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -65,7 +56,6 @@ class BooksNotifier extends StateNotifier<AsyncValue<List<Book>>> {
   Future<void> deleteBook(Book book) async {
     try {
       final repository = ref.read(bookRepositoryProvider);
-      print("Đã bấm xóa " + book.name);
       await repository.deleteBook(book);
       await loadBooks();
     } catch (e, stack) {

@@ -11,25 +11,17 @@ class Books extends ConsumerStatefulWidget {
   const Books({super.key});
 
   @override
-  _BooksState createState() => _BooksState();
+  ConsumerState<Books> createState() => _BooksState();
 }
 
 class _BooksState extends ConsumerState<Books>
     with SingleTickerProviderStateMixin {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
-
-  String _amount = '';
-  String _note = '';
-  String? _selectedCategory;
   List<Map<String, dynamic>> _expenseCategories = [];
   List<Map<String, dynamic>> _incomeCategories = [];
-  bool _isExpense = true;
-  Map<DateTime, List<Map<String, dynamic>>> _events = {};
+  final Map<DateTime, List<Map<String, dynamic>>> _events = {};
   late TabController _tabController;
   int _selectedTabIndex = 0;
-
-  // State để quản lý trạng thái mở rộng của mỗi ngày
-  final Map<String, bool> _expandedDays = {};
 
   // Calendar state
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -59,211 +51,8 @@ class _BooksState extends ConsumerState<Books>
   DateTime? _startDate;
   DateTime? _endDate;
 
-  bool _isExpanded = false;
-  late List<dynamic> _filteredTransactions = [];
-  late double _dayExpense = 0.0;
-
   // Add this field to the class
   OverlayEntry? _overlayEntry;
-
-  Widget _buildSkeletonLoading() {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        backgroundColor: Colors.grey[300],
-        elevation: 0,
-        toolbarHeight: 60,
-        title: Container(
-          width: 150,
-          height: 24,
-          decoration: BoxDecoration(
-            color: Colors.grey[400],
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            width: 100,
-            height: 36,
-            decoration: BoxDecoration(
-              color: Colors.grey[400],
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ],
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-        ),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-          ),
-          child: Column(
-            children: [
-              // Header skeleton
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 22,
-                  horizontal: 20,
-                ),
-                margin: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildStatSkeleton(),
-                        _buildStatSkeleton(),
-                        _buildStatSkeleton(),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              // Transaction list skeleton
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(6),
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 24,
-                                  height: 24,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Container(
-                                  width: 80,
-                                  height: 16,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                                const Spacer(),
-                                Container(
-                                  width: 100,
-                                  height: 16,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatSkeleton() {
-    return Container(
-      width: 100,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 60,
-            height: 12,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            width: 80,
-            height: 20,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   IconData _getIconFromEmoji(String emoji) {
     return _iconMapping[emoji] ?? Icons.category;
@@ -312,7 +101,7 @@ class _BooksState extends ConsumerState<Books>
     // Lấy màu nền hiện tại
     final themeColor = ref.watch(themeColorProvider);
     return books.when(
-      loading: () => _buildSkeletonLoading(),
+      loading: () => const SkeletonLoading(),
       error: (error, stack) =>
           Scaffold(body: Center(child: Text('Có lỗi xảy ra: $error'))),
       data: (books) {
@@ -415,7 +204,7 @@ class _BooksState extends ConsumerState<Books>
         }
 
         return currentBook.when(
-          loading: () => _buildSkeletonLoading(),
+          loading: () => const SkeletonLoading(),
           error: (error, stack) => Scaffold(
             body: Center(child: Text('Có lỗi xảy ra: $error')),
           ),
@@ -427,7 +216,7 @@ class _BooksState extends ConsumerState<Books>
                     .read(currentBookProvider.notifier)
                     .setCurrentBook(books.first);
               }
-              return _buildSkeletonLoading();
+              return const SkeletonLoading();
             }
 
             // Lọc transactions theo currentBook
@@ -818,15 +607,27 @@ class _BooksState extends ConsumerState<Books>
 
                                 if (filteredTransactions.isEmpty) {
                                   return Center(
-                                    child: Text(
-                                      'Hiện chưa có chi tiêu',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey[600],
-                                        fontWeight: FontWeight.w500,
+                                      child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.sentiment_dissatisfied_outlined,
+                                        size: 100,
+                                        color: Colors.grey,
                                       ),
-                                    ),
-                                  );
+                                      const SizedBox(
+                                        height: 16,
+                                      ),
+                                      Text(
+                                        'Hiện chưa có chi tiêu',
+                                        style: TextStyle(
+                                            fontSize: 17,
+                                            color: Colors.grey[600],
+                                            fontWeight: FontWeight.w500,
+                                            fontStyle: FontStyle.italic),
+                                      ),
+                                    ],
+                                  ));
                                 }
 
                                 // Nhóm giao dịch theo ngày
@@ -836,7 +637,7 @@ class _BooksState extends ConsumerState<Books>
 
                                 for (var transaction in filteredTransactions) {
                                   final dateKey = DateFormat('dd/MM/yyyy')
-                                      .format(transaction.date!);
+                                      .format(transaction.date);
                                   if (!groupedTransactions
                                       .containsKey(dateKey)) {
                                     groupedTransactions[dateKey] = [];
@@ -927,31 +728,6 @@ class _BooksState extends ConsumerState<Books>
                                 setState(() {
                                   _selectedDay = selectedDay;
                                   _focusedDay = focusedDay;
-                                  // Chuyển đổi selectedDay thành định dạng DB để lọc
-                                  final selectedDateStr =
-                                      DateFormat('yyyy-MM-dd')
-                                              .format(selectedDay) +
-                                          'T00:00:00.000';
-                                  if (_events.containsKey(selectedDay)) {
-                                    final event = _events[selectedDay]![
-                                        0]; // Lấy sự kiện đầu tiên
-                                    _filteredTransactions =
-                                        event['transactions']?.where((t) {
-                                              return t['date'] ==
-                                                  selectedDateStr; // So sánh với định dạng DB
-                                            }).toList() ??
-                                            [];
-                                    _dayExpense = _filteredTransactions.fold(
-                                        0.0,
-                                        (sum, t) =>
-                                            sum +
-                                            (t['type'] == 'expense'
-                                                ? -t['amount']
-                                                : t['amount']));
-                                  } else {
-                                    _filteredTransactions = [];
-                                    _dayExpense = 0.0;
-                                  }
                                 });
                               },
                               calendarStyle: CalendarStyle(
@@ -991,6 +767,7 @@ class _BooksState extends ConsumerState<Books>
                                         fontSize: 16,
                                         color: Colors.grey[600],
                                         fontWeight: FontWeight.w500,
+                                        fontStyle: FontStyle.italic,
                                       ),
                                     ),
                                   );

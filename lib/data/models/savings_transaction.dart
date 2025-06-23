@@ -1,4 +1,3 @@
-// lib/data/models/savings_transaction.dart
 class SavingsTransaction {
   final int? id;
   final int goalId;

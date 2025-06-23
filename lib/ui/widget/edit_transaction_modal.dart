@@ -5,7 +5,6 @@ import '../../providers/more/transaction_provider.dart';
 import '../../providers/currency_provider.dart';
 import './number_pad.dart';
 import './type_button.dart';
-import '../../providers/currency_provider.dart';
 
 class EditTransactionModal extends ConsumerStatefulWidget {
   final Transaction transaction;
