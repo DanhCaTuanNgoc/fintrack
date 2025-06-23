@@ -121,7 +121,7 @@ void callbackDispatcher() {
                   'invoice_due_date': nextDue.toIso8601String(),
                 });
               }
-              // Đã đến hạn hoặc quá hạn
+              // Đã quá hạn
               else if (now.isAfter(nextDue) ||
                   (now.year == nextDue.year &&
                       now.month == nextDue.month &&
@@ -154,9 +154,9 @@ void callbackDispatcher() {
                 );
               }
             }
-            // Hóa đơn đã thanh toán - chỉ tạo thông báo, không cập nhật trạng thái
+            // Hóa đơn đã thanh toán
             else {
-              // Nếu đã đến hạn mới, chỉ tạo thông báo
+              // Nếu đã đến hạn mới
               if (now.isAfter(nextDue) ||
                   (now.year == nextDue.year &&
                       now.month == nextDue.month &&
