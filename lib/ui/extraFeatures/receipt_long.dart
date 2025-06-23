@@ -54,7 +54,6 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     });
   }
 
-<<<<<<< HEAD
   Future<void> _loadBooks() async {
     final userBooks = await _dbHelper.getBooksByUser(1); // user ID = 1
     setState(() {
@@ -65,13 +64,10 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     });
   }
 
-=======
->>>>>>> develop
   // Hàm làm mới trạng thái hóa đơn định kỳ nếu đã đến hạn
   Future<void> _refreshPeriodicInvoices() async {
     final notifier = ref.read(periodicInvoicesProvider.notifier);
     await notifier.refreshPeriodicInvoices();
-<<<<<<< HEAD
   }
 
   void _clearFilters() {
@@ -81,32 +77,11 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
       _minAmountController.clear();
       _maxAmountController.clear();
     });
-=======
->>>>>>> develop
   }
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final allInvoices = ref.watch(periodicInvoicesProvider);
-=======
-    // Lấy danh sách hóa đơn định kỳ từ provider
-    final invoices = ref.watch(periodicInvoicesProvider);
-    final now = DateTime.now();
-    // Lọc các hóa đơn vừa làm mới: chưa thanh toán và đã đến hạn
-    final refreshedInvoices = invoices.where((invoice) {
-      final nextDue = invoice.nextDueDate ?? invoice.calculateNextDueDate();
-      return !invoice.isPaid &&
-          (now.isAfter(nextDue) ||
-              (now.year == nextDue.year &&
-                  now.month == nextDue.month &&
-                  now.day == nextDue.day));
-    }).toList();
-    // Lọc các hóa đơn còn lại
-    final otherInvoices = invoices
-        .where((invoice) => !refreshedInvoices.contains(invoice))
-        .toList();
->>>>>>> develop
     final themeColor = ref.watch(themeColorProvider);
 
     // Áp dụng bộ lọc
@@ -154,11 +129,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
         children: [
           _buildFilterBar(),
           Expanded(
-<<<<<<< HEAD
             child: filteredInvoices.isEmpty
-=======
-            child: invoices.isEmpty
->>>>>>> develop
                 ? const Center(
                     child: Text(
                       'Chưa có hóa đơn định kỳ nào',
@@ -172,24 +143,12 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                     padding: const EdgeInsets.all(16),
                     children: [
                       // Hiển thị section hóa đơn vừa làm mới
-<<<<<<< HEAD
                       if (filteredInvoices.isNotEmpty) ...[
-=======
-                      if (refreshedInvoices.isNotEmpty) ...[
->>>>>>> develop
                         // Duyệt và hiển thị từng hóa đơn vừa làm mới
                         ...filteredInvoices.map(
                             (invoice) => _buildInvoiceCard(context, invoice)),
                         const Divider(height: 32),
                       ],
-<<<<<<< HEAD
-=======
-                      // Hiển thị các hóa đơn còn lại
-                      if (otherInvoices.isNotEmpty) ...[
-                        ...otherInvoices.map(
-                            (invoice) => _buildInvoiceCard(context, invoice)),
-                      ],
->>>>>>> develop
                     ],
                   ),
           ),
@@ -340,7 +299,6 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                               transactionsProvider.notifier,
                             );
 
-<<<<<<< HEAD
                             await transactionNotifier.createTransaction(
                               amount: invoice.amount,
                               note: 'Thanh toán ${invoice.name}',
@@ -372,12 +330,6 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                               ),
                             );
                           }
-=======
-                          // Đánh dấu hóa đơn đã thanh toán
-                          await ref
-                              .read(periodicInvoicesProvider.notifier)
-                              .markPeriodicInvoiceAsPaid(invoice.id);
->>>>>>> develop
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
