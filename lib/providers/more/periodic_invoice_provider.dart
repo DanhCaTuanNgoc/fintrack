@@ -89,18 +89,3 @@ class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
     await _loadFromDb();
   }
 }
-
-// Các hàm tiện ích để tương thích với code cũ
-Future<void> addPeriodicInvoice(PeriodicInvoice invoice, WidgetRef ref) async {
-  await ref.read(periodicInvoicesProvider.notifier).addPeriodicInvoice(invoice);
-}
-
-Future<void> removePeriodicInvoice(String id, WidgetRef ref) async {
-  await ref.read(periodicInvoicesProvider.notifier).removePeriodicInvoice(id);
-}
-
-Future<void> markPeriodicInvoiceAsPaid(String id, WidgetRef ref) async {
-  await ref
-      .read(periodicInvoicesProvider.notifier)
-      .markPeriodicInvoiceAsPaid(id);
-}

@@ -8,8 +8,6 @@ import '../providers/more/transaction_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/more/notifications_provider.dart';
 import 'more/notification.dart';
-import 'extraFeatures/receipt_long.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 // 🔀 Danh sách các màu chủ đạo có thể chọn
 final List<Color> primaryVariants = [
