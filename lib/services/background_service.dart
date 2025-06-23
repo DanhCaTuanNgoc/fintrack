@@ -1,6 +1,4 @@
 import 'package:workmanager/workmanager.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/more/periodic_invoice_provider.dart';
 import '../data/models/more/periodic_invoice.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../data/database/database_helper.dart';
@@ -68,8 +66,9 @@ void callbackDispatcher() {
             playSound: true,
             enableLights: true,
             icon: '@mipmap/ic_launcher',
-            largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-            color: Color(0xFF6C63FF),
+            largeIcon:
+                const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+            color: const Color(0xFF6C63FF),
             category: AndroidNotificationCategory.reminder,
             visibility: NotificationVisibility.public,
             autoCancel: true,
@@ -82,7 +81,7 @@ void callbackDispatcher() {
             indeterminate: false,
             onlyAlertOnce: false,
             vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
-            ledColor: Color(0xFF6C63FF),
+            ledColor: const Color(0xFF6C63FF),
             ledOnMs: 1000,
             ledOffMs: 500,
           );

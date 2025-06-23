@@ -96,13 +96,22 @@ class SavingsGoal {
       isActive: map['is_active'] == 1,
     );
   }
-  
+
   // Helper methods
   double get progressPercentage =>
       targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0;
 
   double get remainingAmount => targetAmount - currentAmount;
 
-  bool get isCompleted => currentAmount >= targetAmount;
-
+  bool get isCompleted {
+    final now = DateTime.now();
+    if (currentAmount >= targetAmount) {
+      if (targetDate == null ||
+          now.isBefore(targetDate!) ||
+          now.isAtSameMomentAs(targetDate!)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

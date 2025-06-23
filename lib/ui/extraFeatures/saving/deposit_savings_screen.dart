@@ -28,10 +28,12 @@ class DepositSavingsScreen extends ConsumerStatefulWidget {
 class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
   String _amount = '';
   String _note = '';
+  final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 
   @override
   void dispose() {
+    _amountController.dispose();
     _noteController.dispose();
     super.dispose();
   }
@@ -79,27 +81,27 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
               ),
             ),
           ),
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(30),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SavingsHistoryScreen(
-                      goal: widget.goal,
-                      themeColor: widget.themeColor,
-                    ),
-                  ),
-                );
-              },
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(Icons.history, color: Colors.white),
-              ),
-            ),
-          ),
+          // Material(
+          //   color: Colors.transparent,
+          //   child: InkWell(
+          //     borderRadius: BorderRadius.circular(30),
+          //     onTap: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => SavingsHistoryScreen(
+          //             goal: widget.goal,
+          //             themeColor: widget.themeColor,
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     child: const Padding(
+          //       padding: EdgeInsets.all(8.0),
+          //       child: Icon(Icons.history, color: Colors.white),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
       body: savingsGoalAsync.when(
@@ -109,6 +111,9 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
             (g) => g.id == widget.goal.id,
             orElse: () => widget.goal,
           );
+
+          final savingsTransactionsAsync =
+              ref.watch(savingsTransactionsProvider(currentGoal.id!));
 
           return Column(
             children: [
@@ -125,36 +130,15 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                 ),
                 child: Column(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(
-                        Icons.savings,
-                        color: Colors.white,
-                        size: 40,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     Text(
                       currentGoal.name,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    // const SizedBox(height: 8),
-                    // Text(
-                    //   'Tiết kiệm linh hoạt',
-                    //   style: TextStyle(
-                    //     color: Colors.white.withOpacity(0.8),
-                    //     fontSize: 16,
-                    //   ),
-                    // ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -220,163 +204,168 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                             AlwaysStoppedAnimation<Color>(widget.themeColor),
                       ),
                     ),
+                    if (currentGoal.targetDate != null) ...[
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.event_available,
+                              size: 16, color: Colors.grey.shade700),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Ngày mục tiêu: ${_formatDate(currentGoal.targetDate!)}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.grey.shade800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
 
-              // Amount input section
+              // Lịch sử nạp tiền
+              Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Text(
+                  'Lịch sử nạp tiền',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey[600],
+                      fontStyle: FontStyle.italic),
+                ),
+              ),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      // Amount display
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.grey.shade200),
+                child: (savingsTransactionsAsync.isEmpty)
+                    ? Center(
+                        child: Text(
+                          'Chưa có lịch sử nạp tiền',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16,
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Số tiền nạp',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500,
-                              ),
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        itemCount: savingsTransactionsAsync.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 16),
+                        itemBuilder: (context, index) {
+                          final tx = savingsTransactionsAsync[index];
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.08),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 12),
-                            Text(
-                              _amount.isEmpty
-                                  ? '0 ${currencyType.symbol}'
-                                  : formatCurrency(
-                                      double.tryParse(_amount) ?? 0,
-                                      currencyType),
-                              style: TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.bold,
-                                color: widget.themeColor,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '+${formatCurrency(tx.amount, currencyType)}',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: widget.themeColor,
+                                      ),
+                                    ),
+                                    Text(
+                                      _formatDate(tx.savedAt),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (tx.note != null && tx.note!.isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.note,
+                                          size: 18, color: Colors.grey),
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          tx.note!,
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ]
+                              ],
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                      const SizedBox(height: 20),
+              ),
 
-                      // Number pad
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
-                                spreadRadius: 1,
-                                blurRadius: 10,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
+              // Nút nạp tiền
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 4,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: currentGoal.isCompleted
+                      ? ElevatedButton.icon(
+                          onPressed: null,
+                          icon: const Icon(Icons.check_circle,
+                              color: Colors.white),
+                          label: const Text(
+                            'Đã hoàn thành',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                          child: NumberPad(
-                            onNumberTap: (number) {
-                              setState(() {
-                                _amount += number;
-                              });
-                            },
-                            onBackspaceTap: () {
-                              setState(() {
-                                if (_amount.isNotEmpty) {
-                                  _amount =
-                                      _amount.substring(0, _amount.length - 1);
-                                }
-                              });
-                            },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: widget.themeColor,
+                            disabledBackgroundColor: widget.themeColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Note input
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey.shade200),
-                        ),
-                        child: TextField(
-                          controller: _noteController,
-                          decoration: InputDecoration(
-                            hintText: 'Ghi chú (tùy chọn)',
-                            border: InputBorder.none,
-                            icon: Icon(Icons.note, color: widget.themeColor),
-                          ),
-                          maxLines: 2,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Deposit button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: _amount.isNotEmpty &&
-                                  double.tryParse(_amount) != null
-                              ? () async {
-                                  final amount = double.parse(_amount);
-                                  if (amount > 0) {
-                                    try {
-                                      // Tạo transaction mới
-                                      final transaction = SavingsTransaction(
-                                        goalId: currentGoal.id!,
-                                        amount: amount,
-                                        note: _noteController.text.isNotEmpty
-                                            ? _noteController.text
-                                            : null,
-                                        savedAt: DateTime.now(),
-                                      );
-
-                                      // Thêm transaction
-                                      await savingsTransactionNotifier
-                                          .addTransaction(transaction);
-
-                                      // Cập nhật số tiền hiện tại của goal
-                                      await savingsGoalNotifier.addAmountToGoal(
-                                          currentGoal.id!, amount);
-
-                                      if (mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'Đã nạp ${formatCurrency(amount, currencyType)} vào sổ tiết kiệm!',
-                                            ),
-                                            backgroundColor: Colors.green,
-                                          ),
-                                        );
-                                        Navigator.pop(context);
-                                      }
-                                    } catch (e) {
-                                      if (mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text('Có lỗi xảy ra: $e'),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  }
-                                }
-                              : null,
+                        )
+                      : ElevatedButton(
+                          onPressed: () {
+                            _showDepositModal(
+                                context, widget.themeColor, currentGoal, ref);
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: widget.themeColor,
                             shape: RoundedRectangleBorder(
@@ -393,10 +382,6 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
                 ),
               ),
             ],
@@ -439,6 +424,229 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  }
+
+  void _showDepositModal(
+      BuildContext context, Color themeColor, SavingsGoal goal, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return _DepositModal(
+          themeColor: themeColor,
+          goal: goal,
+        );
+      },
+    );
+  }
+}
+
+class _DepositModal extends ConsumerStatefulWidget {
+  final Color themeColor;
+  final SavingsGoal goal;
+
+  const _DepositModal({
+    required this.themeColor,
+    required this.goal,
+  });
+
+  @override
+  ConsumerState<_DepositModal> createState() => _DepositModalState();
+}
+
+class _DepositModalState extends ConsumerState<_DepositModal> {
+  String _modalAmount = '';
+  String _modalNote = '';
+  late final FocusNode _noteFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _noteFocusNode = FocusNode();
+    _noteFocusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _noteFocusNode.removeListener(_onFocusChange);
+    _noteFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currency = ref.watch(currencyProvider);
+    final bool isKeyboardVisible = _noteFocusNode.hasFocus;
+
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 16,
+        ),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const Center(
+                child: Text(
+                  'Bỏ tiền tiết kiệm',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 20),
+              if (!isKeyboardVisible) ...[
+                Center(
+                  child: Text(
+                    _modalAmount.isEmpty
+                        ? '0 ${currency.symbol}'
+                        : formatCurrency(
+                            double.tryParse(_modalAmount) ?? 0,
+                            currency,
+                          ),
+                    style: const TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                NumberPad(
+                  onNumberTap: (number) {
+                    setState(() {
+                      _modalAmount += number;
+                    });
+                  },
+                  onBackspaceTap: () {
+                    setState(() {
+                      if (_modalAmount.isNotEmpty) {
+                        _modalAmount =
+                            _modalAmount.substring(0, _modalAmount.length - 1);
+                      }
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+              TextField(
+                focusNode: _noteFocusNode,
+                decoration: InputDecoration(
+                  labelText: 'Ghi chú (tùy chọn)',
+                  labelStyle: TextStyle(color: widget.themeColor),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: widget.themeColor,
+                      width: 2,
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  _modalNote = value;
+                },
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: _modalAmount.isNotEmpty &&
+                          double.tryParse(_modalAmount) != null &&
+                          double.parse(_modalAmount) > 0
+                      ? () async {
+                          final amount = double.parse(_modalAmount);
+                          final savingsTransactionNotifier = ref.read(
+                              savingsTransactionsProvider(widget.goal.id!)
+                                  .notifier);
+                          final savingsGoalNotifier =
+                              ref.read(savingsGoalsProvider.notifier);
+                          try {
+                            final transaction = SavingsTransaction(
+                              goalId: widget.goal.id!,
+                              amount: amount,
+                              note: _modalNote.isNotEmpty ? _modalNote : null,
+                              savedAt: DateTime.now(),
+                            );
+                            await savingsTransactionNotifier
+                                .addTransaction(transaction);
+                            await savingsGoalNotifier.addAmountToGoal(
+                                widget.goal.id!, amount);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Đã nạp ${formatCurrency(amount, currency)} vào sổ tiết kiệm!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Có lỗi xảy ra: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: widget.themeColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Xác nhận nạp tiền',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
       ),
     );
   }

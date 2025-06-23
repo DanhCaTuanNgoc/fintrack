@@ -2,9 +2,7 @@ import 'package:Fintrack/providers/providers_barrel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/savings_goal_provider.dart';
 import '../../../data/models/savings_goal.dart';
-import '../../../providers/currency_provider.dart';
 
 class AddFlexibleSavingGoalDialog extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -79,8 +77,8 @@ class _AddFlexibleSavingGoalDialogState
                       controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Tên sổ chi tiêu',
-                        labelStyle: TextStyle(
-                          color: Colors.black,
+                        labelStyle: const TextStyle(
+                          color: const Color.fromARGB(255, 62, 62, 62),
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -104,7 +102,7 @@ class _AddFlexibleSavingGoalDialogState
                       controller: _targetAmountController,
                       decoration: InputDecoration(
                         labelText: 'Số tiền mục tiêu',
-                        labelStyle: TextStyle(
+                        labelStyle: const TextStyle(
                           color: Colors.black,
                         ),
                         border: OutlineInputBorder(
@@ -196,7 +194,7 @@ class _AddFlexibleSavingGoalDialogState
                       child: InputDecorator(
                         decoration: InputDecoration(
                           labelText: 'Ngày mục tiêu',
-                          labelStyle: TextStyle(color: Colors.black),
+                          labelStyle: const TextStyle(color: Colors.black),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),

@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../books.dart';
 import '../../data/models/book.dart';
-import '../../providers/book_provider.dart';
-import '../../data/repositories/book_repository.dart';
 import '../../providers/book_provider.dart';
 
 class CreateBookModal extends ConsumerStatefulWidget {
@@ -103,7 +99,6 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
             backgroundColor: Colors.red,
           ),
         );
-        print('Error creating book: $e');
       }
     }
   }

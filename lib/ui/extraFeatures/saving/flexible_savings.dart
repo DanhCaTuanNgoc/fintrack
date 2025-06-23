@@ -16,7 +16,9 @@ class FlexibleSavingsScreen extends ConsumerWidget {
     final Color themeColor = ref.watch(themeColorProvider);
     final savingsGoal = ref.watch(savingsGoalsProvider);
     final currencyType = ref.watch(currencyProvider);
+
     return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: themeColor,
           elevation: 0,
@@ -74,15 +76,33 @@ class FlexibleSavingsScreen extends ConsumerWidget {
                         currencyType: currencyType,
                         themeColor: themeColor,
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DepositSavingsScreen(
-                                goal: goal,
-                                themeColor: themeColor,
+                          bool isOverdue = goal.targetDate != null &&
+                              goal.targetDate!.isBefore(DateTime.now()) &&
+                              !goal.isCompleted;
+                          bool isClosed = !goal.isActive;
+
+                          if (isOverdue || isClosed) {
+                            String message = isOverdue
+                                ? 'Sổ tiết kiệm này đã quá hạn.'
+                                : 'Sổ tiết kiệm này đã được đóng.';
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(message),
+                                backgroundColor:
+                                    isOverdue ? Colors.red : Colors.grey,
                               ),
-                            ),
-                          );
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DepositSavingsScreen(
+                                  goal: goal,
+                                  themeColor: themeColor,
+                                ),
+                              ),
+                            );
+                          }
                         },
                       );
                     },
@@ -201,13 +221,14 @@ class SavingCard extends StatelessWidget {
   final VoidCallback? onTap;
   final CurrencyType currencyType;
   final Color themeColor;
+
   const SavingCard({
-    Key? key,
+    super.key,
     required this.goal,
     required this.currencyType,
     required this.themeColor,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -215,121 +236,435 @@ class SavingCard extends StatelessWidget {
         ? (goal.currentAmount / goal.targetAmount).clamp(0.0, 1.0)
         : 0.0;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-      color: Colors.white,
-      elevation: 4,
-      shadowColor: Colors.black26,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(45),
-          topLeft: Radius.circular(16),
-          bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(16),
+    String statusText;
+    Color statusColor;
+
+    if (goal.isCompleted) {
+      statusText = 'Đã hoàn thành';
+      statusColor = const Color.fromARGB(255, 53, 177, 57);
+    } else if (goal.targetDate != null &&
+        goal.targetDate!.isBefore(DateTime.now())) {
+      statusText = 'Đã quá hạn';
+      statusColor = Colors.red;
+    } else if (!goal.isActive) {
+      statusText = 'Đã đóng';
+      statusColor = Colors.grey;
+    } else {
+      statusText = 'Đang tiến hành';
+      statusColor = Colors.blueAccent;
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(60),
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              themeColor.withOpacity(0.2),
+              themeColor.withOpacity(0.15),
+              themeColor.withOpacity(0.1),
+              themeColor.withOpacity(0.05),
+              Colors.white,
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: themeColor.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+              spreadRadius: 0,
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+              spreadRadius: 0,
+            ),
+          ],
+          border: Border.all(
+            color: themeColor.withOpacity(0.1),
+            width: 1,
+          ),
         ),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: const BorderRadius.only(
-          topRight: Radius.circular(45),
-          topLeft: Radius.circular(16),
-          bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 26, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(32),
+            topRight: Radius.circular(20),
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+          child: Stack(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text.rich(
-                      
-                      TextSpan(
-                        text: goal.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: ' - Tiết kiệm linh hoạt',
-                            
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.grey[600],
+              // Background pattern
+              Positioned(
+                top: -50,
+                right: -50,
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: themeColor.withOpacity(0.03),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: -30,
+                left: -30,
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: themeColor.withOpacity(0.02),
+                  ),
+                ),
+              ),
+
+              // Main content
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header section
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                themeColor,
+                                themeColor.withOpacity(0.7),
+                              ],
                             ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: themeColor.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.savings_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Goal name và label trên cùng một dòng
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      goal.name,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF1A1A1A),
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: statusColor.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      statusText,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: statusColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Target amount
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.grey.shade200,
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.flag_outlined,
+                            size: 20,
+                            color: Colors.grey.shade600,
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Mục tiêu',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                formatCurrency(goal.targetAmount, currencyType),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF1A1A1A),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  if (goal.isCompleted)
-                    const Icon(Icons.verified, color: Colors.green, size: 20),
-                ],
-              ),
-              const SizedBox(height: 16),
+                    const SizedBox(height: 20),
 
-              // Progress bar
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  value: percent,
-                  minHeight: 10,
-                  backgroundColor: Colors.grey.shade300,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    themeColor,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
+                    // Progress section
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Tiến độ',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                            Text(
+                              '${(percent * 100).toInt()}%',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: themeColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
 
-              // Progress info
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    progressText(
-                        currencyType, goal.currentAmount, goal.targetAmount),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
+                        // Custom progress bar
+                        Container(
+                          height: 10,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.grey.shade200,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 2,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            children: [
+                              // Base track
+                              Container(
+                                width: double.infinity,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.grey.shade200,
+                                ),
+                              ),
+                              // Progress fill - chỉ hiển thị khi có tiến độ thực sự
+                              if (percent > 0)
+                                FractionallySizedBox(
+                                  alignment: Alignment.centerLeft,
+                                  widthFactor: percent,
+                                  child: Container(
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          themeColor,
+                                          themeColor.withOpacity(0.8),
+                                        ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: themeColor.withOpacity(0.3),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Amount details
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Đã tiết kiệm',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    formatCurrency(
+                                        goal.currentAmount, currencyType),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: themeColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: 1,
+                              height: 40,
+                              color: Colors.grey.shade300,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Còn lại',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    formatCurrency(
+                                        goal.remainingAmount, currencyType),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.grey.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  Text(
-                    'Còn lại: ${formatCurrency(goal.remainingAmount, currencyType)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.redAccent,
-                    ),
-                  ),
-                ],
-              ),
 
-              // Ngày hoàn thành
-              if (goal.targetDate != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.calendar_today_outlined,
-                          size: 16, color: Colors.grey),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Hoàn thành trước: '
-                        '${goal.targetDate!.day}/${goal.targetDate!.month}/${goal.targetDate!.year}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic,
+                    // Target date section
+                    if (goal.targetDate != null) ...[
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.orange.shade200,
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.shade100,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Icons.access_time_rounded,
+                                size: 16,
+                                color: Colors.orange.shade700,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Ngày hoàn thành dự kiến',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.orange.shade700,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${goal.targetDate!.day}/${goal.targetDate!.month}/${goal.targetDate!.year}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.orange.shade800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
+                  ],
                 ),
+              ),
             ],
           ),
         ),
