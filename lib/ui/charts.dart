@@ -263,7 +263,10 @@ class _ChartsState extends ConsumerState<Charts>
   }
 
   Widget _buildPieChart(
-      Map<String, double> data, CurrencyType currencyType, bool isExpense) {
+    Map<String, double> data,
+    CurrencyType currencyType,
+    bool isExpense,
+  ) {
     final total = data.values.fold(0.0, (sum, amount) => sum + amount);
     final sortedData = data.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
@@ -297,36 +300,48 @@ class _ChartsState extends ConsumerState<Charts>
               ),
             ),
           Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  data.isEmpty ? '0' : formatCurrency(total, currencyType),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: data.isEmpty
-                        ? Colors.grey[400]
-                        : (isExpense
-                            ? const Color(0xFFFF5252)
-                            : const Color(0xFF4CAF50)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 140, // Giới hạn chiều ngang, bạn có thể điều chỉnh
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        data.isEmpty
+                            ? '0'
+                            : formatCurrency(total, currencyType),
+                        style: TextStyle(
+                          fontSize: 16.5,
+                          fontWeight: FontWeight.bold,
+                          color: data.isEmpty
+                              ? Colors.grey[400]
+                              : (isExpense
+                                  ? const Color(0xFFFF5252)
+                                  : const Color(0xFF4CAF50)),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                Text(
-                  isExpense ? 'Tổng chi tiêu' : 'Tổng thu nhập',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
+                  const SizedBox(height: 0),
+                  Text(
+                    isExpense ? 'Tổng chi tiêu' : 'Tổng thu nhập',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
                   ),
-                ),
-                Text(
-                  DateFormat('MM/yyyy').format(_selectedMonth),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[500],
+                  Text(
+                    DateFormat('MM/yyyy').format(_selectedMonth),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[500],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

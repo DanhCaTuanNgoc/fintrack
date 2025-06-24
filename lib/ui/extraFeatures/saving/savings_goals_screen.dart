@@ -51,7 +51,11 @@ class _SavingsGoalsScreenState extends ConsumerState<SavingsGoalsScreen>
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(30),
-              onTap: () => Navigator.pop(context),
+              onTap: () => {
+                Future.delayed(Duration.zero, () {
+                  Navigator.pop(context);
+                })
+              },
               child: const Icon(Icons.arrow_back, color: Colors.white),
             ),
           ),
@@ -162,7 +166,13 @@ class _SavingsGoalsScreenState extends ConsumerState<SavingsGoalsScreen>
                     color: Colors.transparent,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const PeriodicSavingScreen()));
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Row(

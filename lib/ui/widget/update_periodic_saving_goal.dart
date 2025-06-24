@@ -7,36 +7,40 @@ import '../../../data/models/savings_goal.dart';
 import '../../../providers/currency_provider.dart';
 import 'add_flexible_saving_goal.dart';
 
-class UpdateFlexibleSavingGoalDialog extends ConsumerStatefulWidget {
+class UpdatePeriodicSavingGoalDialog extends ConsumerStatefulWidget {
   final Color themeColor;
   final SavingsGoal goal;
 
-  const UpdateFlexibleSavingGoalDialog({
+  const UpdatePeriodicSavingGoalDialog({
     super.key,
     required this.themeColor,
     required this.goal,
   });
 
   @override
-  ConsumerState<UpdateFlexibleSavingGoalDialog> createState() =>
-      _UpdateFlexibleSavingGoalDialogState();
+  ConsumerState<UpdatePeriodicSavingGoalDialog> createState() =>
+      _UpdatePeriodicSavingGoalDialogState();
 }
 
-class _UpdateFlexibleSavingGoalDialogState
-    extends ConsumerState<UpdateFlexibleSavingGoalDialog> {
+class _UpdatePeriodicSavingGoalDialogState
+    extends ConsumerState<UpdatePeriodicSavingGoalDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _targetAmountController = TextEditingController();
+  final _periodicAmountController = TextEditingController();
+  String? _periodicFrequency;
   DateTime? _targetDate;
   DateTime? _startedDate;
 
   @override
   void initState() {
     super.initState();
-    // Khởi tạo giá trị từ goal hiện tại
     _nameController.text = widget.goal.name;
     _targetAmountController.text =
         formatCurrency(widget.goal.targetAmount, ref.read(currencyProvider));
+    _periodicAmountController.text = formatCurrency(
+        widget.goal.periodicAmount ?? 0, ref.read(currencyProvider));
+    _periodicFrequency = widget.goal.periodicFrequency;
     _targetDate = widget.goal.targetDate;
     _startedDate = widget.goal.startedDate;
   }
@@ -45,6 +49,7 @@ class _UpdateFlexibleSavingGoalDialogState
   void dispose() {
     _nameController.dispose();
     _targetAmountController.dispose();
+    _periodicAmountController.dispose();
     super.dispose();
   }
 
@@ -84,7 +89,7 @@ class _UpdateFlexibleSavingGoalDialogState
               ),
               const Center(
                 child: Text(
-                  'Chỉnh sửa sổ tiết kiệm',
+                  'Chỉnh sửa sổ tiết kiệm định kỳ',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -142,11 +147,8 @@ class _UpdateFlexibleSavingGoalDialogState
                       validator: (value) {
                         if (value == null || value.isEmpty)
                           return 'Nhập số tiền';
-
                         final amount = getNumericValueFromFormattedText(value);
                         if (amount <= 0) return 'Số tiền phải lớn hơn 0';
-
-                        // Lấy goal hiện tại từ provider để có dữ liệu mới nhất
                         final currentGoal = savingsGoalAsync.when(
                           data: (goals) => goals.firstWhere(
                             (g) => g.id == widget.goal.id,
@@ -155,14 +157,91 @@ class _UpdateFlexibleSavingGoalDialogState
                           loading: () => widget.goal,
                           error: (_, __) => widget.goal,
                         );
-
-                        // Kiểm tra số tiền mục tiêu mới không được nhỏ hơn số tiền hiện tại
                         if (amount < currentGoal.currentAmount) {
                           return 'Số tiền mục tiêu không được nhỏ hơn số tiền đã tiết kiệm (${formatCurrency(currentGoal.currentAmount, currencyType)})';
                         }
-
                         return null;
                       },
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: _periodicAmountController,
+                            decoration: InputDecoration(
+                              labelText: 'Số tiền định kỳ',
+                              labelStyle: const TextStyle(
+                                color: Colors.black,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: widget.themeColor,
+                                  width: 2,
+                                ),
+                              ),
+                              prefixIcon:
+                                  Icon(Icons.repeat, color: widget.themeColor),
+                            ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              CurrencyInputFormatter(currencyType)
+                            ],
+                            validator: (value) {
+                              if (value == null || value.isEmpty)
+                                return 'Nhập số tiền định kỳ';
+                              final amount =
+                                  getNumericValueFromFormattedText(value);
+                              if (amount <= 0)
+                                return 'Số tiền định kỳ phải lớn hơn 0';
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          flex: 2,
+                          child: DropdownButtonFormField<String>(
+                            value: _periodicFrequency,
+                            decoration: InputDecoration(
+                              labelText: 'Tần suất',
+                              labelStyle: const TextStyle(color: Colors.black),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: widget.themeColor,
+                                  width: 2,
+                                ),
+                              ),
+                              prefixIcon: Icon(Icons.schedule,
+                                  color: widget.themeColor),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                  value: 'daily', child: Text('Hàng ngày')),
+                              DropdownMenuItem(
+                                  value: 'weekly', child: Text('Hàng tuần')),
+                              DropdownMenuItem(
+                                  value: 'monthly', child: Text('Hàng tháng')),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _periodicFrequency = value;
+                              });
+                            },
+                            validator: (value) =>
+                                value == null ? 'Chọn tần suất' : null,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
                     Row(
@@ -271,15 +350,12 @@ class _UpdateFlexibleSavingGoalDialogState
                       ],
                     ),
                     const SizedBox(height: 20),
-
-                    // Hiển thị thông tin hiện tại với dữ liệu real-time
                     savingsGoalAsync.when(
                       data: (goals) {
                         final currentGoal = goals.firstWhere(
                           (g) => g.id == widget.goal.id,
                           orElse: () => widget.goal,
                         );
-
                         return Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -373,26 +449,6 @@ class _UpdateFlexibleSavingGoalDialogState
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Expanded(
-              //   child: ElevatedButton(
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: Colors.grey[300],
-              //       foregroundColor: Colors.black,
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(12),
-              //       ),
-              //       padding: const EdgeInsets.symmetric(vertical: 16),
-              //     ),
-              //     onPressed: () {
-              //       Navigator.pop(context);
-              //     },
-              //     child: const Text('Hủy',
-              //         style: TextStyle(
-              //             fontWeight: FontWeight.bold, fontSize: 18)),
-              //   ),
-              // ),
-              const SizedBox(width: 12),
               Row(
                 children: [
                   Expanded(
@@ -429,6 +485,10 @@ class _UpdateFlexibleSavingGoalDialogState
                           final name = _nameController.text.trim();
                           final targetAmount = getNumericValueFromFormattedText(
                               _targetAmountController.text.trim());
+                          final periodicAmount =
+                              getNumericValueFromFormattedText(
+                                  _periodicAmountController.text.trim());
+                          final periodicFrequency = _periodicFrequency;
                           final startedDate = _startedDate;
                           final targetDate = _targetDate;
 
@@ -439,16 +499,24 @@ class _UpdateFlexibleSavingGoalDialogState
                             );
                             return;
                           }
+                          if (periodicFrequency == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Vui lòng chọn tần suất')),
+                            );
+                            return;
+                          }
 
                           final notifier =
                               ref.read(savingsGoalsProvider.notifier);
 
-                          // Tạo goal mới với thông tin đã cập nhật
                           final updatedGoal = widget.goal.copyWith(
                             name: name,
                             targetAmount: targetAmount,
-                            targetDate: targetDate,
+                            periodicAmount: periodicAmount,
+                            periodicFrequency: periodicFrequency,
                             startedDate: startedDate,
+                            targetDate: targetDate,
                           );
 
                           await notifier.updateSavingsGoal(updatedGoal);
@@ -463,7 +531,9 @@ class _UpdateFlexibleSavingGoalDialogState
                                 backgroundColor: Colors.green,
                               ),
                             );
-                            Navigator.pop(context);
+                            Future.delayed(Duration.zero, () {
+                              Navigator.pop(context);
+                            });
                           }
                         }
                       },
@@ -474,9 +544,7 @@ class _UpdateFlexibleSavingGoalDialogState
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 20,
-              )
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -517,7 +585,9 @@ class _UpdateFlexibleSavingGoalDialogState
                       backgroundColor: Colors.red,
                     ),
                   );
-                  Navigator.pop(context); // Đóng modal cập nhật
+                  Future.delayed(Duration.zero, () {
+                    Navigator.pop(context);
+                  });
                 }
               },
               child: const Text('Xóa'),

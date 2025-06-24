@@ -673,11 +673,11 @@ class _BooksState extends ConsumerState<Books>
 
                                     // Tính tổng theo ngày (thu - chi)
                                     final dayTotal = dayIncome - dayExpense;
-
+                                    print('dayTotal' + dayTotal.toString());
                                     return ExpenseItem(
                                       dateKey: dateKey,
                                       transactions: transactions,
-                                      dayExpense: dayExpense,
+                                      dayExpense: dayTotal,
                                       themeColor: themeColor,
                                       categories: _categories,
                                       isAmountVisible: _isAmountVisible,

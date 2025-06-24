@@ -77,7 +77,7 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
+  // Tùy chỉnh statusBar
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -87,8 +87,6 @@ void main() async {
 
   // Khởi tạo database
   await DatabaseHelper.instance.database;
-  // Insert database ra terminal
-  await DatabaseHelper.instance.showAllTables();
 
   //Lưu vào biến local
   SharedPreferences prefs = await SharedPreferences.getInstance();

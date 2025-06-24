@@ -6,18 +6,17 @@ import '../../../data/models/savings_transaction.dart';
 import '../../../providers/savings_goal_provider.dart';
 import '../../../providers/savings_transaction_provider.dart';
 import '../../../providers/currency_provider.dart';
-import '../../widget/number_pad.dart';
-import '../../widget/update_flexible_saving_goal.dart';
-import 'savings_history_screen.dart';
+import '../../widget/widget_barrel.dart';
 
 class DepositSavingsScreen extends ConsumerStatefulWidget {
   final SavingsGoal goal;
   final Color themeColor;
-
+  final String type;
   const DepositSavingsScreen({
     super.key,
     required this.goal,
     required this.themeColor,
+    required this.type,
   });
 
   @override
@@ -51,19 +50,30 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
       appBar: AppBar(
         backgroundColor: widget.themeColor,
         elevation: 0,
-        title: const Text(
-          'Sổ tiết kiệm linh hoạt',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: widget.type == 'flexible'
+            ? const Text(
+                'Sổ tiết kiệm linh hoạt',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : const Text(
+                'Sổ tiết kiệm định kỳ',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
         leading: Material(
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(30),
-            onTap: () => Navigator.pop(context),
+            onTap: () => Future.delayed(Duration.zero, () {
+              Navigator.pop(context);
+            }),
             child: const Icon(Icons.arrow_back, color: Colors.white),
           ),
         ),
@@ -73,7 +83,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
             child: InkWell(
               borderRadius: BorderRadius.circular(30),
               onTap: () {
-                _showUpdateModal(context, themeColor, widget.goal);
+                _showUpdateModal(context, themeColor, widget.goal, widget.type);
               },
               child: const Padding(
                 padding: EdgeInsets.all(8.0),
@@ -204,25 +214,94 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                             AlwaysStoppedAnimation<Color>(widget.themeColor),
                       ),
                     ),
-                    if (currentGoal.targetDate != null) ...[
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    const SizedBox(height: 16),
+                    // Thông tin mục tiêu và định kỳ
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: Column(
                         children: [
-                          Icon(Icons.event_available,
-                              size: 16, color: Colors.grey.shade700),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Ngày mục tiêu: ${_formatDate(currentGoal.targetDate!)}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.grey.shade800,
+                          // Ngày mục tiêu
+                          if (currentGoal.targetDate != null) ...[
+                            Row(
+                              children: [
+                                Icon(Icons.event_available,
+                                    size: 18, color: widget.themeColor),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Ngày mục tiêu:',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey.shade700,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  _formatDate(currentGoal.targetDate!),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: widget.themeColor,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                          ],
+                          // Thông tin định kỳ
+                          if (widget.type == 'periodic' &&
+                              currentGoal.periodicAmount != null &&
+                              currentGoal.periodicFrequency != null) ...[
+                            if (currentGoal.targetDate != null)
+                              const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Icon(Icons.repeat,
+                                    size: 18, color: widget.themeColor),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Nạp định kỳ:',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey.shade700,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      formatCurrency(
+                                          currentGoal.periodicAmount!,
+                                          currencyType),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: widget.themeColor,
+                                      ),
+                                    ),
+                                    Text(
+                                      _getFrequencyText(
+                                          currentGoal.periodicFrequency!),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade600,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
                         ],
                       ),
-                    ],
+                    ),
                   ],
                 ),
               ),
@@ -607,13 +686,18 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                                 widget.goal.id!, amount);
                             if (context.mounted) {
                               Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      'Đã nạp ${formatCurrency(amount, currency)} vào sổ tiết kiệm!'),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
+                              Future.delayed(const Duration(milliseconds: 100),
+                                  () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Đã nạp ${formatCurrency(amount, currency)} vào sổ tiết kiệm!',
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              });
                             }
                           } catch (e) {
                             if (context.mounted) {
@@ -653,14 +737,29 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
 }
 
 void _showUpdateModal(
-    BuildContext context, Color themeColor, SavingsGoal goal) {
+    BuildContext context, Color themeColor, SavingsGoal goal, String type) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (context) => UpdateFlexibleSavingGoalDialog(
-      themeColor: themeColor,
-      goal: goal,
-    ),
+    builder: (context) => type == 'flexible'
+        ? UpdateFlexibleSavingGoalDialog(
+            themeColor: themeColor,
+            goal: goal,
+          )
+        : UpdatePeriodicSavingGoalDialog(themeColor: themeColor, goal: goal),
   );
+}
+
+String _getFrequencyText(String frequency) {
+  switch (frequency) {
+    case 'daily':
+      return 'hàng ngày';
+    case 'weekly':
+      return 'hàng tuần';
+    case 'monthly':
+      return 'hàng tháng';
+    default:
+      return frequency;
+  }
 }

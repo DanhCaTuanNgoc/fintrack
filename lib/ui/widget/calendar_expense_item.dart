@@ -4,6 +4,19 @@ import 'package:intl/intl.dart';
 import '../../data/models/models_barrel.dart';
 import '../../providers/providers_barrel.dart';
 
+final Map<String, IconData> _iconMapping = {
+  '🍔': Icons.restaurant,
+  '🚗': Icons.directions_car,
+  '🛍': Icons.shopping_bag,
+  '🎮': Icons.sports_esports,
+  '📚': Icons.book,
+  '💅': Icons.face,
+  '💰': Icons.attach_money,
+  '🎁': Icons.card_giftcard,
+  '📈': Icons.trending_up,
+  '🏠': Icons.home,
+};
+
 class CalendarExpenseItem extends ConsumerWidget {
   final String dateKey;
   final List<Transaction> transactions;
@@ -24,13 +37,8 @@ class CalendarExpenseItem extends ConsumerWidget {
     required this.onTapTransaction,
   });
 
-  Icon _getIconFromEmoji(String emoji) {
-    return Icon(
-      const Text('🔖').data != emoji
-          ? Icons.category
-          : Icons.label, // fallback if emoji parsing fails
-      size: 20,
-    );
+  IconData _getIconFromEmoji(String emoji) {
+    return _iconMapping[emoji] ?? Icons.category;
   }
 
   @override
@@ -129,7 +137,7 @@ class CalendarExpenseItem extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
-                            icon.icon,
+                            _getIconFromEmoji(category['icon'] ?? '🏷️'),
                             color: themeColor,
                             size: 20,
                           ),

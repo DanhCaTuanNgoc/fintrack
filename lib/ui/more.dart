@@ -148,7 +148,7 @@ class _MoreState extends ConsumerState<More> {
           _buildSettingItem(
             icon: Icons.color_lens,
             title: 'Màu chủ đạo',
-            subtitle: _themeColorNames[_currentColorIndex!],
+            subtitle: _themeColorNames[_currentColorIndex ?? 0],
             onTap: () {
               _showBackgroundColorDialog();
             },

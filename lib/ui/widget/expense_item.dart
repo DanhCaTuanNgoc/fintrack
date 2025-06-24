@@ -40,6 +40,7 @@ class _ExpenseItemState extends State<ExpenseItem> {
     '💰': Icons.attach_money,
     '🎁': Icons.card_giftcard,
     '📈': Icons.trending_up,
+    '🏠': Icons.home,
   };
 
   IconData _getIconFromEmoji(String emoji) {
@@ -124,7 +125,7 @@ class _ExpenseItemState extends State<ExpenseItem> {
                   ),
                   const Spacer(),
                   Text(
-                    'Tổng: ${widget.isAmountVisible ? (widget.dayExpense >= 0 ? '+' : '-') + formatCurrency(widget.dayExpense.abs(), widget.currencySymbol) : '•••••'}',
+                    'Tổng: ${widget.isAmountVisible ? (widget.dayExpense > 0 ? '+' : '-') + formatCurrency(widget.dayExpense.abs(), widget.currencySymbol) : '•••••'}',
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],
