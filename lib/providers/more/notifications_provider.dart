@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/database/database_helper.dart';
 import '../../data/models/more/notification_item.dart';
+import '../../data/repositories/more/notification_repository.dart';
 
 // Provider để quản lý trạng thái thông báo
 final notificationsProvider =
@@ -14,8 +14,8 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
   }
 
   Future<void> _loadFromDb() async {
-    final data = await DatabaseHelper.instance.getAllNotifications();
-    state = data.map((e) => NotificationItem.fromMap(e)).toList();
+    final data = await NotificationRepository().getAllNotifications();
+    state = data;
   }
 
   // Phương thức để làm mới dữ liệu
@@ -50,14 +50,14 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
       invoiceId: invoiceId,
       invoiceDueDate: dueDate,
     );
-    await DatabaseHelper.instance.insertNotification(notification.toMap());
+    await NotificationRepository().addNotification(notification);
     await _loadFromDb();
   }
 
   Future<void> markAllAsRead() async {
     for (final n in state) {
       if (!n.isRead && n.id != null) {
-        await DatabaseHelper.instance.updateNotificationRead(n.id!, true);
+        await NotificationRepository().updateNotificationRead(n.id!, true);
       }
     }
     await _loadFromDb();
@@ -66,7 +66,7 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
   Future<void> markAsRead(int index) async {
     final n = state[index];
     if (!n.isRead && n.id != null) {
-      await DatabaseHelper.instance.updateNotificationRead(n.id!, true);
+      await NotificationRepository().updateNotificationRead(n.id!, true);
       await _loadFromDb();
     }
   }
@@ -74,7 +74,7 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
   Future<void> deleteNotification(int index) async {
     final n = state[index];
     if (n.id != null) {
-      await DatabaseHelper.instance.deleteNotification(n.id!);
+      await NotificationRepository().deleteNotification(n.id!);
       await _loadFromDb();
     }
   }

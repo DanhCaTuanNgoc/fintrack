@@ -1,4 +1,6 @@
 import 'package:workmanager/workmanager.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/more/periodic_invoice_provider.dart';
 import '../data/models/more/periodic_invoice.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../data/database/database_helper.dart';
@@ -66,9 +68,8 @@ void callbackDispatcher() {
             playSound: true,
             enableLights: true,
             icon: '@mipmap/ic_launcher',
-            largeIcon:
-                const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-            color: const Color(0xFF6C63FF),
+            largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+            color: Color(0xFF6C63FF),
             category: AndroidNotificationCategory.reminder,
             visibility: NotificationVisibility.public,
             autoCancel: true,
@@ -81,14 +82,12 @@ void callbackDispatcher() {
             indeterminate: false,
             onlyAlertOnce: false,
             vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
-            ledColor: const Color(0xFF6C63FF),
+            ledColor: Color(0xFF6C63FF),
             ledOnMs: 1000,
             ledOffMs: 500,
           );
           final NotificationDetails platformChannelSpecifics =
               NotificationDetails(android: androidPlatformChannelSpecifics);
-
-          int notificationCount = 0;
           for (final invoice in invoices) {
             final nextDue =
                 invoice.nextDueDate ?? invoice.calculateNextDueDate();
@@ -121,9 +120,8 @@ void callbackDispatcher() {
                   'invoice_id': invoice.id,
                   'invoice_due_date': nextDue.toIso8601String(),
                 });
-                notificationCount++;
               }
-              // Đã đến hạn hoặc quá hạn
+              // Đã quá hạn
               else if (now.isAfter(nextDue) ||
                   (now.year == nextDue.year &&
                       now.month == nextDue.month &&
@@ -147,12 +145,18 @@ void callbackDispatcher() {
                   'invoice_id': invoice.id,
                   'invoice_due_date': nextDue.toIso8601String(),
                 });
-                notificationCount++;
+
+                // Cập nhật trạng thái hóa đơn thành quá hạn
+                await DatabaseHelper.instance.updateInvoicePaidStatus(
+                  invoice.id!,
+                  false, // isPaid = false (chưa thanh toán)
+                  nextDueDate: nextDue, // cập nhật ngày đến hạn
+                );
               }
             }
-            // Hóa đơn đã thanh toán - chỉ tạo thông báo, không cập nhật trạng thái
+            // Hóa đơn đã thanh toán
             else {
-              // Nếu đã đến hạn mới, chỉ tạo thông báo
+              // Nếu đã đến hạn mới
               if (now.isAfter(nextDue) ||
                   (now.year == nextDue.year &&
                       now.month == nextDue.month &&
@@ -177,7 +181,13 @@ void callbackDispatcher() {
                   'invoice_id': invoice.id,
                   'invoice_due_date': nextDue.toIso8601String(),
                 });
-                notificationCount++;
+
+                // Cập nhật trạng thái hóa đơn thành chưa thanh toán khi đến hạn mới
+                await DatabaseHelper.instance.updateInvoicePaidStatus(
+                  invoice.id!,
+                  false, // isPaid = false (chưa thanh toán)
+                  nextDueDate: nextDue, // giữ nguyên ngày đến hạn
+                );
               }
             }
           }
