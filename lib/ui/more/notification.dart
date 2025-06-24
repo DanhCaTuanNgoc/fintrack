@@ -37,7 +37,6 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   Widget build(BuildContext context) {
     final notifications = ref.watch(notificationsProvider);
     final notifier = ref.read(notificationsProvider.notifier);
-    final loading = notifications.isEmpty;
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -70,30 +69,28 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
         onRefresh: () async {
           ref.invalidate(notificationsProvider);
         },
-        child: loading
-            ? const Center(child: CircularProgressIndicator())
-            : notifications.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Không có thông báo nào',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF2D3142),
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: notifications.length,
-                    itemBuilder: (context, index) {
-                      final notification = notifications[index];
-                      return NotificationTile(
-                        notification: notification,
-                        onTap: () => notifier.markAsRead(index),
-                        onDelete: () => notifier.deleteNotification(index),
-                      );
-                    },
+        child: notifications.isEmpty
+            ? const Center(
+                child: Text(
+                  'Không có thông báo nào',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF2D3142),
                   ),
+                ),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  final notification = notifications[index];
+                  return NotificationTile(
+                    notification: notification,
+                    onTap: () => notifier.markAsRead(index),
+                    onDelete: () => notifier.deleteNotification(index),
+                  );
+                },
+              ),
       ),
     );
   }
