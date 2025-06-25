@@ -69,43 +69,59 @@ class PeriodicInvoice {
 
   // Tính toán ngày đến hạn tiếp theo dựa trên tần suất
   DateTime calculateNextDueDate() {
-
-    if (lastPaidDate == null) {
-      return startDate;
-    }
+    // Nếu chưa có ngày thanh toán gần nhất, sử dụng ngày bắt đầu
+    final baseDate = lastPaidDate ?? startDate;
 
     switch (frequency) {
       case 'daily':
-        // Ngày tiếp theo, bắt đầu từ 00:00
+        // Ngày tiếp theo
         return DateTime(
-          lastPaidDate!.year,
-          lastPaidDate!.month,
-          lastPaidDate!.day + 1,
+          baseDate.year,
+          baseDate.month,
+          baseDate.day + 1,
         );
       case 'weekly':
-        // Tuần tiếp theo, bắt đầu từ thứ 2
-        final daysUntilMonday = (8 - lastPaidDate!.weekday) % 7;
+        // Tuần tiếp theo, cùng ngày trong tuần
         return DateTime(
-          lastPaidDate!.year,
-          lastPaidDate!.month,
-          lastPaidDate!.day + daysUntilMonday,
+          baseDate.year,
+          baseDate.month,
+          baseDate.day + 7,
         );
       case 'monthly':
-        // Tháng tiếp theo, ngày 1
-        return DateTime(
-          lastPaidDate!.year,
-          lastPaidDate!.month + 1,
-          1,
-        );
+        // Tháng tiếp theo, cùng ngày
+        int nextMonth = baseDate.month + 1;
+        int nextYear = baseDate.year;
+        if (nextMonth > 12) {
+          nextMonth = 1;
+          nextYear++;
+        }
+        // Đảm bảo ngày hợp lệ (ví dụ: 31/01 -> 28/02 hoặc 29/02)
+        int day = baseDate.day;
+        while (day > 28) {
+          try {
+            DateTime(nextYear, nextMonth, day);
+            break;
+          } catch (e) {
+            day--;
+          }
+        }
+        return DateTime(nextYear, nextMonth, day);
       case 'yearly':
-        // Năm tiếp theo, ngày 1 tháng 1
-        return DateTime(
-          lastPaidDate!.year + 1,
-          1,
-          1,
-        );
+        // Năm tiếp theo, cùng ngày tháng
+        int nextYear = baseDate.year + 1;
+        // Đảm bảo ngày hợp lệ (ví dụ: 29/02/2024 -> 28/02/2025)
+        int day = baseDate.day;
+        while (day > 28) {
+          try {
+            DateTime(nextYear, baseDate.month, day);
+            break;
+          } catch (e) {
+            day--;
+          }
+        }
+        return DateTime(nextYear, baseDate.month, day);
       default:
-        return lastPaidDate!;
+        return baseDate;
     }
   }
 

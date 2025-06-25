@@ -27,10 +27,12 @@ class PeriodicInvoiceRepository {
     final invoice = data
         .map((e) => PeriodicInvoice.fromMap(e))
         .firstWhere((e) => e.id == id);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     final updated = invoice.copyWith(
       isPaid: true,
-      lastPaidDate: DateTime.now(),
-      nextDueDate: invoice.calculateNextDueDate(),
+      lastPaidDate: today,
+      nextDueDate: invoice.copyWith(lastPaidDate: today).calculateNextDueDate(),
     );
     await dbHelper.updatePeriodicInvoice(updated.toMap());
   }

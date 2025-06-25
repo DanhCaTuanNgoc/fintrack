@@ -40,10 +40,12 @@ class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
   Future<void> markPeriodicInvoiceAsPaid(String id) async {
     final data = await PeriodicInvoiceRepository().getAllPeriodicInvoices();
     final invoice = data.firstWhere((e) => e.id == id);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     final updated = invoice.copyWith(
       isPaid: true,
-      lastPaidDate: DateTime.now(),
-      nextDueDate: invoice.calculateNextDueDate(),
+      lastPaidDate: today,
+      nextDueDate: invoice.copyWith(lastPaidDate: today).calculateNextDueDate(),
     );
     await PeriodicInvoiceRepository().updatePeriodicInvoice(updated);
     await _loadFromDb();
@@ -68,14 +70,15 @@ class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
   // Làm mới trạng thái hóa đơn định kỳ nếu đã đến hạn
   Future<void> refreshPeriodicInvoices() async {
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     for (final invoice in state) {
       final nextDue = invoice.nextDueDate ?? invoice.calculateNextDueDate();
       // Nếu hóa đơn đã thanh toán và đã đến hạn mới thì chuyển về chưa thanh toán và cập nhật nextDueDate
       if (invoice.isPaid &&
-          (now.isAfter(nextDue) ||
-              (now.year == nextDue.year &&
-                  now.month == nextDue.month &&
-                  now.day == nextDue.day))) {
+          (today.isAfter(nextDue) ||
+              (today.year == nextDue.year &&
+                  today.month == nextDue.month &&
+                  today.day == nextDue.day))) {
         await PeriodicInvoiceRepository().updateInvoicePaidStatus(
           invoice.id,
           false,

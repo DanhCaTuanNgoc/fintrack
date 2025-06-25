@@ -148,7 +148,7 @@ void callbackDispatcher() {
 
                 // Cập nhật trạng thái hóa đơn thành quá hạn
                 await DatabaseHelper.instance.updateInvoicePaidStatus(
-                  invoice.id!,
+                  invoice.id,
                   false, // isPaid = false (chưa thanh toán)
                   nextDueDate: nextDue, // cập nhật ngày đến hạn
                 );
@@ -184,7 +184,7 @@ void callbackDispatcher() {
 
                 // Cập nhật trạng thái hóa đơn thành chưa thanh toán khi đến hạn mới
                 await DatabaseHelper.instance.updateInvoicePaidStatus(
-                  invoice.id!,
+                  invoice.id,
                   false, // isPaid = false (chưa thanh toán)
                   nextDueDate: nextDue, // giữ nguyên ngày đến hạn
                 );
