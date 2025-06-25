@@ -51,7 +51,7 @@ void main() async {
 
   // Khởi tạo database
   await DatabaseHelper.instance.database;
-
+  await DatabaseHelper.instance.showAllTables();
   //Lưu vào biến local
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool hasVisited = prefs.getBool('hasVisited') ?? false;

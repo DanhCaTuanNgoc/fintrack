@@ -4,25 +4,13 @@ import '../../data/repositories/more/notification_repository.dart';
 import '../../data/database/database_helper.dart';
 
 // Provider để quản lý trạng thái thông báo
-final notificationsProvider = StateNotifierProvider<NotificationsNotifier,
-    AsyncValue<List<NotificationItem>>>((ref) {
+final notificationsProvider =
+    StateNotifierProvider<NotificationsNotifier, List<NotificationItem>>((ref) {
   return NotificationsNotifier();
 });
 
-// Provider để lấy số thông báo chưa đọc
-final unreadNotificationsCountProvider = Provider<int>((ref) {
-  final notifications = ref.watch(notificationsProvider);
-  return notifications.when(
-    data: (notificationsList) =>
-        notificationsList.where((n) => !n.isRead).length,
-    loading: () => 0,
-    error: (_, __) => 0,
-  );
-});
-
-class NotificationsNotifier
-    extends StateNotifier<AsyncValue<List<NotificationItem>>> {
-  NotificationsNotifier() : super(const AsyncValue.loading()) {
+class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
+  NotificationsNotifier() : super([]) {
     _loadFromDb();
   }
 
@@ -40,11 +28,8 @@ class NotificationsNotifier
   Future<void> addInvoiceDueNotification(String invoiceName, double amount,
       DateTime dueDate, String invoiceId) async {
     // Check if a similar notification for this invoice and due date already exists and is unread
-    final currentState = state;
-    if (currentState is! AsyncData || currentState.value == null) return;
-
     NotificationItem? existingNotification;
-    for (var item in currentState.value!) {
+    for (var item in state) {
       if (item.invoiceId == invoiceId &&
           item.invoiceDueDate != null &&
           DateTime(item.invoiceDueDate!.year, item.invoiceDueDate!.month,
@@ -73,10 +58,7 @@ class NotificationsNotifier
   }
 
   Future<void> markAllAsRead() async {
-    final currentState = state;
-    if (currentState is! AsyncData || currentState.value == null) return;
-
-    for (final n in currentState.value!) {
+    for (final n in state) {
       if (!n.isRead && n.id != null) {
         await NotificationRepository(DatabaseHelper.instance)
             .updateNotificationRead(n.id!, true);
@@ -101,5 +83,18 @@ class NotificationsNotifier
           .deleteNotification(n.id!);
       await _loadFromDb();
     }
+  }
+
+  Future<void> deleteAllReadNotifications() async {
+    final readNotifications =
+        state.where((n) => n.isRead && n.id != null).toList();
+    if (readNotifications.isEmpty) {
+      return;
+    }
+    final repository = NotificationRepository(DatabaseHelper.instance);
+    for (final n in readNotifications) {
+      await repository.deleteNotification(n.id!);
+    }
+    await _loadFromDb();
   }
 }

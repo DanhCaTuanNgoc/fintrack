@@ -244,138 +244,88 @@ class DatabaseHelper {
     );
   }
 
-  // // Hiển thị tất cả dữ liệu trong database
-  // Future<void> showAllTables() async {
-  //   final db = await database;
-  //   final logger = Logger('DatabaseHelper');
+  // Hiển thị tất cả dữ liệu trong database
+  Future<void> showAllTables() async {
+    final db = await database;
+    final logger = Logger('DatabaseHelper');
 
-  //   logger.info('\n=== DATABASE TABLES ===\n');
+    logger.info('\n=== DATABASE TABLES ===\n');
+    // Hiển thị bảng Books
+    logger.info('\n📚 BOOKS TABLE:');
+    logger.info('----------------');
+    final books = await db.query('books');
+    for (var book in books) {
+      logger.info('ID: ${book['id']}');
+      logger.info('Name: ${book['name']}');
+      logger.info('Description: ${book['description']}');
+      logger.info('Balance: ${book['balance']}');
+      logger.info('User ID: ${book['user_id']}');
+      logger.info('Created at: ${book['created_at']}');
+      logger.info('----------------');
+    }
 
-  //   // Hiển thị bảng Users
-  //   logger.info('📊 USERS TABLE:');
-  //   logger.info('----------------');
-  //   final users = await db.query('users');
-  //   for (var user in users) {
-  //     logger.info('ID: ${user['id']}');
-  //     logger.info('Name: ${user['name']}');
-  //     logger.info('Email: ${user['email']}');
-  //     logger.info('Premium: ${user['premium'] == 1 ? 'Yes' : 'No'}');
-  //     logger.info('----------------');
-  //   }
+    // Hiển thị bảng Categories
+    logger.info('\n🏷 CATEGORIES TABLE:');
+    logger.info('----------------');
+    final categories = await db.query('categories');
+    for (var category in categories) {
+      logger.info('ID: ${category['id']}');
+      logger.info('Name: ${category['name']}');
+      logger.info('Icon: ${category['icon']}');
+      logger.info('Type: ${category['type']}');
+      logger.info('----------------');
+    }
 
-  //   // Hiển thị bảng Books
-  //   logger.info('\n📚 BOOKS TABLE:');
-  //   logger.info('----------------');
-  //   final books = await db.query('books');
-  //   for (var book in books) {
-  //     logger.info('ID: ${book['id']}');
-  //     logger.info('Name: ${book['name']}');
-  //     logger.info('Description: ${book['description']}');
-  //     logger.info('Balance: ${book['balance']}');
-  //     logger.info('User ID: ${book['user_id']}');
-  //     logger.info('Created at: ${book['created_at']}');
-  //     logger.info('----------------');
-  //   }
+    // Hiển thị bảng Transactions
+    logger.info('\n💰 TRANSACTIONS TABLE:');
+    logger.info('----------------');
+    final transactions = await db.query('transactions');
+    for (var transaction in transactions) {
+      logger.info('ID: ${transaction['id']}');
+      logger.info('Amount: ${transaction['amount']}');
+      logger.info('Note: ${transaction['note']}');
+      logger.info('Date: ${transaction['date']}');
+      logger.info('Type: ${transaction['type']}');
+      logger.info('Category ID: ${transaction['category_id']}');
+      logger.info('Book ID: ${transaction['book_id']}');
+      logger.info('User ID: ${transaction['user_id']}');
+      logger.info('----------------');
+    }
 
-  //   // Hiển thị bảng Categories
-  //   logger.info('\n🏷 CATEGORIES TABLE:');
-  //   logger.info('----------------');
-  //   final categories = await db.query('categories');
-  //   for (var category in categories) {
-  //     logger.info('ID: ${category['id']}');
-  //     logger.info('Name: ${category['name']}');
-  //     logger.info('Icon: ${category['icon']}');
-  //     logger.info('Type: ${category['type']}');
-  //     logger.info('----------------');
-  //   }
+    // Hiển thị bảng Notifications
+    logger.info('\n🔔 NOTIFICATIONS TABLE:');
+    logger.info('----------------');
+    final notifications = await db.query('notifications');
+    for (var notification in notifications) {
+      logger.info('ID: ${notification['id']}');
+      logger.info('Title: ${notification['title']}');
+      logger.info('Message: ${notification['message']}');
+      logger.info('Time: ${notification['time']}');
+      logger.info('Is Read: ${notification['is_read'] == 1 ? 'Yes' : 'No'}');
+      logger.info('Invoice ID: ${notification['invoice_id']}');
+      logger.info('Invoice Due Date: ${notification['invoice_due_date']}');
+      logger.info('Goal ID: ${notification['goal_id']}');
+      logger.info('----------------');
+    }
 
-  //   // Hiển thị bảng Transactions
-  //   logger.info('\n💰 TRANSACTIONS TABLE:');
-  //   logger.info('----------------');
-  //   final transactions = await db.query('transactions');
-  //   for (var transaction in transactions) {
-  //     logger.info('ID: ${transaction['id']}');
-  //     logger.info('Amount: ${transaction['amount']}');
-  //     logger.info('Note: ${transaction['note']}');
-  //     logger.info('Date: ${transaction['date']}');
-  //     logger.info('Type: ${transaction['type']}');
-  //     logger.info('Category ID: ${transaction['category_id']}');
-  //     logger.info('Book ID: ${transaction['book_id']}');
-  //     logger.info('User ID: ${transaction['user_id']}');
-  //     logger.info('----------------');
-  //   }
-
-  //   logger.info('\n=== END OF DATABASE ===\n');
-  // }
+    logger.info('\n=== END OF DATABASE ===\n');
+  }
 
   Future<List<Map<String, dynamic>>> getCategories() async {
     final db = await database;
     return await db.query('categories');
   }
 
-  // Future<void> insertSampleTransactions(int userId, int bookId) async {
-  //   final db = await database;
-  //   final random = Random();
-  //   final now = DateTime.now();
-
-  //   // Lấy danh sách categories
-  //   final expenseCategories = await getCategoriesByType('expense');
-  //   final incomeCategories = await getCategoriesByType('income');
-
-  //   // Tạo dữ liệu mẫu cho 5 tháng
-  //   for (int month = 0; month < 5; month++) {
-  //     // Tạo 5-10 giao dịch chi tiêu mỗi tháng
-  //     int numExpenses = random.nextInt(6) + 5;
-  //     for (int i = 0; i < numExpenses; i++) {
-  //       final category =
-  //           expenseCategories[random.nextInt(expenseCategories.length)];
-  //       final amount = (random.nextDouble() * 5000000)
-  //           .roundToDouble(); // Số tiền từ 0-5 triệu
-  //       final date = DateTime(
-  //         now.year,
-  //         now.month - month,
-  //         random.nextInt(28) + 1,
-  //       );
-
-  //       await db.insert('transactions', {
-  //         'amount': amount,
-  //         'note': 'Giao dịch chi tiêu mẫu ${i + 1}',
-  //         'date': date.toIso8601String(),
-  //         'type': 'expense',
-  //         'category_id': category['id'],
-  //         'book_id': bookId,
-  //         'user_id': userId,
-  //       });
-  //     }
-
-  //     // Tạo 1-3 giao dịch thu nhập mỗi tháng
-  //     int numIncomes = random.nextInt(1) + 1;
-  //     for (int i = 0; i < numIncomes; i++) {
-  //       final category =
-  //           incomeCategories[random.nextInt(incomeCategories.length)];
-  //       final amount = (random.nextDouble() * 15000).roundToDouble();
-  //       final date = DateTime(
-  //         now.year,
-  //         now.month - month,
-  //         random.nextInt(28) + 1,
-  //       );
-
-  //       await db.insert('transactions', {
-  //         'amount': amount,
-  //         'note': 'Giao dịch thu nhập mẫu ${i + 1}',
-  //         'date': date.toIso8601String(),
-  //         'type': 'income',
-  //         'category_id': category['id'],
-  //         'book_id': bookId,
-  //         'user_id': userId,
-  //       });
-  //     }
-  //   }
-
   // Lấy toàn bộ danh sách mục tiêu tiết kiệm
   Future<List<Map<String, dynamic>>> getAllSavingsGoals() async {
     final db = await database;
     return await db.query('savings_goals', where: 'is_active = 1');
+  }
+
+  // Lấy toàn bộ danh sách mục tiêu tiết kiệm
+  Future<List<Map<String, dynamic>>> getAllNotifications() async {
+    final db = await database;
+    return await db.query('notifications');
   }
 
   // Cập nhật ngày nhắc nhở tiếp theo cho mục tiêu tiết kiệm

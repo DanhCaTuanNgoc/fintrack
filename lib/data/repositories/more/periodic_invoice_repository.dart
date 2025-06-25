@@ -1,6 +1,12 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../database/database_helper.dart';
 import '../../models/more/periodic_invoice.dart';
 import '../../../providers/currency_provider.dart';
+
+final periodicInvoiceRepositoryProvider = Provider((ref) {
+  return PeriodicInvoiceRepository(DatabaseHelper.instance);
+});
 
 class PeriodicInvoiceRepository {
   final DatabaseHelper _databaseHelper;
@@ -31,12 +37,14 @@ class PeriodicInvoiceRepository {
 
   Future<void> markPeriodicInvoiceAsPaid(String id) async {
     final db = await _databaseHelper.database;
-    final data = await db.query('periodic_invoices');
-    final invoice = data
-        .map((e) => PeriodicInvoice.fromMap(e))
-        .firstWhere((e) => e.id == id);
+    final data =
+        await db.query('periodic_invoices', where: 'id = ?', whereArgs: [id]);
+    if (data.isEmpty) return;
+
+    final invoice = PeriodicInvoice.fromMap(data.first);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
+
     final updated = invoice.copyWith(
       isPaid: true,
       lastPaidDate: today,
@@ -70,7 +78,8 @@ class PeriodicInvoiceRepository {
   ) async {
     final db = await _databaseHelper.database;
     final data = await db.query('periodic_invoices');
-    for (final invoice in data.map((e) => PeriodicInvoice.fromMap(e))) {
+    for (final invoiceMap in data) {
+      final invoice = PeriodicInvoice.fromMap(invoiceMap);
       double newAmount = convertCurrency(
         invoice.amount,
         oldCurrency,

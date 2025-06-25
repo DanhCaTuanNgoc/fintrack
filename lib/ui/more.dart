@@ -93,15 +93,15 @@ class _MoreState extends ConsumerState<More> {
             ),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_forever, color: Color(0xFF2D3142)),
-            onPressed: () async {
-              await removeData();
-              await ref.read(booksProvider.notifier).deleteAllBooks();
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.delete_forever, color: Color(0xFF2D3142)),
+        //     onPressed: () async {
+        //       await removeData();
+        //       await ref.read(booksProvider.notifier).deleteAllBooks();
+        //     },
+        //   ),
+        // ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -154,7 +154,8 @@ class _MoreState extends ConsumerState<More> {
           _buildDivider(),
           Consumer(
             builder: (context, ref, child) {
-              final unreadCount = ref.watch(unreadNotificationsCountProvider);
+              final notifications = ref.watch(notificationsProvider);
+              final unreadCount = notifications.where((n) => !n.isRead).length;
 
               return _buildSettingItem(
                 icon: Icons.notifications,
@@ -191,54 +192,54 @@ class _MoreState extends ConsumerState<More> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FA),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: const Color(0xFF2D3142), size: 24),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8F9FA),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: const Color(0xFF2D3142), size: 24),
+                ),
+                if (badge != null && badge.isNotEmpty)
+                  Positioned(
+                    right: -5,
+                    top: -5,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE57373),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white, width: 1),
+                      ),
+                      child: Text(
+                        badge,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF2D3142),
-                          ),
-                        ),
-                      ),
-                      if (badge != null) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF4CAF50),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            badge,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        )
-                      ],
-                    ],
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF2D3142),
+                    ),
                   ),
                   if (subtitle != null)
                     Padding(

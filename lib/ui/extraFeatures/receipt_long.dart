@@ -84,25 +84,6 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     final allInvoices = ref.watch(periodicInvoicesProvider);
     final themeColor = ref.watch(themeColorProvider);
 
-    // Áp dụng bộ lọc
-    final filteredInvoices = allInvoices.where((invoice) {
-      // Lọc theo sổ
-      final bookMatch = _selectedBookFilterId == null ||
-          invoice.bookId == _selectedBookFilterId;
-
-      // Lọc theo danh mục
-      final categoryMatch = _selectedCategoryFilter == null ||
-          invoice.category == _selectedCategoryFilter;
-
-      // Lọc theo khoản tiền
-      final minAmount = double.tryParse(_minAmountController.text);
-      final maxAmount = double.tryParse(_maxAmountController.text);
-      final amountMatch = (minAmount == null || invoice.amount >= minAmount) &&
-          (maxAmount == null || invoice.amount <= maxAmount);
-
-      return bookMatch && categoryMatch && amountMatch;
-    }).toList();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -125,74 +106,106 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
         ),
         titleSpacing: 0,
       ),
-      body: Column(
-        children: [
-          _buildFilterBar(),
-          Expanded(
-            child: filteredInvoices.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Chưa có hóa đơn định kỳ nào',
-                      style: TextStyle(
-                        color: Color(0xFF9E9E9E),
-                        fontSize: 16,
+      body: ref.watch(periodicInvoicesProvider).when(
+            data: (allInvoices) {
+              // Áp dụng bộ lọc
+              final filteredInvoices = allInvoices.where((invoice) {
+                // Lọc theo sổ
+                final bookMatch = _selectedBookFilterId == null ||
+                    invoice.bookId == _selectedBookFilterId;
+
+                // Lọc theo danh mục
+                final categoryMatch = _selectedCategoryFilter == null ||
+                    invoice.category == _selectedCategoryFilter;
+
+                // Lọc theo khoản tiền
+                final minAmount = double.tryParse(_minAmountController.text);
+                final maxAmount = double.tryParse(_maxAmountController.text);
+                final amountMatch =
+                    (minAmount == null || invoice.amount >= minAmount) &&
+                        (maxAmount == null || invoice.amount <= maxAmount);
+
+                return bookMatch && categoryMatch && amountMatch;
+              }).toList();
+
+              return Column(
+                children: [
+                  _buildFilterBar(),
+                  Expanded(
+                    child: filteredInvoices.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'Chưa có hóa đơn định kỳ nào',
+                              style: TextStyle(
+                                color: Color(0xFF9E9E9E),
+                                fontSize: 16,
+                              ),
+                            ),
+                          )
+                        : ListView(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                            children: [
+                              // Hiển thị section hóa đơn vừa làm mới
+                              if (filteredInvoices.isNotEmpty) ...[
+                                // Duyệt và hiển thị từng hóa đơn vừa làm mới
+                                ...filteredInvoices.map((invoice) =>
+                                    _buildInvoiceCard(context, invoice)),
+                                const SizedBox(height: 20),
+                              ],
+                            ],
+                          ),
+                  ),
+                  // Nút thêm hóa đơn mới
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _showAddInvoiceDialog(context, themeColor);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: themeColor,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Tạo hóa đơn mới',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
-                  )
-                : ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                    children: [
-                      // Hiển thị section hóa đơn vừa làm mới
-                      if (filteredInvoices.isNotEmpty) ...[
-                        // Duyệt và hiển thị từng hóa đơn vừa làm mới
-                        ...filteredInvoices.map(
-                            (invoice) => _buildInvoiceCard(context, invoice)),
-                        const SizedBox(height: 32),
-                      ],
-                    ],
                   ),
-          ),
-          // Nút thêm hóa đơn mới
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  _showAddInvoiceDialog(context, themeColor);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: themeColor,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Tạo hóa đơn mới',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                ],
+              );
+            },
+            loading: () => Center(
+              child: CircularProgressIndicator(
+                color: themeColor,
               ),
             ),
+            error: (error, stackTrace) => Center(
+              child: Text('Đã xảy ra lỗi: $error'),
+            ),
           ),
-        ],
-      ),
     );
   }
 
@@ -769,7 +782,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                     },
                                     child: const Text(
                                       'Xóa',
-                                      style: TextStyle(color: Colors.red),
+                                      style: TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 255, 255, 255)),
                                     ),
                                   ),
                                 ],
@@ -778,7 +793,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey.shade100,
+                          backgroundColor: Colors.red,
                           foregroundColor: Colors.red,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -788,7 +803,8 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                         ),
                         child: const Text(
                           'Xóa',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                       ),
                     ),
@@ -930,8 +946,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           controller: nameController,
                           decoration: InputDecoration(
                             labelText: 'Tên hóa đơn',
-                            labelStyle: TextStyle(
-                              color: themeColor,
+                            labelStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -954,8 +971,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           controller: amountController,
                           decoration: InputDecoration(
                             labelText: 'Số tiền',
-                            labelStyle: TextStyle(
-                              color: themeColor,
+                            labelStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -985,6 +1003,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                   labelText: 'Tần suất',
                                   labelStyle: TextStyle(
                                     color: themeColor,
+                                    fontSize: 14,
                                   ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -1099,8 +1118,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           value: selectedBookForInvoice?['id'],
                           decoration: InputDecoration(
                             labelText: 'Sổ chi tiêu',
-                            labelStyle: TextStyle(
-                              color: themeColor,
+                            labelStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -1139,8 +1159,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           controller: descriptionController,
                           decoration: InputDecoration(
                             labelText: 'Chi tiết',
-                            labelStyle: TextStyle(
-                              color: themeColor,
+                            labelStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
