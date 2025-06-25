@@ -63,34 +63,89 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             onPressed: () => notifier.markAllAsRead(),
             tooltip: 'Đánh dấu tất cả đã đọc',
           ),
+          IconButton(
+            icon: const Icon(Icons.delete_sweep, color: Color(0xFFE57373)),
+            onPressed: () => notifier.deleteAllReadNotifications(),
+            tooltip: 'Xóa tất cả đã đọc',
+          ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(notificationsProvider);
         },
-        child: notifications.isEmpty
-            ? const Center(
-                child: Text(
-                  'Không có thông báo nào',
+        child: notifications.when(
+          data: (notificationsList) => notificationsList.isEmpty
+              ? const Center(
+                  child: Text(
+                    'Không có thông báo nào',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF2D3142),
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: notificationsList.length,
+                  itemBuilder: (context, index) {
+                    final notification = notificationsList[index];
+                    return NotificationTile(
+                      notification: notification,
+                      onTap: () => notifier.markAsRead(index),
+                      onDelete: () => notifier.deleteNotification(index),
+                    );
+                  },
+                ),
+          loading: () => const Center(
+            child: CircularProgressIndicator(
+              color: Color(0xFF4CAF50),
+            ),
+          ),
+          error: (error, stackTrace) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Color(0xFFE57373),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Đã xảy ra lỗi',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                     color: Color(0xFF2D3142),
                   ),
                 ),
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  final notification = notifications[index];
-                  return NotificationTile(
-                    notification: notification,
-                    onTap: () => notifier.markAsRead(index),
-                    onDelete: () => notifier.deleteNotification(index),
-                  );
-                },
-              ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Vui lòng thử lại',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF9E9E9E),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    ref.invalidate(notificationsProvider);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4CAF50),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Thử lại'),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

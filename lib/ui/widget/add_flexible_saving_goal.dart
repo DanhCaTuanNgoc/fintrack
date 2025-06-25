@@ -64,7 +64,7 @@ class _AddFlexibleSavingGoalDialogState
               ),
               const Center(
                 child: Text(
-                  'Thêm sổ tiết kiệm linh hoạt',
+                  'Tạo sổ tiết kiệm linh hoạt',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -78,8 +78,7 @@ class _AddFlexibleSavingGoalDialogState
                       decoration: InputDecoration(
                         labelText: 'Tên sổ chi tiêu',
                         labelStyle: const TextStyle(
-                          color: const Color.fromARGB(255, 62, 62, 62),
-                        ),
+                            color: Color.fromARGB(255, 0, 0, 0), fontSize: 14),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -104,6 +103,7 @@ class _AddFlexibleSavingGoalDialogState
                         labelText: 'Số tiền mục tiêu',
                         labelStyle: const TextStyle(
                           color: Colors.black,
+                          fontSize: 14,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -130,100 +130,110 @@ class _AddFlexibleSavingGoalDialogState
                       },
                     ),
                     const SizedBox(height: 20),
-                    GestureDetector(
-                      onTap: () async {
-                        final now = DateTime.now();
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: _startedDate ?? now,
-                          firstDate: now,
-                          lastDate: DateTime(now.year + 10),
-                        );
-                        if (picked != null) {
-                          setState(() => _startedDate = picked);
-                        }
-                      },
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          labelText: 'Ngày bắt đầu',
-                          labelStyle: const TextStyle(color: Colors.black),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: widget.themeColor,
-                              width: 2,
-                            ),
-                          ),
-                          prefixIcon: Icon(Icons.calendar_today,
-                              color: widget.themeColor),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 0, horizontal: 0),
-                          child: Text(
-                            _startedDate == null
-                                ? 'Chọn ngày'
-                                : '${_startedDate!.day}/${_startedDate!.month}/${_startedDate!.year}',
-                            style: TextStyle(
-                              color: _targetDate == null
-                                  ? Colors.grey
-                                  : Colors.black,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    GestureDetector(
-                      onTap: () async {
-                        final now = DateTime.now();
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: _targetDate ?? now,
-                          firstDate: now,
-                          lastDate: DateTime(now.year + 10),
-                        );
-                        if (picked != null) {
-                          setState(() => _targetDate = picked);
-                        }
-                      },
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          labelText: 'Ngày mục tiêu',
-                          labelStyle: const TextStyle(color: Colors.black),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: widget.themeColor,
-                              width: 2,
-                            ),
-                          ),
-                          prefixIcon:
-                              Icon(Icons.flag, color: widget.themeColor),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 0, horizontal: 0),
-                          child: Text(
-                            _targetDate == null
-                                ? 'Chọn ngày'
-                                : '${_targetDate!.day}/${_targetDate!.month}/${_targetDate!.year}',
-                            style: TextStyle(
-                              color: _targetDate == null
-                                  ? Colors.grey
-                                  : Colors.black,
-                              fontSize: 16,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final now = DateTime.now();
+                              final picked = await showDatePicker(
+                                context: context,
+                                initialDate: _startedDate ?? now,
+                                firstDate: now,
+                                lastDate: DateTime(now.year + 10),
+                              );
+                              if (picked != null) {
+                                setState(() => _startedDate = picked);
+                              }
+                            },
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: 'Ngày bắt đầu',
+                                labelStyle:
+                                    const TextStyle(color: Colors.black),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: widget.themeColor,
+                                    width: 2,
+                                  ),
+                                ),
+                                prefixIcon: Icon(Icons.calendar_today,
+                                    color: widget.themeColor),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 0),
+                                child: Text(
+                                  _startedDate == null
+                                      ? 'Chọn ngày'
+                                      : '${_startedDate!.day}/${_startedDate!.month}/${_startedDate!.year}',
+                                  style: TextStyle(
+                                    color: _startedDate == null
+                                        ? Colors.grey
+                                        : Colors.black,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final now = DateTime.now();
+                              final picked = await showDatePicker(
+                                context: context,
+                                initialDate: _targetDate ?? now,
+                                firstDate: now,
+                                lastDate: DateTime(now.year + 10),
+                              );
+                              if (picked != null) {
+                                setState(() => _targetDate = picked);
+                              }
+                            },
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: 'Ngày mục tiêu',
+                                labelStyle:
+                                    const TextStyle(color: Colors.black),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: widget.themeColor,
+                                    width: 2,
+                                  ),
+                                ),
+                                prefixIcon:
+                                    Icon(Icons.flag, color: widget.themeColor),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 0),
+                                child: Text(
+                                  _targetDate == null
+                                      ? 'Chọn ngày'
+                                      : '${_targetDate!.day}/${_targetDate!.month}/${_targetDate!.year}',
+                                  style: TextStyle(
+                                    color: _targetDate == null
+                                        ? Colors.grey
+                                        : Colors.black,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -273,7 +283,7 @@ class _AddFlexibleSavingGoalDialogState
                           Navigator.pop(context);
                         }
                       },
-                      child: const Text('Tạo',
+                      child: const Text('Tạo sổ',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18)),
                     ),

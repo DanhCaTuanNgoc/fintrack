@@ -206,39 +206,145 @@ class _UpdatePeriodicSavingGoalDialogState
                         const SizedBox(width: 12),
                         Expanded(
                           flex: 2,
-                          child: DropdownButtonFormField<String>(
-                            value: _periodicFrequency,
-                            decoration: InputDecoration(
-                              labelText: 'Tần suất',
-                              labelStyle: const TextStyle(color: Colors.black),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                          child: GestureDetector(
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) => Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 4,
+                                        margin: const EdgeInsets.only(
+                                            top: 12, bottom: 20),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[300],
+                                          borderRadius:
+                                              BorderRadius.circular(2),
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Chọn tần suất',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF2D3142),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      ...['daily', 'weekly', 'monthly']
+                                          .map((frequency) {
+                                        final labels = {
+                                          'daily': 'Hàng ngày',
+                                          'weekly': 'Hàng tuần',
+                                          'monthly': 'Hàng tháng',
+                                        };
+                                        final icons = {
+                                          'daily': Icons.today,
+                                          'weekly': Icons.view_week,
+                                          'monthly': Icons.calendar_month,
+                                        };
+
+                                        return ListTile(
+                                          leading: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: _periodicFrequency ==
+                                                      frequency
+                                                  ? widget.themeColor
+                                                      .withOpacity(0.1)
+                                                  : Colors.grey[100],
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Icon(
+                                              icons[frequency],
+                                              color: _periodicFrequency ==
+                                                      frequency
+                                                  ? widget.themeColor
+                                                  : Colors.grey[600],
+                                              size: 20,
+                                            ),
+                                          ),
+                                          title: Text(
+                                            labels[frequency]!,
+                                            style: TextStyle(
+                                              fontWeight: _periodicFrequency ==
+                                                      frequency
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
+                                              color: _periodicFrequency ==
+                                                      frequency
+                                                  ? widget.themeColor
+                                                  : const Color(0xFF2D3142),
+                                            ),
+                                          ),
+                                          trailing:
+                                              _periodicFrequency == frequency
+                                                  ? Icon(
+                                                      Icons.check_circle,
+                                                      color: widget.themeColor,
+                                                    )
+                                                  : null,
+                                          onTap: () {
+                                            setState(() {
+                                              _periodicFrequency = frequency;
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        );
+                                      }).toList(),
+                                      const SizedBox(height: 20),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: 'Tần suất',
+                                labelStyle:
+                                    const TextStyle(color: Colors.black),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: widget.themeColor,
+                                    width: 2,
+                                  ),
+                                ),
+                                prefixIcon: Icon(Icons.schedule,
+                                    color: widget.themeColor),
+                                suffixIcon:
+                                    const Icon(Icons.keyboard_arrow_down),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: widget.themeColor,
-                                  width: 2,
+                              child: Text(
+                                _periodicFrequency == null
+                                    ? 'Tần suất'
+                                    : {
+                                        'daily': 'Hàng ngày',
+                                        'weekly': 'Hàng tuần',
+                                        'monthly': 'Hàng tháng',
+                                      }[_periodicFrequency]!,
+                                style: TextStyle(
+                                  color: _periodicFrequency == null
+                                      ? Colors.grey
+                                      : Colors.black,
+                                  fontSize: 14,
                                 ),
                               ),
-                              prefixIcon: Icon(Icons.schedule,
-                                  color: widget.themeColor),
                             ),
-                            items: const [
-                              DropdownMenuItem(
-                                  value: 'daily', child: Text('Hàng ngày')),
-                              DropdownMenuItem(
-                                  value: 'weekly', child: Text('Hàng tuần')),
-                              DropdownMenuItem(
-                                  value: 'monthly', child: Text('Hàng tháng')),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _periodicFrequency = value;
-                              });
-                            },
-                            validator: (value) =>
-                                value == null ? 'Chọn tần suất' : null,
                           ),
                         ),
                       ],

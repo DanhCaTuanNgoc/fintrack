@@ -81,7 +81,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                   const Text(
                     'Chỉnh sửa giao dịch',
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF2D3142),
                     ),
@@ -169,37 +169,139 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                 ),
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                decoration: InputDecoration(
-                  labelText: 'Danh mục',
-                  labelStyle: TextStyle(color: widget.themeColor),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: widget.themeColor, width: 2),
-                  ),
-                ),
-                items: categories
-                    .map<DropdownMenuItem<String>>(
-                        (category) => DropdownMenuItem<String>(
-                              value: category['name'],
-                              child: Row(
-                                children: [
-                                  Text(category['icon']),
-                                  const SizedBox(width: 8),
-                                  Text(category['name']),
-                                ],
+              GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 4,
+                              margin:
+                                  const EdgeInsets.only(top: 12, bottom: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(2),
                               ),
-                            ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value;
-                  });
+                            ),
+                            Text(
+                              'Chọn danh mục ${_isExpense ? 'chi tiêu' : 'thu nhập'}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2D3142),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            ...categories.map((category) {
+                              return ListTile(
+                                leading: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: _selectedCategory == category['name']
+                                        ? widget.themeColor.withOpacity(0.1)
+                                        : Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    category['icon'],
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color:
+                                          _selectedCategory == category['name']
+                                              ? widget.themeColor
+                                              : Colors.grey[600],
+                                    ),
+                                  ),
+                                ),
+                                title: Text(
+                                  category['name'],
+                                  style: TextStyle(
+                                    fontWeight:
+                                        _selectedCategory == category['name']
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                    color: _selectedCategory == category['name']
+                                        ? widget.themeColor
+                                        : const Color(0xFF2D3142),
+                                  ),
+                                ),
+                                trailing: _selectedCategory == category['name']
+                                    ? Icon(
+                                        Icons.check_circle,
+                                        color: widget.themeColor,
+                                      )
+                                    : null,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedCategory = category['name'];
+                                  });
+                                  Future.delayed(Duration.zero,
+                                      () => {Navigator.pop(context)});
+                                },
+                              );
+                            }).toList(),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
                 },
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Danh mục',
+                    labelStyle: TextStyle(color: widget.themeColor),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: widget.themeColor,
+                        width: 2,
+                      ),
+                    ),
+                    suffixIcon: const Icon(Icons.keyboard_arrow_down),
+                  ),
+                  child: _selectedCategory == null
+                      ? Text(
+                          'Chọn danh mục',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16,
+                          ),
+                        )
+                      : Row(
+                          children: [
+                            Text(
+                              categories.firstWhere(
+                                (cat) => cat['name'] == _selectedCategory,
+                              )['icon'],
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _selectedCategory!,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF2D3142),
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
               ),
               const SizedBox(height: 24),
               SizedBox(
