@@ -111,7 +111,8 @@ class DatabaseHelper {
         time TEXT NOT NULL,
         is_read INTEGER NOT NULL,
         invoice_id TEXT,
-        invoice_due_date TEXT
+        invoice_due_date TEXT,
+        goal_id TEXT
       )
     ''');
 
