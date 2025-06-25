@@ -33,8 +33,17 @@ class SavingsGoalsNotifier
   Future<void> addSavingsGoal(SavingsGoal goal) async {
     try {
       final db = await DatabaseHelper.instance.database;
-      final id = await db.insert('savings_goals', goal.toMap());
-      final newGoal = goal.copyWith(id: id);
+
+      // Tự động tính toán ngày nhắc nhở tiếp theo nếu chưa có
+      SavingsGoal goalWithReminder = goal;
+      if (goal.nextReminderDate == null) {
+        goalWithReminder = goal.copyWith(
+          nextReminderDate: goal.calculateNextReminderDate(),
+        );
+      }
+
+      final id = await db.insert('savings_goals', goalWithReminder.toMap());
+      final newGoal = goalWithReminder.copyWith(id: id);
       state.whenData((goals) {
         state = AsyncValue.data([newGoal, ...goals]);
       });
@@ -60,7 +69,6 @@ class SavingsGoalsNotifier
             goals.map((g) => g.id == goal.id ? goal : g).toList();
         state = AsyncValue.data(updatedGoals);
       });
-
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -117,5 +125,20 @@ class SavingsGoalsNotifier
       loading: () => [],
       error: (_, __) => [],
     );
+  }
+
+  // Làm mới trạng thái mục tiêu tiết kiệm
+  Future<void> refreshSavingsGoals() async {
+    try {
+      final db = await DatabaseHelper.instance.database;
+      final List<Map<String, dynamic>> maps = await db.query(
+        'savings_goals',
+        orderBy: 'created_at DESC',
+      );
+      final goals = maps.map((map) => SavingsGoal.fromMap(map)).toList();
+      state = AsyncValue.data(goals);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
   }
 }

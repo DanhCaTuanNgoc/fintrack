@@ -114,4 +114,95 @@ class SavingsGoal {
     }
     return false;
   }
+
+  // Tính toán ngày nhắc nhở tiếp theo dựa trên tần suất
+  DateTime calculateNextReminderDate() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    // Nếu là mục tiêu linh hoạt, nhắc nhở hàng tuần
+    if (type == 'flexible') {
+      return DateTime(
+        today.year,
+        today.month,
+        today.day + 7,
+      );
+    }
+
+    // Nếu là mục tiêu định kỳ, tính theo tần suất
+    if (type == 'periodic' && periodicFrequency != null) {
+      switch (periodicFrequency!) {
+        case 'daily':
+          return DateTime(
+            today.year,
+            today.month,
+            today.day + 1,
+          );
+        case 'weekly':
+          return DateTime(
+            today.year,
+            today.month,
+            today.day + 7,
+          );
+        case 'monthly':
+          int nextMonth = today.month + 1;
+          int nextYear = today.year;
+          if (nextMonth > 12) {
+            nextMonth = 1;
+            nextYear++;
+          }
+          // Đảm bảo ngày hợp lệ
+          int day = today.day;
+          while (day > 28) {
+            try {
+              DateTime(nextYear, nextMonth, day);
+              break;
+            } catch (e) {
+              day--;
+            }
+          }
+          return DateTime(nextYear, nextMonth, day);
+        default:
+          return DateTime(
+            today.year,
+            today.month,
+            today.day + 7,
+          );
+      }
+    }
+
+    // Mặc định nhắc nhở hàng tuần
+    return DateTime(
+      today.year,
+      today.month,
+      today.day + 7,
+    );
+  }
+
+  // Kiểm tra xem có cần nhắc nhở không
+  bool needsReminder() {
+    if (isCompleted || !isActive) return false;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final nextReminder = nextReminderDate ?? calculateNextReminderDate();
+
+    return today.isAfter(nextReminder) ||
+        (today.year == nextReminder.year &&
+            today.month == nextReminder.month &&
+            today.day == nextReminder.day);
+  }
+
+  // Kiểm tra xem mục tiêu có sắp đến hạn không (trước 7 ngày)
+  bool isAlmostDue({int daysBefore = 7}) {
+    if (isCompleted || !isActive || targetDate == null) return false;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final target =
+        DateTime(targetDate!.year, targetDate!.month, targetDate!.day);
+    final diff = target.difference(today).inDays;
+
+    return diff > 0 && diff <= daysBefore;
+  }
 }

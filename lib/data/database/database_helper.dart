@@ -463,4 +463,24 @@ class DatabaseHelper {
     final db = await database;
     return await db.delete('notifications', where: 'id = ?', whereArgs: [id]);
   }
+
+  // Lấy toàn bộ danh sách mục tiêu tiết kiệm
+  Future<List<Map<String, dynamic>>> getAllSavingsGoals() async {
+    final db = await database;
+    return await db.query('savings_goals', where: 'is_active = 1');
+  }
+
+  // Cập nhật ngày nhắc nhở tiếp theo cho mục tiêu tiết kiệm
+  Future<int> updateSavingsGoalNextReminder(
+      int id, DateTime nextReminderDate) async {
+    final db = await database;
+    return await db.update(
+      'savings_goals',
+      {
+        'next_reminder_date': nextReminderDate.toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }
