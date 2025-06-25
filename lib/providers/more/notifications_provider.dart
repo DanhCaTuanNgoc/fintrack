@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/more/notification_item.dart';
 import '../../data/repositories/more/notification_repository.dart';
+import '../../data/database/database_helper.dart';
 
 // Provider để quản lý trạng thái thông báo
 final notificationsProvider = StateNotifierProvider<NotificationsNotifier,
@@ -26,13 +27,9 @@ class NotificationsNotifier
   }
 
   Future<void> _loadFromDb() async {
-    try {
-      state = const AsyncValue.loading();
-      final data = await NotificationRepository().getAllNotifications();
-      state = AsyncValue.data(data);
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-    }
+    final data = await NotificationRepository(DatabaseHelper.instance)
+        .getAllNotifications();
+    state = data;
   }
 
   // Phương thức để làm mới dữ liệu
@@ -70,7 +67,8 @@ class NotificationsNotifier
       invoiceId: invoiceId,
       invoiceDueDate: dueDate,
     );
-    await NotificationRepository().addNotification(notification);
+    await NotificationRepository(DatabaseHelper.instance)
+        .addNotification(notification);
     await _loadFromDb();
   }
 
@@ -80,49 +78,28 @@ class NotificationsNotifier
 
     for (final n in currentState.value!) {
       if (!n.isRead && n.id != null) {
-        await NotificationRepository().updateNotificationRead(n.id!, true);
+        await NotificationRepository(DatabaseHelper.instance)
+            .updateNotificationRead(n.id!, true);
       }
     }
     await _loadFromDb();
   }
 
   Future<void> markAsRead(int index) async {
-    final currentState = state;
-    if (currentState is! AsyncData || currentState.value == null) return;
-
-    final notifications = currentState.value!;
-    if (index >= 0 && index < notifications.length) {
-      final n = notifications[index];
-      if (!n.isRead && n.id != null) {
-        await NotificationRepository().updateNotificationRead(n.id!, true);
-        await _loadFromDb();
-      }
+    final n = state[index];
+    if (!n.isRead && n.id != null) {
+      await NotificationRepository(DatabaseHelper.instance)
+          .updateNotificationRead(n.id!, true);
+      await _loadFromDb();
     }
   }
 
   Future<void> deleteNotification(int index) async {
-    final currentState = state;
-    if (currentState is! AsyncData || currentState.value == null) return;
-
-    final notifications = currentState.value!;
-    if (index >= 0 && index < notifications.length) {
-      final n = notifications[index];
-      if (n.id != null) {
-        await NotificationRepository().deleteNotification(n.id!);
-        await _loadFromDb();
-      }
+    final n = state[index];
+    if (n.id != null) {
+      await NotificationRepository(DatabaseHelper.instance)
+          .deleteNotification(n.id!);
+      await _loadFromDb();
     }
-  }
-
-  Future<void> deleteAllReadNotifications() async {
-    final currentState = state;
-    if (currentState is! AsyncData || currentState.value == null) return;
-
-    final readNotifications =
-        currentState.value!.where((n) => n.isRead && n.id != null).toList();
-    for (final n in readNotifications) {
-      await NotificationRepository().deleteNotification(n.id!);
-    }
-    await _loadFromDb();
   }
 }

@@ -6,6 +6,7 @@ class NotificationItem {
   final bool isRead;
   final String? invoiceId;
   final DateTime? invoiceDueDate;
+  final String? goalId;
 
   NotificationItem({
     this.id,
@@ -15,6 +16,7 @@ class NotificationItem {
     this.isRead = false,
     this.invoiceId,
     this.invoiceDueDate,
+    this.goalId,
   });
 
   factory NotificationItem.fromMap(Map<String, dynamic> map) {
@@ -28,6 +30,7 @@ class NotificationItem {
       invoiceDueDate: map['invoice_due_date'] != null
           ? DateTime.tryParse(map['invoice_due_date'])
           : null,
+      goalId: map['goal_id'],
     );
   }
 
@@ -40,6 +43,7 @@ class NotificationItem {
       'is_read': isRead ? 1 : 0,
       'invoice_id': invoiceId,
       'invoice_due_date': invoiceDueDate?.toIso8601String(),
+      'goal_id': goalId,
     };
   }
 
@@ -51,6 +55,7 @@ class NotificationItem {
     bool? isRead,
     String? invoiceId,
     DateTime? invoiceDueDate,
+    String? goalId,
   }) {
     return NotificationItem(
       id: id ?? this.id,
@@ -60,6 +65,7 @@ class NotificationItem {
       isRead: isRead ?? this.isRead,
       invoiceId: invoiceId ?? this.invoiceId,
       invoiceDueDate: invoiceDueDate ?? this.invoiceDueDate,
+      goalId: goalId ?? this.goalId,
     );
   }
 }

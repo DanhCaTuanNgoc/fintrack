@@ -61,7 +61,7 @@ Future<void> updateAllTransactionCurrencies(
   }
 }
 
-final _periodicInvoiceRepo = PeriodicInvoiceRepository();
+final _periodicInvoiceRepo = PeriodicInvoiceRepository(DatabaseHelper.instance);
 
 Future<void> updateAllPeriodicInvoiceCurrencies(
   WidgetRef ref,

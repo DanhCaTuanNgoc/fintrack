@@ -3,36 +3,47 @@ import '../../models/more/periodic_invoice.dart';
 import '../../../providers/currency_provider.dart';
 
 class PeriodicInvoiceRepository {
-  final dbHelper = DatabaseHelper.instance;
+  final DatabaseHelper _databaseHelper;
+
+  PeriodicInvoiceRepository(this._databaseHelper);
 
   Future<void> addPeriodicInvoice(PeriodicInvoice invoice) async {
-    await dbHelper.insertPeriodicInvoice(invoice.toMap());
+    final db = await _databaseHelper.database;
+    await db.insert('periodic_invoices', invoice.toMap());
   }
 
   Future<void> removePeriodicInvoice(String id) async {
-    await dbHelper.deletePeriodicInvoice(id);
+    final db = await _databaseHelper.database;
+    await db.delete('periodic_invoices', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<void> updatePeriodicInvoice(PeriodicInvoice invoice) async {
-    await dbHelper.updatePeriodicInvoice(invoice.toMap());
+    final db = await _databaseHelper.database;
+    await db.update('periodic_invoices', invoice.toMap(),
+        where: 'id = ?', whereArgs: [invoice.id]);
   }
 
   Future<List<PeriodicInvoice>> getAllPeriodicInvoices() async {
-    final data = await dbHelper.getAllPeriodicInvoices();
+    final db = await _databaseHelper.database;
+    final data = await db.query('periodic_invoices');
     return data.map((e) => PeriodicInvoice.fromMap(e)).toList();
   }
 
   Future<void> markPeriodicInvoiceAsPaid(String id) async {
-    final data = await dbHelper.getAllPeriodicInvoices();
+    final db = await _databaseHelper.database;
+    final data = await db.query('periodic_invoices');
     final invoice = data
         .map((e) => PeriodicInvoice.fromMap(e))
         .firstWhere((e) => e.id == id);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     final updated = invoice.copyWith(
       isPaid: true,
-      lastPaidDate: DateTime.now(),
-      nextDueDate: invoice.calculateNextDueDate(),
+      lastPaidDate: today,
+      nextDueDate: invoice.copyWith(lastPaidDate: today).calculateNextDueDate(),
     );
-    await dbHelper.updatePeriodicInvoice(updated.toMap());
+    await db.update('periodic_invoices', updated.toMap(),
+        where: 'id = ?', whereArgs: [invoice.id]);
   }
 
   Future<void> updateInvoicePaidStatus(
@@ -41,19 +52,24 @@ class PeriodicInvoiceRepository {
     DateTime? lastPaidDate,
     DateTime? nextDueDate,
   }) async {
-    await dbHelper.updateInvoicePaidStatus(
-      id,
-      isPaid,
-      lastPaidDate: lastPaidDate,
-      nextDueDate: nextDueDate,
-    );
+    final db = await _databaseHelper.database;
+    await db.update(
+        'periodic_invoices',
+        {
+          'is_paid': isPaid ? 1 : 0,
+          'last_paid_date': lastPaidDate?.toIso8601String(),
+          'next_due_date': nextDueDate?.toIso8601String(),
+        },
+        where: 'id = ?',
+        whereArgs: [id]);
   }
 
   Future<void> updateAllPeriodicInvoiceCurrencies(
     CurrencyType oldCurrency,
     CurrencyType newCurrency,
   ) async {
-    final data = await dbHelper.getAllPeriodicInvoices();
+    final db = await _databaseHelper.database;
+    final data = await db.query('periodic_invoices');
     for (final invoice in data.map((e) => PeriodicInvoice.fromMap(e))) {
       double newAmount = convertCurrency(
         invoice.amount,
@@ -61,7 +77,8 @@ class PeriodicInvoiceRepository {
         newCurrency,
       );
       final updatedInvoice = invoice.copyWith(amount: newAmount);
-      await dbHelper.updatePeriodicInvoice(updatedInvoice.toMap());
+      await db.update('periodic_invoices', updatedInvoice.toMap(),
+          where: 'id = ?', whereArgs: [invoice.id]);
     }
   }
 }
