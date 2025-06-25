@@ -3,16 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../data/database/database_helper.dart';
+import '../ui/more.dart';
 import '../providers/providers_barrel.dart';
 import './widget/widget_barrel.dart';
-
-// Enum để định nghĩa các loại bộ lọc
-enum FilterType {
-  day,
-  week,
-  month,
-  year,
-}
 
 class Charts extends ConsumerStatefulWidget {
   const Charts({super.key});
@@ -28,8 +21,7 @@ class _ChartsState extends ConsumerState<Charts>
   List<Map<String, dynamic>> _categories = [];
   Map<String, double> _categoryExpenses = {};
   Map<String, double> _categoryIncomes = {};
-  DateTime _selectedDate = DateTime.now();
-  FilterType _selectedFilter = FilterType.month;
+  DateTime _selectedMonth = DateTime.now();
   int _selectedTab = 0;
 
   @override
@@ -55,164 +47,25 @@ class _ChartsState extends ConsumerState<Charts>
     });
   }
 
-  // Phương thức để lấy khoảng thời gian dựa trên loại bộ lọc
-  DateTimeRange _getDateRange() {
-    final now = DateTime.now();
-
-    switch (_selectedFilter) {
-      case FilterType.day:
-        return DateTimeRange(
-          start: DateTime(
-              _selectedDate.year, _selectedDate.month, _selectedDate.day),
-          end: DateTime(_selectedDate.year, _selectedDate.month,
-              _selectedDate.day, 23, 59, 59),
-        );
-      case FilterType.week:
-        // Tính ngày đầu tuần (Thứ 2)
-        final daysFromMonday = _selectedDate.weekday - 1;
-        final startOfWeek =
-            _selectedDate.subtract(Duration(days: daysFromMonday));
-        final endOfWeek = startOfWeek.add(const Duration(days: 6));
-        return DateTimeRange(
-          start: DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day),
-          end: DateTime(
-              endOfWeek.year, endOfWeek.month, endOfWeek.day, 23, 59, 59),
-        );
-      case FilterType.month:
-        return DateTimeRange(
-          start: DateTime(_selectedDate.year, _selectedDate.month, 1),
-          end: DateTime(
-              _selectedDate.year, _selectedDate.month + 1, 0, 23, 59, 59),
-        );
-      case FilterType.year:
-        return DateTimeRange(
-          start: DateTime(_selectedDate.year, 1, 1),
-          end: DateTime(_selectedDate.year, 12, 31, 23, 59, 59),
-        );
-    }
-  }
-
-  // Phương thức để chọn ngày dựa trên loại bộ lọc
-  void _selectDate(BuildContext context) async {
-    DateTime? picked;
-
-    switch (_selectedFilter) {
-      case FilterType.day:
-        picked = await showDatePicker(
-          context: context,
-          initialDate: _selectedDate,
-          firstDate: DateTime(2020),
-          lastDate: DateTime.now(),
-        );
-        break;
-      case FilterType.week:
-        picked = await showDatePicker(
-          context: context,
-          initialDate: _selectedDate,
-          firstDate: DateTime(2020),
-          lastDate: DateTime.now(),
-        );
-        break;
-      case FilterType.month:
-        picked = await showDatePicker(
-          context: context,
-          initialDate: _selectedDate,
-          firstDate: DateTime(2020),
-          lastDate: DateTime.now(),
-          initialDatePickerMode: DatePickerMode.year,
-        );
-        if (picked != null) {
-          picked = DateTime(picked.year, picked.month);
-        }
-        break;
-      case FilterType.year:
-        picked = await showDatePicker(
-          context: context,
-          initialDate: _selectedDate,
-          firstDate: DateTime(2020),
-          lastDate: DateTime.now(),
-          initialDatePickerMode: DatePickerMode.year,
-        );
-        if (picked != null) {
-          picked = DateTime(picked.year);
-        }
-        break;
-    }
-
+  void _selectMonth(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedMonth,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      initialDatePickerMode: DatePickerMode.year,
+    );
     if (picked != null) {
       setState(() {
-        _selectedDate = picked!;
+        _selectedMonth = DateTime(picked.year, picked.month);
       });
     }
   }
 
-  // Phương thức để cập nhật ngày dựa trên loại bộ lọc
-  void _updateSelectedDate(DateTime newDate) {
+  void _updateSelectedMonth(DateTime newMonth) {
     setState(() {
-      _selectedDate = newDate;
+      _selectedMonth = newMonth;
     });
-  }
-
-  // Phương thức để lấy ngày trước đó
-  DateTime _getPreviousDate() {
-    switch (_selectedFilter) {
-      case FilterType.day:
-        return _selectedDate.subtract(const Duration(days: 1));
-      case FilterType.week:
-        return _selectedDate.subtract(const Duration(days: 7));
-      case FilterType.month:
-        return DateTime(_selectedDate.year, _selectedDate.month - 1);
-      case FilterType.year:
-        return DateTime(_selectedDate.year - 1);
-    }
-  }
-
-  // Phương thức để lấy ngày tiếp theo
-  DateTime _getNextDate() {
-    switch (_selectedFilter) {
-      case FilterType.day:
-        return _selectedDate.add(const Duration(days: 1));
-      case FilterType.week:
-        return _selectedDate.add(const Duration(days: 7));
-      case FilterType.month:
-        return DateTime(_selectedDate.year, _selectedDate.month + 1);
-      case FilterType.year:
-        return DateTime(_selectedDate.year + 1);
-    }
-  }
-
-  // Phương thức để kiểm tra xem có thể đi đến ngày tiếp theo không
-  bool _canGoToNextDate() {
-    final nextDate = _getNextDate();
-    final now = DateTime.now();
-
-    switch (_selectedFilter) {
-      case FilterType.day:
-        return nextDate.isBefore(now) || nextDate.isAtSameMomentAs(now);
-      case FilterType.week:
-        return nextDate.isBefore(now) || nextDate.isAtSameMomentAs(now);
-      case FilterType.month:
-        return nextDate.year < now.year ||
-            (nextDate.year == now.year && nextDate.month <= now.month);
-      case FilterType.year:
-        return nextDate.year <= now.year;
-    }
-  }
-
-  // Phương thức để format ngày hiển thị
-  String _getDisplayDate() {
-    final dateRange = _getDateRange();
-
-    switch (_selectedFilter) {
-      case FilterType.day:
-        return DateFormat('dd/MM/yyyy').format(_selectedDate);
-      case FilterType.week:
-        return '${DateFormat('dd/MM').format(dateRange.start)} - ${DateFormat('dd/MM/yyyy').format(dateRange.end)}';
-      case FilterType.month:
-        return DateFormat('MM/yyyy').format(_selectedDate);
-      case FilterType.year:
-        return DateFormat('yyyy').format(_selectedDate);
-    }
   }
 
   @override
@@ -225,19 +78,9 @@ class _ChartsState extends ConsumerState<Charts>
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-        selectedDate: _selectedDate,
-        selectedFilter: _selectedFilter,
-        onDateChanged: _updateSelectedDate,
-        onDateTap: () => _selectDate(context),
-        onFilterChanged: (FilterType filter) {
-          setState(() {
-            _selectedFilter = filter;
-          });
-        },
-        onPreviousDate: () => _updateSelectedDate(_getPreviousDate()),
-        onNextDate: () => _updateSelectedDate(_getNextDate()),
-        canGoToNextDate: _canGoToNextDate(),
-        displayDate: _getDisplayDate(),
+        selectedMonth: _selectedMonth,
+        onMonthChanged: _updateSelectedMonth,
+        onMonthTap: () => _selectMonth(context),
         themeColor: themeColor,
       ),
       body: currentBook.when(
@@ -491,7 +334,7 @@ class _ChartsState extends ConsumerState<Charts>
                     ),
                   ),
                   Text(
-                    _getDisplayDate(),
+                    DateFormat('MM/yyyy').format(_selectedMonth),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[500],
@@ -547,27 +390,19 @@ class _ChartsState extends ConsumerState<Charts>
         // Calculate expenses by category for selected month and current book
         _categoryExpenses.clear();
 
-        // Filter transactions for the selected month
         for (var transaction in transactionsList) {
           if (transaction.type == 'expense' &&
               transaction.bookId == bookId &&
-              transaction.date != null) {
-            final dateRange = _getDateRange();
-            final transactionDate = transaction.date!;
-
-            // Kiểm tra xem giao dịch có nằm trong khoảng thời gian được chọn không
-            if (transactionDate.isAfter(
-                    dateRange.start.subtract(const Duration(seconds: 1))) &&
-                transactionDate
-                    .isBefore(dateRange.end.add(const Duration(seconds: 1)))) {
-              final category = _categories.firstWhere(
-                (cat) => cat['id'] == transaction.categoryId,
-                orElse: () => {'name': 'Khác'},
-              );
-              final categoryName = category['name'] as String;
-              _categoryExpenses[categoryName] =
-                  (_categoryExpenses[categoryName] ?? 0) + transaction.amount;
-            }
+              transaction.date != null &&
+              transaction.date!.year == _selectedMonth.year &&
+              transaction.date!.month == _selectedMonth.month) {
+            final category = _categories.firstWhere(
+              (cat) => cat['id'] == transaction.categoryId,
+              orElse: () => {'name': 'Khác'},
+            );
+            final categoryName = category['name'] as String;
+            _categoryExpenses[categoryName] =
+                (_categoryExpenses[categoryName] ?? 0) + transaction.amount;
           }
         }
 
@@ -672,27 +507,19 @@ class _ChartsState extends ConsumerState<Charts>
         // Calculate income by category for selected month and current book
         _categoryIncomes.clear();
 
-        // Filter transactions for the selected month
         for (var transaction in transactionsList) {
           if (transaction.type == 'income' &&
               transaction.bookId == bookId &&
-              transaction.date != null) {
-            final dateRange = _getDateRange();
-            final transactionDate = transaction.date!;
-
-            // Kiểm tra xem giao dịch có nằm trong khoảng thời gian được chọn không
-            if (transactionDate.isAfter(
-                    dateRange.start.subtract(const Duration(seconds: 1))) &&
-                transactionDate
-                    .isBefore(dateRange.end.add(const Duration(seconds: 1)))) {
-              final category = _categories.firstWhere(
-                (cat) => cat['id'] == transaction.categoryId,
-                orElse: () => {'name': 'Khác'},
-              );
-              final categoryName = category['name'] as String;
-              _categoryIncomes[categoryName] =
-                  (_categoryIncomes[categoryName] ?? 0) + transaction.amount;
-            }
+              transaction.date != null &&
+              transaction.date!.year == _selectedMonth.year &&
+              transaction.date!.month == _selectedMonth.month) {
+            final category = _categories.firstWhere(
+              (cat) => cat['id'] == transaction.categoryId,
+              orElse: () => {'name': 'Khác'},
+            );
+            final categoryName = category['name'] as String;
+            _categoryIncomes[categoryName] =
+                (_categoryIncomes[categoryName] ?? 0) + transaction.amount;
           }
         }
 
@@ -790,27 +617,15 @@ class _ChartsState extends ConsumerState<Charts>
 }
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final DateTime selectedDate;
-  final FilterType selectedFilter;
-  final Function(DateTime) onDateChanged;
-  final VoidCallback onDateTap;
-  final Function(FilterType) onFilterChanged;
-  final VoidCallback onPreviousDate;
-  final VoidCallback onNextDate;
-  final bool canGoToNextDate;
-  final String displayDate;
+  final DateTime selectedMonth;
+  final Function(DateTime) onMonthChanged;
+  final VoidCallback onMonthTap;
   final Color themeColor;
   const CustomAppBar(
       {super.key,
-      required this.selectedDate,
-      required this.selectedFilter,
-      required this.onDateChanged,
-      required this.onDateTap,
-      required this.onFilterChanged,
-      required this.onPreviousDate,
-      required this.onNextDate,
-      required this.canGoToNextDate,
-      required this.displayDate,
+      required this.selectedMonth,
+      required this.onMonthChanged,
+      required this.onMonthTap,
       required this.themeColor});
 
   @override
@@ -831,13 +646,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           Row(
             children: [
-              // Điều hướng ngày với dropdown bộ lọc
               IconButton(
                 icon: const Icon(Icons.chevron_left),
-                onPressed: onPreviousDate,
+                onPressed: () {
+                  onMonthChanged(DateTime(
+                    selectedMonth.year,
+                    selectedMonth.month - 1,
+                  ));
+                },
               ),
               GestureDetector(
-                onTap: onDateTap,
+                onTap: onMonthTap,
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -846,7 +665,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    displayDate,
+                    DateFormat('MM/yyyy').format(selectedMonth),
                     style: const TextStyle(
                       color: Color.fromARGB(255, 0, 0, 0),
                       fontWeight: FontWeight.bold,
@@ -855,138 +674,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
               ),
-              PopupMenuButton<FilterType>(
-                onSelected: (FilterType filter) {
-                  onFilterChanged(filter);
-                },
-                itemBuilder: (BuildContext context) => [
-                  PopupMenuItem<FilterType>(
-                    value: FilterType.day,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_today,
-                          size: 16,
-                          color: selectedFilter == FilterType.day
-                              ? themeColor
-                              : Colors.grey,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Ngày',
-                          style: TextStyle(
-                            color: selectedFilter == FilterType.day
-                                ? themeColor
-                                : Colors.black,
-                            fontWeight: selectedFilter == FilterType.day
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem<FilterType>(
-                    value: FilterType.week,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.view_week,
-                          size: 16,
-                          color: selectedFilter == FilterType.week
-                              ? themeColor
-                              : Colors.grey,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Tuần',
-                          style: TextStyle(
-                            color: selectedFilter == FilterType.week
-                                ? themeColor
-                                : Colors.black,
-                            fontWeight: selectedFilter == FilterType.week
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem<FilterType>(
-                    value: FilterType.month,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_month,
-                          size: 16,
-                          color: selectedFilter == FilterType.month
-                              ? themeColor
-                              : Colors.grey,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Tháng',
-                          style: TextStyle(
-                            color: selectedFilter == FilterType.month
-                                ? themeColor
-                                : Colors.black,
-                            fontWeight: selectedFilter == FilterType.month
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem<FilterType>(
-                    value: FilterType.year,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_month,
-                          size: 16,
-                          color: selectedFilter == FilterType.year
-                              ? themeColor
-                              : Colors.grey,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Năm',
-                          style: TextStyle(
-                            color: selectedFilter == FilterType.year
-                                ? themeColor
-                                : Colors.black,
-                            fontWeight: selectedFilter == FilterType.year
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-                child: Stack(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.chevron_right),
-                      onPressed: canGoToNextDate ? onNextDate : null,
-                      tooltip: _getFilterTooltip(),
-                    ),
-                    // Indicator cho loại bộ lọc hiện tại
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: themeColor,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                onPressed: selectedMonth.year == DateTime.now().year &&
+                        selectedMonth.month == DateTime.now().month
+                    ? null
+                    : () {
+                        onMonthChanged(DateTime(
+                          selectedMonth.year,
+                          selectedMonth.month + 1,
+                        ));
+                      },
               ),
             ],
           ),
@@ -998,19 +696,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  String _getFilterTooltip() {
-    switch (selectedFilter) {
-      case FilterType.day:
-        return 'Ngày';
-      case FilterType.week:
-        return 'Tuần';
-      case FilterType.month:
-        return 'Tháng';
-      case FilterType.year:
-        return 'Năm';
-    }
-  }
 }
 
 String formatCurrency(double amount, CurrencyType currencyType) {
