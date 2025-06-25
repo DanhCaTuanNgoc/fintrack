@@ -22,6 +22,7 @@ void callbackDispatcher() {
           // Khởi tạo thông báo với cấu hình đầy đủ
           const AndroidInitializationSettings initializationSettingsAndroid =
               AndroidInitializationSettings('@mipmap/ic_launcher');
+
           const InitializationSettings initializationSettings =
               InitializationSettings(android: initializationSettingsAndroid);
 
@@ -212,16 +213,13 @@ class BackgroundService {
   // Đăng ký task kiểm tra hóa đơn định kỳ
   static Future<void> registerPeriodicTask() async {
     await Workmanager().registerPeriodicTask(
-      'checkPeriodicInvoices', // Tên task
-      'checkPeriodicInvoices', // Tên task (phải giống nhau)
-      frequency: const Duration(seconds: 1), // Tần suất chạy task
+      'checkPeriodicInvoices', // Tên  task
+      'checkPeriodicInvoices', // Tên task (phảigiống nhau)
+      frequency: const Duration(minutes: 15), // Tần suất chạy task
+      initialDelay: const Duration(seconds: 10),
       constraints: Constraints(
         // Các điều kiện để chạy task
         networkType: NetworkType.not_required, // Không yêu cầu kết nối mạng
-        requiresBatteryNotLow: false, // Không yêu cầu pin cao
-        requiresCharging: false, // Không yêu cầu đang sạc
-        requiresDeviceIdle: false, // Không yêu cầu thiết bị rảnh
-        requiresStorageNotLow: false, // Không yêu cầu bộ nhớ trống nhiều
       ),
     );
   }
