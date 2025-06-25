@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/more/periodic_invoice.dart';
 import '../../data/repositories/more/periodic_invoice_repository.dart';
+import '../../data/database/database_helper.dart';
 
 // StateNotifierProvider để quản lý trạng thái hóa đơn định kỳ
 final periodicInvoicesProvider =
@@ -15,7 +16,8 @@ class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
   }
 
   Future<void> _loadFromDb() async {
-    final data = await PeriodicInvoiceRepository().getAllPeriodicInvoices();
+    final data = await PeriodicInvoiceRepository(DatabaseHelper.instance)
+        .getAllPeriodicInvoices();
     state = data;
   }
 
@@ -26,19 +28,22 @@ class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
 
   // Thêm hóa đơn định kỳ mới
   Future<void> addPeriodicInvoice(PeriodicInvoice invoice) async {
-    await PeriodicInvoiceRepository().addPeriodicInvoice(invoice);
+    await PeriodicInvoiceRepository(DatabaseHelper.instance)
+        .addPeriodicInvoice(invoice);
     await _loadFromDb();
   }
 
   // Xóa hóa đơn định kỳ
   Future<void> removePeriodicInvoice(String id) async {
-    await PeriodicInvoiceRepository().removePeriodicInvoice(id);
+    await PeriodicInvoiceRepository(DatabaseHelper.instance)
+        .removePeriodicInvoice(id);
     await _loadFromDb();
   }
 
   // Đánh dấu hóa đơn đã thanh toán
   Future<void> markPeriodicInvoiceAsPaid(String id) async {
-    final data = await PeriodicInvoiceRepository().getAllPeriodicInvoices();
+    final data = await PeriodicInvoiceRepository(DatabaseHelper.instance)
+        .getAllPeriodicInvoices();
     final invoice = data.firstWhere((e) => e.id == id);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -47,7 +52,8 @@ class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
       lastPaidDate: today,
       nextDueDate: invoice.copyWith(lastPaidDate: today).calculateNextDueDate(),
     );
-    await PeriodicInvoiceRepository().updatePeriodicInvoice(updated);
+    await PeriodicInvoiceRepository(DatabaseHelper.instance)
+        .updatePeriodicInvoice(updated);
     await _loadFromDb();
   }
 
@@ -58,7 +64,8 @@ class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
     DateTime? lastPaidDate,
     DateTime? nextDueDate,
   }) async {
-    await PeriodicInvoiceRepository().updateInvoicePaidStatus(
+    await PeriodicInvoiceRepository(DatabaseHelper.instance)
+        .updateInvoicePaidStatus(
       id,
       isPaid,
       lastPaidDate: lastPaidDate,
@@ -79,7 +86,8 @@ class PeriodicInvoicesNotifier extends StateNotifier<List<PeriodicInvoice>> {
               (today.year == nextDue.year &&
                   today.month == nextDue.month &&
                   today.day == nextDue.day))) {
-        await PeriodicInvoiceRepository().updateInvoicePaidStatus(
+        await PeriodicInvoiceRepository(DatabaseHelper.instance)
+            .updateInvoicePaidStatus(
           invoice.id,
           false,
           lastPaidDate: null,

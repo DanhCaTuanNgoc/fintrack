@@ -1,12 +1,13 @@
 import 'package:workmanager/workmanager.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/more/periodic_invoice_provider.dart';
 import '../data/models/more/periodic_invoice.dart';
 import '../data/models/savings_goal.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../data/database/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
+import '../data/repositories/more/notification_repository.dart';
+import '../data/models/more/notification_item.dart';
+import '../data/repositories/more/periodic_invoice_repository.dart';
 
 // Khởi tạo plugin thông báo
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -47,9 +48,8 @@ Future<bool> _checkPeriodicInvoices() async {
     }
 
     // Lấy danh sách hóa đơn định kỳ trực tiếp từ database
-    final dbHelper = DatabaseHelper.instance;
-    final data = await dbHelper.getAllPeriodicInvoices();
-    final invoices = data.map((e) => PeriodicInvoice.fromMap(e)).toList();
+    final invoices = await PeriodicInvoiceRepository(DatabaseHelper.instance)
+        .getAllPeriodicInvoices();
 
     // Tạo notification channel với cấu hình đầy đủ
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -121,15 +121,16 @@ Future<bool> _checkPeriodicInvoices() async {
           );
 
           // Lưu thông báo vào database
-          await DatabaseHelper.instance.insertNotification({
-            'title': 'Hóa đơn sắp đến hạn',
-            'message':
+          await NotificationRepository(DatabaseHelper.instance)
+              .addNotification(NotificationItem(
+            title: 'Hóa đơn sắp đến hạn',
+            message:
                 'Hóa đơn ${invoice.name} sẽ đến hạn vào ${nextDue.day}/${nextDue.month}/${nextDue.year}',
-            'time': DateTime.now().toIso8601String(),
-            'is_read': 0,
-            'invoice_id': invoice.id,
-            'invoice_due_date': nextDue.toIso8601String(),
-          });
+            time: DateTime.now(),
+            isRead: false,
+            invoiceId: invoice.id,
+            invoiceDueDate: nextDue,
+          ));
         }
         // Đã quá hạn
         else if (now.isAfter(nextDue) ||
@@ -147,17 +148,19 @@ Future<bool> _checkPeriodicInvoices() async {
           );
 
           // Lưu thông báo vào database
-          await DatabaseHelper.instance.insertNotification({
-            'title': 'Hóa đơn quá hạn',
-            'message': 'Hóa đơn ${invoice.name} đã quá hạn thanh toán',
-            'time': DateTime.now().toIso8601String(),
-            'is_read': 0,
-            'invoice_id': invoice.id,
-            'invoice_due_date': nextDue.toIso8601String(),
-          });
+          await NotificationRepository(DatabaseHelper.instance)
+              .addNotification(NotificationItem(
+            title: 'Hóa đơn quá hạn',
+            message: 'Hóa đơn ${invoice.name} đã quá hạn thanh toán',
+            time: DateTime.now(),
+            isRead: false,
+            invoiceId: invoice.id,
+            invoiceDueDate: nextDue,
+          ));
 
           // Cập nhật trạng thái hóa đơn thành quá hạn
-          await DatabaseHelper.instance.updateInvoicePaidStatus(
+          await PeriodicInvoiceRepository(DatabaseHelper.instance)
+              .updateInvoicePaidStatus(
             invoice.id,
             false, // isPaid = false (chưa thanh toán)
             nextDueDate: nextDue, // cập nhật ngày đến hạn
@@ -182,17 +185,19 @@ Future<bool> _checkPeriodicInvoices() async {
           );
 
           // Lưu thông báo vào database
-          await DatabaseHelper.instance.insertNotification({
-            'title': 'Đến hạn thanh toán mới',
-            'message': 'Hóa đơn ${invoice.name} đã đến hạn thanh toán mới',
-            'time': DateTime.now().toIso8601String(),
-            'is_read': 0,
-            'invoice_id': invoice.id,
-            'invoice_due_date': nextDue.toIso8601String(),
-          });
+          await NotificationRepository(DatabaseHelper.instance)
+              .addNotification(NotificationItem(
+            title: 'Đến hạn thanh toán mới',
+            message: 'Hóa đơn ${invoice.name} đã đến hạn thanh toán mới',
+            time: DateTime.now(),
+            isRead: false,
+            invoiceId: invoice.id,
+            invoiceDueDate: nextDue,
+          ));
 
           // Cập nhật trạng thái hóa đơn thành chưa thanh toán khi đến hạn mới
-          await DatabaseHelper.instance.updateInvoicePaidStatus(
+          await PeriodicInvoiceRepository(DatabaseHelper.instance)
+              .updateInvoicePaidStatus(
             invoice.id,
             false, // isPaid = false (chưa thanh toán)
             nextDueDate: nextDue, // giữ nguyên ngày đến hạn
@@ -302,13 +307,14 @@ Future<bool> _checkSavingsGoals() async {
         );
 
         // Lưu thông báo vào database
-        await DatabaseHelper.instance.insertNotification({
-          'title': title,
-          'message': message,
-          'time': DateTime.now().toIso8601String(),
-          'is_read': 0,
-          'goal_id': goal.id,
-        });
+        await NotificationRepository(DatabaseHelper.instance)
+            .addNotification(NotificationItem(
+          title: title,
+          message: message,
+          time: DateTime.now(),
+          isRead: false,
+          goalId: goal.id?.toString(),
+        ));
 
         // Cập nhật ngày nhắc nhở tiếp theo
         final nextReminder = goal.calculateNextReminderDate();
@@ -331,14 +337,15 @@ Future<bool> _checkSavingsGoals() async {
         );
 
         // Lưu thông báo vào database
-        await DatabaseHelper.instance.insertNotification({
-          'title': 'Mục tiêu sắp đến hạn',
-          'message':
+        await NotificationRepository(DatabaseHelper.instance)
+            .addNotification(NotificationItem(
+          title: 'Mục tiêu sắp đến hạn',
+          message:
               'Mục tiêu "${goal.name}" còn ${remainingDays} ngày nữa! Tiến độ: ${goal.progressPercentage.toStringAsFixed(1)}%',
-          'time': DateTime.now().toIso8601String(),
-          'is_read': 0,
-          'goal_id': goal.id,
-        });
+          time: DateTime.now(),
+          isRead: false,
+          goalId: goal.id?.toString(),
+        ));
       }
 
       // Kiểm tra nếu mục tiêu đã hoàn thành
@@ -354,13 +361,14 @@ Future<bool> _checkSavingsGoals() async {
         );
 
         // Lưu thông báo vào database
-        await DatabaseHelper.instance.insertNotification({
-          'title': 'Chúc mừng!',
-          'message': 'Bạn đã hoàn thành mục tiêu "${goal.name}"! 🎉',
-          'time': DateTime.now().toIso8601String(),
-          'is_read': 0,
-          'goal_id': goal.id,
-        });
+        await NotificationRepository(DatabaseHelper.instance)
+            .addNotification(NotificationItem(
+          title: 'Chúc mừng!',
+          message: 'Bạn đã hoàn thành mục tiêu "${goal.name}"! 🎉',
+          time: DateTime.now(),
+          isRead: false,
+          goalId: goal.id?.toString(),
+        ));
       }
     }
 
