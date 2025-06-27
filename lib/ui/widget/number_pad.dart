@@ -52,11 +52,16 @@ class NumberPad extends StatelessWidget {
           Row(
             children: [
               Expanded(
+                flex: 2,
                 child: _buildNumberButton('0', () => onNumberTap('0'), primary,
                     isWide: true),
               ),
               const SizedBox(width: 16),
-              _buildNumberButton('000', () => onNumberTap('000'), primary),
+              Expanded(
+                flex: 2,
+                child: _buildNumberButton(
+                    '000', () => onNumberTap('000'), primary),
+              ),
               const SizedBox(width: 16),
               _buildBackspaceButton(onBackspaceTap),
             ],

@@ -8,6 +8,7 @@ import '../providers/more/transaction_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/more/notifications_provider.dart';
 import 'more/notification.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // 🔀 Danh sách các màu chủ đạo có thể chọn
 final List<Color> primaryVariants = [
@@ -82,14 +83,14 @@ class _MoreState extends ConsumerState<More> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Padding(
-          padding: EdgeInsets.only(left: 14.0),
+        title: Padding(
+          padding: EdgeInsets.only(left: 14.w),
           child: Text(
             'Cài đặt',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 22,
-              color: Color(0xFF2D3142),
+              fontSize: 22.sp,
+              color: const Color(0xFF2D3142),
             ),
           ),
         ),
@@ -104,7 +105,7 @@ class _MoreState extends ConsumerState<More> {
         // ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.w),
         child: Column(children: [_buildSettingsCard(currentCurrency)]),
       ),
     );
@@ -114,13 +115,13 @@ class _MoreState extends ConsumerState<More> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.15),
-            spreadRadius: 2,
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            spreadRadius: 2.r,
+            blurRadius: 16.r,
+            offset: Offset(0, 4.h),
           ),
         ],
       ),
@@ -173,9 +174,10 @@ class _MoreState extends ConsumerState<More> {
   }
 
   Widget _buildDivider() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
-      child: Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child:
+          Divider(height: 1.h, thickness: 1.h, color: const Color(0xFFEEEEEE)),
     );
   }
 
@@ -189,37 +191,37 @@ class _MoreState extends ConsumerState<More> {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
         child: Row(
           children: [
             Stack(
               clipBehavior: Clip.none,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.all(10.w),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8F9FA),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Icon(icon, color: const Color(0xFF2D3142), size: 24),
+                  child: Icon(icon, color: const Color(0xFF2D3142), size: 24.w),
                 ),
                 if (badge != null && badge.isNotEmpty)
                   Positioned(
-                    right: -5,
-                    top: -5,
+                    right: -5.w,
+                    top: -5.h,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE57373),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.white, width: 1),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: Colors.white, width: 1.w),
                       ),
                       child: Text(
                         badge,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
-                          fontSize: 11,
+                          fontSize: 11.sp,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
@@ -228,37 +230,37 @@ class _MoreState extends ConsumerState<More> {
                   ),
               ],
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF2D3142),
+                      color: const Color(0xFF2D3142),
                     ),
                   ),
                   if (subtitle != null)
                     Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
+                      padding: EdgeInsets.only(top: 4.h),
                       child: Text(
                         subtitle,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF9E9E9E),
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: const Color(0xFF9E9E9E),
                         ),
                       ),
                     ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
-              size: 16,
-              color: Color(0xFF9E9E9E),
+              size: 16.w,
+              color: const Color(0xFF9E9E9E),
             ),
           ],
         ),
@@ -271,13 +273,14 @@ class _MoreState extends ConsumerState<More> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
         ),
-        title: const Text(
+        title: Text(
           'Chọn ngôn ngữ',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2D3142),
+            color: const Color(0xFF2D3142),
+            fontSize: 18.sp,
           ),
         ),
         content: Column(
@@ -309,13 +312,14 @@ class _MoreState extends ConsumerState<More> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
         ),
-        title: const Text(
+        title: Text(
           'Chọn tiền tệ',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2D3142),
+            color: const Color(0xFF2D3142),
+            fontSize: 18.sp,
           ),
         ),
         content: Column(
@@ -356,13 +360,14 @@ class _MoreState extends ConsumerState<More> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
         ),
-        title: const Text(
+        title: Text(
           'Chọn màu chủ đạo',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2D3142),
+            color: const Color(0xFF2D3142),
+            fontSize: 18.sp,
           ),
         ),
         content: Column(
@@ -388,6 +393,7 @@ class _MoreState extends ConsumerState<More> {
                   SnackBar(
                     content: Text(
                       'Đã đổi màu nền thành ${_themeColorNames[index]}',
+                      style: TextStyle(fontSize: 16.sp),
                     ),
                     backgroundColor: const Color(0xFF4CAF50),
                     duration: const Duration(seconds: 2),
@@ -420,6 +426,7 @@ class _MoreState extends ConsumerState<More> {
         SnackBar(
           content: Text(
             'Đã chuyển sang ${newCurrency.displayName} và cập nhật tất cả giao dịch',
+            style: TextStyle(fontSize: 16.sp),
           ),
           backgroundColor: const Color(0xFF4CAF50),
         ),
@@ -436,17 +443,17 @@ class _MoreState extends ConsumerState<More> {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
         child: Row(
           children: [
             if (color != null)
               Container(
-                width: 24,
-                height: 24,
-                margin: const EdgeInsets.only(right: 12),
+                width: 24.w,
+                height: 24.w,
+                margin: EdgeInsets.only(right: 12.w),
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(4.r),
                   border: Border.all(color: Colors.grey.shade300),
                 ),
               ),
@@ -454,7 +461,7 @@ class _MoreState extends ConsumerState<More> {
               child: Text(
                 title,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   color: isSelected
                       ? const Color(0xFF4CAF50)
@@ -463,10 +470,10 @@ class _MoreState extends ConsumerState<More> {
               ),
             ),
             if (isSelected)
-              const Icon(
+              Icon(
                 Icons.check_circle,
-                color: Color(0xFF4CAF50),
-                size: 20,
+                color: const Color(0xFF4CAF50),
+                size: 20.w,
               ),
           ],
         ),

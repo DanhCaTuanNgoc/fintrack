@@ -4,6 +4,7 @@ import '../providers/providers_barrel.dart';
 import './widget/widget_barrel.dart';
 import 'extraFeatures/saving/savings_goals_screen.dart';
 import 'extraFeatures/receipt_long.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ExtraFeaturesScreen extends ConsumerStatefulWidget {
   const ExtraFeaturesScreen({super.key});
@@ -32,16 +33,16 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: themeColor,
-        toolbarHeight: 60,
-        title: const Row(
+        toolbarHeight: 60.h,
+        title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'Tiện ích bổ sung',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 22,
-                color: Color.fromARGB(255, 255, 255, 255),
+                fontSize: 22.sp,
+                color: const Color.fromARGB(255, 255, 255, 255),
               ),
             ),
           ],
@@ -53,34 +54,34 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
           color: themeColor,
         ),
         child: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(22.r)),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0.w),
             child: Column(
               children: [
                 // Mục tiêu tiết kiệm button
                 Container(
                   width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 16),
+                  margin: EdgeInsets.only(bottom: 16.h),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 2,
-                        blurRadius: 4,
-                        offset: const Offset(0, 0),
+                        spreadRadius: 2.r,
+                        blurRadius: 4.r,
+                        offset: Offset(0, 0.h),
                       ),
                     ],
                   ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -90,22 +91,22 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                         );
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: EdgeInsets.all(20.0.w),
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: EdgeInsets.all(12.w),
                               decoration: BoxDecoration(
                                 color: themeColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(10.r),
                               ),
                               child: Icon(
                                 Icons.savings,
                                 color: themeColor,
-                                size: 28,
+                                size: 28.w,
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            SizedBox(width: 16.w),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,16 +114,16 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                                   Text(
                                     'Mục tiêu tiết kiệm',
                                     style: TextStyle(
-                                      fontSize: 17,
+                                      fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.grey[800],
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: 4.h),
                                   Text(
                                     'Thiết lập và theo dõi mục tiêu tiết kiệm',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       color: Colors.grey[600],
                                     ),
                                   ),
@@ -132,7 +133,7 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                             Icon(
                               Icons.arrow_forward_ios,
                               color: themeColor,
-                              size: 16,
+                              size: 16.w,
                             ),
                           ],
                         ),
@@ -144,23 +145,23 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                 // Hóa đơn định kỳ button
                 Container(
                   width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 16),
+                  margin: EdgeInsets.only(bottom: 16.h),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
+                        spreadRadius: 1.r,
+                        blurRadius: 4.r,
+                        offset: Offset(0, 2.h),
                       ),
                     ],
                   ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -170,22 +171,22 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                         );
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: EdgeInsets.all(20.0.w),
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: EdgeInsets.all(12.w),
                               decoration: BoxDecoration(
                                 color: themeColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(10.r),
                               ),
                               child: Icon(
                                 Icons.receipt_long,
                                 color: themeColor,
-                                size: 28,
+                                size: 28.w,
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            SizedBox(width: 16.w),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,16 +194,16 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                                   Text(
                                     'Hóa đơn định kỳ',
                                     style: TextStyle(
-                                      fontSize: 17,
+                                      fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.grey[800],
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: 4.h),
                                   Text(
                                     'Quản lý các hóa đơn định kỳ hàng tháng',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       color: Colors.grey[600],
                                     ),
                                   ),
@@ -212,7 +213,7 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                             Icon(
                               Icons.arrow_forward_ios,
                               color: themeColor,
-                              size: 16,
+                              size: 16.w,
                             ),
                           ],
                         ),

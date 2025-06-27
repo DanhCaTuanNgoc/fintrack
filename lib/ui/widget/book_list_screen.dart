@@ -1,5 +1,7 @@
+import 'package:Fintrack/ui/widget/update_book_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/models_barrel.dart';
 import '../../providers/book_provider.dart';
 import './create_book_modal.dart';
@@ -22,11 +24,11 @@ class BookListScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: themeColor,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Danh sách sổ chi tiêu',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: 20.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -48,14 +50,14 @@ class BookListScreen extends ConsumerWidget {
                       children: [
                         Icon(
                           Icons.book_outlined,
-                          size: 64,
+                          size: 64.sp,
                           color: themeColor,
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         Text(
                           'Không có sổ chi tiêu',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             color: Colors.grey[600],
                             fontWeight: FontWeight.w500,
                           ),
@@ -64,7 +66,7 @@ class BookListScreen extends ConsumerWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16.w),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       boxShadow: [
@@ -85,16 +87,16 @@ class BookListScreen extends ConsumerWidget {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: themeColor,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16.w),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.r),
                           ),
                           elevation: 0,
                         ),
-                        child: const Text(
+                        child: Text(
                           'Tạo sổ mới',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -111,7 +113,7 @@ class BookListScreen extends ConsumerWidget {
             children: [
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16.w),
                   itemCount: books.length,
                   itemBuilder: (context, index) {
                     final book = books[index];
@@ -123,10 +125,10 @@ class BookListScreen extends ConsumerWidget {
                     );
 
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
+                      margin: EdgeInsets.only(bottom: 12.w),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.1),
@@ -137,26 +139,26 @@ class BookListScreen extends ConsumerWidget {
                         ],
                       ),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 8.w,
                         ),
                         leading: Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
                             color: themeColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.book,
                             color: themeColor,
-                            size: 24,
+                            size: 24.w,
                           ),
                         ),
                         title: Text(
                           book.name,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -167,23 +169,23 @@ class BookListScreen extends ConsumerWidget {
                               Icon(
                                 Icons.check_circle,
                                 color: themeColor,
-                                size: 24,
+                                size: 24.w,
                               ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8.w),
                             IconButton(
                               icon: Icon(
                                 Icons.edit,
                                 color: themeColor,
-                                size: 20,
+                                size: 20.w,
                               ),
                               onPressed: () =>
                                   _showEditBookDialog(context, book, ref),
                             ),
                             IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.delete,
                                 color: Colors.red,
-                                size: 20,
+                                size: 20.w,
                               ),
                               onPressed: () =>
                                   _showDeleteBookDialog(context, book, ref),
@@ -202,7 +204,7 @@ class BookListScreen extends ConsumerWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.w),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [
@@ -223,16 +225,16 @@ class BookListScreen extends ConsumerWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: themeColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: 16.w),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Tạo sổ mới',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -250,14 +252,14 @@ class BookListScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
+              Icon(Icons.error, size: 64.w, color: Colors.red),
+              SizedBox(height: 16.h),
               Text(
                 'Có lỗi xảy ra: $error',
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16.sp),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: () => ref.refresh(booksProvider),
                 child: const Text('Thử lại'),
@@ -279,54 +281,14 @@ class BookListScreen extends ConsumerWidget {
   }
 
   void _showEditBookDialog(BuildContext context, Book book, WidgetRef ref) {
-    final TextEditingController controller =
-        TextEditingController(text: book.name);
-
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Chỉnh sửa tên sổ'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'Tên sổ',
-              border: OutlineInputBorder(),
-            ),
-            autofocus: true,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Hủy'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final newName = controller.text.trim();
-                if (newName.isNotEmpty) {
-                  ref.read(booksProvider.notifier).updateBook(book, newName);
-                  Navigator.of(context).pop();
-                }
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Cập nhật thành công',
-                      style: TextStyle(fontSize: 15),
-                    ),
-                    backgroundColor: Color(0xFF4CAF50),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: themeColor),
-              child: const Text(
-                'Lưu',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        );
-      },
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => UpdateBookModal(
+        themeColor: themeColor,
+        book: book,
+      ),
     );
   }
 
@@ -334,35 +296,171 @@ class BookListScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Xóa sổ'),
-          content: Text('Bạn có chắc chắn muốn xóa sổ "${book.name}"?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Hủy'),
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(24.w),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20.r,
+                  offset: Offset(0, 10.h),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await ref.read(booksProvider.notifier).deleteBook(book);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Xóa thành thành công',
-                      style: TextStyle(fontSize: 15),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon cảnh báo
+                Container(
+                  width: 60.w,
+                  height: 60.w,
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(30.r),
+                    border: Border.all(
+                      color: Colors.red.shade200,
+                      width: 2,
                     ),
-                    backgroundColor: Color(0xFF4CAF50),
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text(
-                'Xóa',
-                style: TextStyle(color: Colors.white),
-              ),
+                  child: Icon(
+                    Icons.warning_rounded,
+                    color: Colors.red.shade600,
+                    size: 30.w,
+                  ),
+                ),
+                SizedBox(height: 20.h),
+
+                // Tiêu đề
+                Text(
+                  'Xóa sổ chi tiêu',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+
+                // Nội dung
+                Text(
+                  'Bạn có chắc chắn muốn xóa sổ "${book.name}"?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.grey.shade600,
+                    height: 1.4,
+                  ),
+                ),
+
+                SizedBox(height: 24.h),
+
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 48.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 1,
+                          ),
+                        ),
+                        child: TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                          ),
+                          child: Text(
+                            'Hủy',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Container(
+                        height: 48.h,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.red.shade600, Colors.red.shade700],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.red.withOpacity(0.3),
+                              blurRadius: 8.r,
+                              offset: Offset(0, 4.h),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            Navigator.of(context).pop();
+                            await ref
+                                .read(booksProvider.notifier)
+                                .deleteBook(book);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Xóa sổ thành công',
+                                  style: TextStyle(fontSize: 15.sp),
+                                ),
+                                backgroundColor: const Color(0xFF4CAF50),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.delete_forever,
+                                color: Colors.white,
+                                size: 18.w,
+                              ),
+                              SizedBox(width: 6.w),
+                              Text(
+                                'Xóa',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );

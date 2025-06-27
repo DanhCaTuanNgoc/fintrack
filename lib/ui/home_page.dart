@@ -7,6 +7,7 @@ import 'charts.dart';
 import 'more.dart';
 import 'extra_features_screen.dart';
 import '../providers/theme_provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -58,35 +59,51 @@ class _MyHomePageState extends ConsumerState<HomePage> {
         child: _screens[_selectedIndex],
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black12, // màu bóng
-              blurRadius: 8, // độ mờ
-              offset: Offset(0, -2), // đổ bóng lên phía trên
+              color: Colors.black12,
+              blurRadius: 8.r, // Sử dụng .r cho blurRadius
+              offset: Offset(0, -2.h), // Sử dụng .h cho offset
             ),
           ],
         ),
-        child: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(Icons.book_outlined), label: 'Sổ'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.analytics_outlined), label: 'Phân tích'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.more_horiz_outlined), label: 'Tiện ích'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings_outlined), label: 'Cài đặt'),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          type: BottomNavigationBarType.fixed,
-          showUnselectedLabels: true,
-          unselectedItemColor: Colors.grey,
-          selectedItemColor: themeColor,
-          backgroundColor: Colors.white,
-          elevation: 0, // 👈 Đặt elevation = 0 để dùng boxShadow tự custom
+        child: Padding(
+          padding: EdgeInsets.only(
+              top: 4.h, bottom: 4.h), // Thêm padding top và bottom
+          child: BottomNavigationBar(
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.book_outlined,
+                    size: 25.w), // Sử dụng .w cho size
+                label: 'Sổ',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.analytics_outlined, size: 25.w),
+                label: 'Phân tích',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.more_horiz_outlined, size: 25.w),
+                label: 'Tiện ích',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings_outlined, size: 25.w),
+                label: 'Cài đặt',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            type: BottomNavigationBarType.fixed,
+            showUnselectedLabels: true,
+            unselectedItemColor: Colors.grey,
+            selectedItemColor: themeColor,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            selectedLabelStyle:
+                TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600),
+            unselectedLabelStyle: TextStyle(fontSize: 13.sp),
+          ),
         ),
       ),
     );

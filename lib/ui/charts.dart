@@ -6,6 +6,7 @@ import '../data/database/database_helper.dart';
 import '../ui/more.dart';
 import '../providers/providers_barrel.dart';
 import './widget/widget_barrel.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Charts extends ConsumerStatefulWidget {
   const Charts({super.key});
@@ -93,48 +94,48 @@ class _ChartsState extends ConsumerState<Charts>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(20.w),
+                    margin: EdgeInsets.all(16.w),
                     child: Column(
                       children: [
                         Icon(
                           Icons.book,
-                          size: 64,
+                          size: 64.w,
                           color: themeColor,
                         ),
-                        const SizedBox(height: 20),
-                        const Text(
+                        SizedBox(height: 20.h),
+                        Text(
                           'Chưa có sổ chi tiêu nào',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF2D3142),
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        const Text(
+                        SizedBox(height: 10.h),
+                        Text(
                           'Hãy tạo sổ chi tiêu đầu tiên của bạn',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          style: TextStyle(fontSize: 16.sp, color: Colors.grey),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         ElevatedButton(
                           onPressed: () {
                             _showCreateBookModal(context, themeColor);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: themeColor,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 32.w,
+                              vertical: 16.h,
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.r),
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Tạo sổ chi tiêu',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -152,16 +153,16 @@ class _ChartsState extends ConsumerState<Charts>
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(22),
-                  topRight: Radius.circular(22),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(22.r),
+                  topRight: Radius.circular(22.r),
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.1),
                     spreadRadius: 1,
                     blurRadius: 4,
-                    offset: const Offset(0, 1),
+                    offset: Offset(0, 1.h),
                   ),
                 ],
               ),
@@ -181,13 +182,13 @@ class _ChartsState extends ConsumerState<Charts>
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 20),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 20),
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 8.w, vertical: 20.h),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12.h, horizontal: 20.w),
                             decoration: BoxDecoration(
                               color: isSelected ? themeColor : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(30.r),
                               boxShadow: isSelected
                                   ? [
                                       BoxShadow(
@@ -202,7 +203,7 @@ class _ChartsState extends ConsumerState<Charts>
                                 color: isSelected
                                     ? themeColor
                                     : Colors.grey.shade400,
-                                width: 1.2,
+                                width: 1.2.w,
                               ),
                             ),
                             child: Row(
@@ -215,9 +216,9 @@ class _ChartsState extends ConsumerState<Charts>
                                   color: isSelected
                                       ? Colors.white
                                       : Colors.black54,
-                                  size: 20,
+                                  size: 20.w,
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8.w),
                                 Text(
                                   index == 0 ? 'Chi tiêu' : 'Thu nhập',
                                   style: TextStyle(
@@ -225,7 +226,7 @@ class _ChartsState extends ConsumerState<Charts>
                                         ? Colors.white
                                         : Colors.black87,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 16.sp,
                                   ),
                                 ),
                               ],
@@ -272,8 +273,8 @@ class _ChartsState extends ConsumerState<Charts>
       ..sort((a, b) => b.value.compareTo(a.value));
 
     return Container(
-      height: 320,
-      padding: const EdgeInsets.only(top: 20),
+      height: 320.h,
+      padding: EdgeInsets.only(top: 20.h),
       child: Stack(
         children: [
           if (data.isEmpty)
@@ -301,12 +302,12 @@ class _ChartsState extends ConsumerState<Charts>
             ),
           Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
+              padding: EdgeInsets.symmetric(horizontal: 5.w),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
-                    width: 140, // Giới hạn chiều ngang, bạn có thể điều chỉnh
+                    width: 140.w, // Giới hạn chiều ngang, bạn có thể điều chỉnh
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
@@ -314,7 +315,7 @@ class _ChartsState extends ConsumerState<Charts>
                             ? '0'
                             : formatCurrency(total, currencyType),
                         style: TextStyle(
-                          fontSize: 16.5,
+                          fontSize: 16.5.sp,
                           fontWeight: FontWeight.bold,
                           color: data.isEmpty
                               ? Colors.grey[400]
@@ -325,18 +326,17 @@ class _ChartsState extends ConsumerState<Charts>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 0),
                   Text(
                     isExpense ? 'Tổng chi tiêu' : 'Tổng thu nhập',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       color: Colors.grey[600],
                     ),
                   ),
                   Text(
                     DateFormat('MM/yyyy').format(_selectedMonth),
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 12.sp,
                       color: Colors.grey[500],
                     ),
                   ),
@@ -372,8 +372,8 @@ class _ChartsState extends ConsumerState<Charts>
         value: data[index].value,
         title: '$percentage%',
         radius: 100,
-        titleStyle: const TextStyle(
-          fontSize: 14,
+        titleStyle: TextStyle(
+          fontSize: 14.sp,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
@@ -413,16 +413,16 @@ class _ChartsState extends ConsumerState<Charts>
         return Column(
           children: [
             _buildPieChart(_categoryExpenses, currencyType, true),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 20.h,
             ),
             if (_categoryExpenses.isEmpty)
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0.w),
                 child: Text(
                   'Không có chi tiêu trong tháng này',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     color: Colors.grey[600],
                     fontStyle: FontStyle.italic,
                   ),
@@ -443,11 +443,11 @@ class _ChartsState extends ConsumerState<Charts>
                         .toStringAsFixed(1);
 
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(12),
+                      margin: EdgeInsets.only(bottom: 8.h),
+                      padding: EdgeInsets.all(12.w),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.1),
@@ -460,30 +460,30 @@ class _ChartsState extends ConsumerState<Charts>
                       child: Row(
                         children: [
                           Container(
-                            width: 12,
-                            height: 12,
+                            width: 12.w,
+                            height: 12.h,
                             decoration: BoxDecoration(
                               color: Colors
                                   .primaries[index % Colors.primaries.length],
                               shape: BoxShape.circle,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                           Expanded(
                             child: Text(
                               category.key,
-                              style: const TextStyle(
-                                fontSize: 14,
+                              style: TextStyle(
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
                           Text(
                             formatCurrency(category.value, currencyType),
-                            style: const TextStyle(
-                              fontSize: 14,
+                            style: TextStyle(
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFFFF5252),
+                              color: const Color(0xFFFF5252),
                             ),
                           ),
                         ],
@@ -530,16 +530,16 @@ class _ChartsState extends ConsumerState<Charts>
         return Column(
           children: [
             _buildPieChart(_categoryIncomes, currencyType, false),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 20.h,
             ),
             if (_categoryIncomes.isEmpty)
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0.w),
                 child: Text(
                   'Không có thu nhập trong tháng này',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     color: Colors.grey[600],
                     fontStyle: FontStyle.italic,
                   ),
@@ -560,11 +560,11 @@ class _ChartsState extends ConsumerState<Charts>
                         (category.value / totalIncome * 100).toStringAsFixed(1);
 
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(12),
+                      margin: EdgeInsets.only(bottom: 8.h),
+                      padding: EdgeInsets.all(12.w),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.1),
@@ -577,30 +577,30 @@ class _ChartsState extends ConsumerState<Charts>
                       child: Row(
                         children: [
                           Container(
-                            width: 12,
-                            height: 12,
+                            width: 12.w,
+                            height: 12.h,
                             decoration: BoxDecoration(
                               color: Colors
                                   .primaries[index % Colors.primaries.length],
                               shape: BoxShape.circle,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                           Expanded(
                             child: Text(
                               category.key,
-                              style: const TextStyle(
-                                fontSize: 14,
+                              style: TextStyle(
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
                           Text(
                             formatCurrency(category.value, currencyType),
-                            style: const TextStyle(
-                              fontSize: 14,
+                            style: TextStyle(
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF4CAF50),
+                              color: const Color(0xFF4CAF50),
                             ),
                           ),
                         ],
@@ -632,22 +632,25 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: themeColor,
-      toolbarHeight: 60,
+      toolbarHeight: 60.h,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
+          Text(
             'Phân tích chi tiêu',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 22,
-              color: Color.fromARGB(255, 255, 255, 255),
+              fontSize: 22.sp,
+              color: const Color.fromARGB(255, 255, 255, 255),
             ),
           ),
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.chevron_left),
+                icon: const Icon(
+                  Icons.chevron_left,
+                  color: Colors.white,
+                ),
                 onPressed: () {
                   onMonthChanged(DateTime(
                     selectedMonth.year,
@@ -659,23 +662,26 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onTap: onMonthTap,
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      EdgeInsets.symmetric(horizontal: 12.h, vertical: 6.w),
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Text(
                     DateFormat('MM/yyyy').format(selectedMonth),
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0),
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 0, 0, 0),
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                     ),
                   ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.chevron_right),
+                icon: const Icon(
+                  Icons.chevron_right,
+                  color: Colors.white,
+                ),
                 onPressed: selectedMonth.year == DateTime.now().year &&
                         selectedMonth.month == DateTime.now().month
                     ? null

@@ -17,3 +17,4 @@ export './saving_card.dart';
 export './add_periodic_saving_goal.dart';
 export './update_periodic_saving_goal.dart';
 export './number_pad.dart';
+export './update_book_modal.dart';

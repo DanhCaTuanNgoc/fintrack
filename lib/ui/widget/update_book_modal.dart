@@ -4,21 +4,29 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/book.dart';
 import '../../providers/book_provider.dart';
 
-class CreateBookModal extends ConsumerStatefulWidget {
+class UpdateBookModal extends ConsumerStatefulWidget {
   final Color themeColor;
+  final Book book;
 
-  const CreateBookModal({
+  const UpdateBookModal({
     super.key,
     required this.themeColor,
+    required this.book,
   });
 
   @override
-  ConsumerState<CreateBookModal> createState() => _CreateBookModalState();
+  ConsumerState<UpdateBookModal> createState() => _UpdateBookModalState();
 }
 
-class _CreateBookModalState extends ConsumerState<CreateBookModal> {
+class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
   final _formKey = GlobalKey<FormState>();
-  final _bookNameController = TextEditingController();
+  late final TextEditingController _bookNameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _bookNameController = TextEditingController(text: widget.book.name);
+  }
 
   @override
   void dispose() {
@@ -26,12 +34,13 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
     super.dispose();
   }
 
-  Future<void> _handleCreateBook() async {
+  Future<void> _handleUpdateBook() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Kiểm tra xem tên sổ đã tồn tại chưa
+        // Kiểm tra xem tên sổ đã tồn tại chưa (trừ book hiện tại)
         final books = ref.read(booksProvider).value ?? [];
         final isNameExists = books.any((book) =>
+            book.id != widget.book.id &&
             book.name.toLowerCase() == _bookNameController.text.toLowerCase());
 
         if (isNameExists) {
@@ -71,13 +80,17 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
           return;
         }
 
-        final book = Book(
-          name: _bookNameController.text,
-          balance: 0.0,
-          userId: 1,
-        );
+        // Kiểm tra xem tên có thay đổi không
+        if (_bookNameController.text.trim() == widget.book.name) {
+          Navigator.pop(context);
+          return;
+        }
 
-        await ref.read(booksProvider.notifier).createBook(book.name);
+        // Cập nhật tên book
+        await ref.read(booksProvider.notifier).updateBook(
+              widget.book,
+              _bookNameController.text.trim(),
+            );
 
         if (!mounted) return;
         Navigator.pop(context);
@@ -86,7 +99,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Tạo sổ chi tiêu thành công',
+              'Cập nhật tên sổ chi tiêu thành công',
               style: TextStyle(fontSize: 15.sp),
             ),
             backgroundColor: const Color(0xFF4CAF50),
@@ -97,7 +110,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Đã xảy ra lỗi khi tạo sổ. Vui lòng thử lại.',
+              'Đã xảy ra lỗi khi cập nhật sổ. Vui lòng thử lại.',
               style: TextStyle(fontSize: 15.sp),
             ),
             backgroundColor: Colors.red,
@@ -134,7 +147,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                   ),
                 ),
                 Text(
-                  'Tạo sổ chi tiêu mới',
+                  'Chỉnh sửa tên sổ chi tiêu',
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
@@ -149,7 +162,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                       TextFormField(
                         controller: _bookNameController,
                         decoration: InputDecoration(
-                          labelText: 'Tên sổ chi tiêu',
+                          labelText: 'Tên sổ chi tiêu mới',
                           labelStyle: TextStyle(
                             color: widget.themeColor,
                             fontSize: 14.sp,
@@ -165,7 +178,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                             ),
                           ),
                           prefixIcon: Icon(
-                            Icons.book,
+                            Icons.edit,
                             size: 20.w,
                             color: widget.themeColor,
                           ),
@@ -181,9 +194,6 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                           if (value == null || value.isEmpty) {
                             return 'Vui lòng nhập tên sổ chi tiêu';
                           }
-                          // if (value.trim().length < 3) {
-                          //   return 'Tên sổ phải có ít nhất 3 ký tự';
-                          // }
                           return null;
                         },
                       ),
@@ -195,7 +205,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                   width: double.infinity,
                   height: 52.h,
                   child: ElevatedButton(
-                    onPressed: _handleCreateBook,
+                    onPressed: _handleUpdateBook,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: widget.themeColor,
                       padding: EdgeInsets.symmetric(vertical: 16.h),
@@ -204,7 +214,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                       ),
                     ),
                     child: Text(
-                      'Tạo sổ',
+                      'Lưu thay đổi',
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,

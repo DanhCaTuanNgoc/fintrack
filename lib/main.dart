@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/currency_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:io';
 
 import 'services/background_service.dart';
@@ -72,22 +73,29 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key, required this.hasVisited});
   @override
   Widget build(BuildContext context) {
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-          textScaleFactor:
-              1.0), // Font chữ của thiết bị không ảnh hưởng đến ứng dụng
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Fintrack',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-          fontFamily: 'Roboto',
-          textTheme: GoogleFonts.robotoTextTheme(),
-          scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-        ),
-        home: hasVisited ? const HomePage() : const WelcomeScreen(),
-      ),
+    return ScreenUtilInit(
+      designSize: const Size(410, 840), // Samsung A30 design size
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+              textScaleFactor:
+                  1.0), // Font chữ của thiết bị không ảnh hưởng đến ứng dụng
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Fintrack',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+              useMaterial3: true,
+              fontFamily: 'Roboto',
+              textTheme: GoogleFonts.robotoTextTheme(),
+              scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+            ),
+            home: hasVisited ? const HomePage() : const WelcomeScreen(),
+          ),
+        );
+      },
     );
   }
 }

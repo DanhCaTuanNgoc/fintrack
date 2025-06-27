@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../data/database/database_helper.dart';
 import '../providers/providers_barrel.dart';
 import './widget/widget_barrel.dart';
@@ -111,12 +112,12 @@ class _BooksState extends ConsumerState<Books>
             appBar: AppBar(
               backgroundColor: themeColor,
               elevation: 0,
-              toolbarHeight: 60,
-              title: const Text(
+              toolbarHeight: 60.h,
+              title: Text(
                 'Sổ chi tiêu',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 24,
+                  fontSize: 24.sp,
                   color: Colors.white,
                 ),
               ),
@@ -150,43 +151,43 @@ class _BooksState extends ConsumerState<Books>
                           children: [
                             Icon(
                               Icons.book,
-                              size: 64,
+                              size: 64.w,
                               color: themeColor,
                             ),
-                            const SizedBox(height: 20),
-                            const Text(
+                            SizedBox(height: 20.h),
+                            Text(
                               'Chưa có sổ chi tiêu nào',
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 20.sp,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF2D3142),
+                                color: const Color(0xFF2D3142),
                               ),
                             ),
-                            const SizedBox(height: 10),
-                            const Text(
+                            SizedBox(height: 10.h),
+                            Text(
                               'Hãy tạo sổ chi tiêu đầu tiên của bạn',
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.grey),
+                              style: TextStyle(
+                                  fontSize: 16.sp, color: Colors.grey),
                             ),
-                            const SizedBox(height: 20),
+                            SizedBox(height: 20.h),
                             ElevatedButton(
                               onPressed: () {
                                 _showCreateBookModal(context, themeColor);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: themeColor,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 16,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 32.w,
+                                  vertical: 16.h,
                                 ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                 ),
                               ),
-                              child: const Text(
+                              child: Text(
                                 'Tạo sổ chi tiêu',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
@@ -255,7 +256,7 @@ class _BooksState extends ConsumerState<Books>
               appBar: AppBar(
                 backgroundColor: themeColor,
                 elevation: 0,
-                toolbarHeight: 60,
+                toolbarHeight: 60.h,
                 title: Row(
                   children: [
                     Flexible(
@@ -264,12 +265,12 @@ class _BooksState extends ConsumerState<Books>
                         children: [
                           Flexible(
                             child: Padding(
-                              padding: const EdgeInsets.only(left: 5),
+                              padding: EdgeInsets.only(left: 5.w),
                               child: Text(
                                 currentBook.name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 22,
+                                  fontSize: 22.sp,
                                   color: Colors.white,
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -283,14 +284,14 @@ class _BooksState extends ConsumerState<Books>
                               onTap: () {
                                 _showBookListScreen(context, themeColor);
                               },
-                              borderRadius: BorderRadius.circular(999),
+                              borderRadius: BorderRadius.circular(999.r),
                               child: Container(
-                                width: 35,
-                                height: 37,
+                                width: 35.w,
+                                height: 37.h,
                                 alignment: Alignment.center,
-                                child: const Icon(
+                                child: Icon(
                                   Icons.arrow_right_rounded,
-                                  size: 35,
+                                  size: 35.w,
                                   color: Colors.white,
                                 ),
                               ),
@@ -341,16 +342,16 @@ class _BooksState extends ConsumerState<Books>
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(22),
-                      topRight: Radius.circular(22),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(22.r),
+                      topRight: Radius.circular(22.r),
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.1),
                         spreadRadius: 1,
                         blurRadius: 4,
-                        offset: const Offset(0, 1),
+                        offset: Offset(0, 1.h),
                       ),
                     ],
                   ),
@@ -363,20 +364,20 @@ class _BooksState extends ConsumerState<Books>
                         children: [
                           // Header với thông tin tổng quan
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 22,
-                              horizontal: 20,
+                            padding: EdgeInsets.symmetric(
+                              vertical: 22.h,
+                              horizontal: 20.w,
                             ),
-                            margin: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                            margin: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 14.h),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(16.r),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.2),
                                   spreadRadius: 2,
                                   blurRadius: 8,
-                                  offset: const Offset(0, 4),
+                                  offset: Offset(0, 4.h),
                                 ),
                               ],
                             ),
@@ -396,42 +397,20 @@ class _BooksState extends ConsumerState<Books>
                                             final defaultEnd = now;
                                             final picked =
                                                 await showDateRangePicker(
-                                              context: context,
-                                              firstDate: DateTime(2020),
-                                              lastDate: DateTime(2030),
-                                              initialDateRange:
-                                                  (_startDate != null &&
-                                                          _endDate != null)
-                                                      ? DateTimeRange(
-                                                          start: _startDate!,
-                                                          end: _endDate!)
-                                                      : DateTimeRange(
-                                                          start: defaultStart,
-                                                          end: defaultEnd,
-                                                        ),
-                                              builder: (context, child) {
-                                                return Theme(
-                                                  data: Theme.of(context)
-                                                      .copyWith(
-                                                    colorScheme:
-                                                        ColorScheme.light(
-                                                      primary: themeColor,
-                                                      onPrimary: Colors.white,
-                                                      onSurface: themeColor,
-                                                    ),
-                                                    textButtonTheme:
-                                                        TextButtonThemeData(
-                                                      style:
-                                                          TextButton.styleFrom(
-                                                        foregroundColor:
-                                                            themeColor,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  child: child!,
+                                                  context: context,
+                                                  firstDate: DateTime(2020),
+                                                  lastDate: DateTime(2030),
+                                                  initialDateRange:
+                                                      (_startDate != null &&
+                                                              _endDate != null)
+                                                          ? DateTimeRange(
+                                                              start: _startDate!,
+                                                              end: _endDate!)
+                                                          : DateTimeRange(
+                                                              start: defaultStart,
+                                                              end: defaultEnd,
+                                                            ),
                                                 );
-                                              },
-                                            );
 
                                             if (picked != null) {
                                               setState(() {
@@ -441,12 +420,13 @@ class _BooksState extends ConsumerState<Books>
                                             }
                                           },
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16, vertical: 10),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16.w,
+                                                vertical: 10.h),
                                             decoration: BoxDecoration(
                                               color: Colors.white,
                                               borderRadius:
-                                                  BorderRadius.circular(12),
+                                                  BorderRadius.circular(12.r),
                                               border: Border.all(
                                                 color: Colors.grey.shade300,
                                                 width: 1.2,
@@ -456,7 +436,7 @@ class _BooksState extends ConsumerState<Books>
                                                   color: Colors.grey
                                                       .withOpacity(0.1),
                                                   blurRadius: 6,
-                                                  offset: const Offset(0, 3),
+                                                  offset: Offset(0, 3.h),
                                                 ),
                                               ],
                                             ),
@@ -464,9 +444,9 @@ class _BooksState extends ConsumerState<Books>
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Icon(Icons.calendar_today,
-                                                    size: 18,
+                                                    size: 18.w,
                                                     color: themeColor),
-                                                const SizedBox(width: 8),
+                                                SizedBox(width: 8.w),
                                                 Builder(
                                                   builder: (context) {
                                                     final now = DateTime.now();
@@ -487,12 +467,12 @@ class _BooksState extends ConsumerState<Books>
                                                       isDefault
                                                           ? '${DateFormat('dd/MM/yyyy').format(defaultStart)} - ${DateFormat('dd/MM/yyyy').format(defaultEnd)}'
                                                           : '${DateFormat('dd/MM/yyyy').format(displayStart)} - ${DateFormat('dd/MM/yyyy').format(displayEnd)}',
-                                                      style: const TextStyle(
-                                                        fontSize: 15,
+                                                      style: TextStyle(
+                                                        fontSize: 15.sp,
                                                         fontWeight:
                                                             FontWeight.w500,
-                                                        color:
-                                                            Color(0xFF2D3142),
+                                                        color: const Color(
+                                                            0xFF2D3142),
                                                       ),
                                                     );
                                                   },
@@ -509,7 +489,7 @@ class _BooksState extends ConsumerState<Books>
                                             ? Icons.visibility
                                             : Icons.visibility_off,
                                         color: Colors.grey[600],
-                                        size: 24,
+                                        size: 24.w,
                                       ),
                                       onPressed: () {
                                         setState(() {
@@ -519,15 +499,15 @@ class _BooksState extends ConsumerState<Books>
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 20),
+                                SizedBox(height: 20.h),
                                 // Stats row
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Expanded(
                                       child: Container(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: 110,
+                                        constraints: BoxConstraints(
+                                          maxWidth: 110.w,
                                         ),
                                         child: FittedBox(
                                           fit: BoxFit.scaleDown,
@@ -543,11 +523,11 @@ class _BooksState extends ConsumerState<Books>
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    SizedBox(width: 8.w),
                                     Expanded(
                                       child: Container(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: 110,
+                                        constraints: BoxConstraints(
+                                          maxWidth: 110.w,
                                         ),
                                         child: FittedBox(
                                           fit: BoxFit.scaleDown,
@@ -560,11 +540,11 @@ class _BooksState extends ConsumerState<Books>
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    SizedBox(width: 8.w),
                                     Expanded(
                                       child: Container(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: 110,
+                                        constraints: BoxConstraints(
+                                          maxWidth: 110.w,
                                         ),
                                         child: FittedBox(
                                           fit: BoxFit.scaleDown,
@@ -610,18 +590,18 @@ class _BooksState extends ConsumerState<Books>
                                       child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.sentiment_dissatisfied_outlined,
-                                        size: 100,
+                                        size: 100.w,
                                         color: Colors.grey,
                                       ),
-                                      const SizedBox(
-                                        height: 16,
+                                      SizedBox(
+                                        height: 16.h,
                                       ),
                                       Text(
                                         'Hiện chưa có chi tiêu',
                                         style: TextStyle(
-                                            fontSize: 17,
+                                            fontSize: 17.sp,
                                             color: Colors.grey[600],
                                             fontWeight: FontWeight.w500,
                                             fontStyle: FontStyle.italic),
@@ -653,7 +633,7 @@ class _BooksState extends ConsumerState<Books>
                                 }
 
                                 return ListView.builder(
-                                  padding: const EdgeInsets.all(6),
+                                  padding: EdgeInsets.all(6.w),
                                   itemCount: groupedTransactions.length,
                                   itemBuilder: (context, index) {
                                     final dateKey = groupedTransactions.keys
@@ -698,16 +678,16 @@ class _BooksState extends ConsumerState<Books>
                       Column(
                         children: [
                           Container(
-                            margin: const EdgeInsets.all(16),
+                            margin: EdgeInsets.all(16.w),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(20.r),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.2),
                                   spreadRadius: 2,
                                   blurRadius: 8,
-                                  offset: const Offset(0, 4),
+                                  offset: Offset(0, 4.h),
                                 ),
                               ],
                             ),
@@ -764,7 +744,7 @@ class _BooksState extends ConsumerState<Books>
                                     child: Text(
                                       'Hiện chưa có chi tiêu',
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 16.sp,
                                         color: Colors.grey[600],
                                         fontWeight: FontWeight.w500,
                                         fontStyle: FontStyle.italic,
@@ -805,13 +785,16 @@ class _BooksState extends ConsumerState<Books>
                   ),
                 ),
               ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  _showAddExpenseModal(context, currentBook, themeColor);
-                },
-                backgroundColor: themeColor,
-                elevation: 4,
-                child: const Icon(Icons.add, size: 30, color: Colors.white),
+              floatingActionButton: Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 10.h, 20.h),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    _showAddExpenseModal(context, currentBook, themeColor);
+                  },
+                  backgroundColor: themeColor,
+                  elevation: 4,
+                  child: Icon(Icons.add, size: 30.w, color: Colors.white),
+                ),
               ),
             );
           },

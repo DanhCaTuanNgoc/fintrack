@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/models_barrel.dart';
-import '../../providers/currency_provider.dart';
 import '../../providers/providers_barrel.dart';
 import '../widget/type_button.dart';
 import '../widget/number_pad.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AddTransactionModal extends ConsumerStatefulWidget {
   final Book currentBook;
@@ -49,35 +49,35 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(top: 12, bottom: 20),
+              width: 40.w,
+              height: 4.h,
+              margin: EdgeInsets.only(top: 12.h, bottom: 20.h),
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(2.r),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Thêm giao dịch',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3142),
+                          color: const Color(0xFF2D3142),
                         ),
                       ),
                       Row(
@@ -93,7 +93,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                             },
                             themeColor: widget.themeColor,
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8.w),
                           TypeButton(
                             text: 'Thu nhập',
                             isSelected: !_isExpense,
@@ -109,16 +109,20 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18),
+                  SizedBox(height: 18.h),
                   TextField(
                     decoration: InputDecoration(
                       labelText: 'Ghi chú',
-                      labelStyle: TextStyle(color: widget.themeColor),
+                      labelStyle: const TextStyle(color: Colors.black),
+                      prefixIcon: Icon(
+                        Icons.note,
+                        color: widget.themeColor,
+                      ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         borderSide: BorderSide(
                           color: widget.themeColor,
                           width: 2,
@@ -127,12 +131,12 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                     ),
                     onChanged: (value) => _note = value,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Container(
-                    padding: const EdgeInsets.all(9),
+                    padding: EdgeInsets.fromLTRB(0, 9.h, 0, 0),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                     child: Column(
                       children: [
@@ -140,13 +144,13 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                           _amount.isEmpty
                               ? '0 ${currency.symbol}'
                               : '${formatCurrency(double.tryParse(_amount) ?? 0, currency)}',
-                          style: const TextStyle(
-                            fontSize: 32,
+                          style: TextStyle(
+                            fontSize: 32.sp,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF2D3142),
+                            color: const Color(0xFF2D3142),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 10.h),
                         NumberPad(
                           onNumberTap: (number) {
                             setState(() {
@@ -165,96 +169,102 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   GestureDetector(
                     onTap: () {
                       showModalBottomSheet(
                         context: context,
                         backgroundColor: Colors.transparent,
                         builder: (context) => Container(
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
+                              top: Radius.circular(20.r),
                             ),
                           ),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 4,
-                                  margin: const EdgeInsets.only(
-                                      top: 12, bottom: 20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 40.w,
+                                height: 4.h,
+                                margin:
+                                    EdgeInsets.only(top: 12.h, bottom: 20.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(2.r),
                                 ),
-                                Text(
-                                  'Chọn danh mục ${_isExpense ? 'chi tiêu' : 'thu nhập'}',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF2D3142),
-                                  ),
+                              ),
+                              Text(
+                                'Chọn danh mục ${_isExpense ? 'chi tiêu' : 'thu nhập'}',
+                                style: TextStyle(
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF2D3142),
                                 ),
-                                const SizedBox(height: 20),
-                                ...categories.map((category) {
-                                  return ListTile(
-                                    leading: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: _selectedCategory ==
-                                                category['name']
-                                            ? widget.themeColor.withOpacity(0.1)
-                                            : Colors.grey[100],
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        category['icon'],
-                                        style: TextStyle(
-                                          fontSize: 20,
+                              ),
+                              SizedBox(height: 10.h),
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: categories.map((category) {
+                                    return ListTile(
+                                      leading: Container(
+                                        padding: EdgeInsets.all(8.w),
+                                        decoration: BoxDecoration(
                                           color: _selectedCategory ==
                                                   category['name']
                                               ? widget.themeColor
-                                              : Colors.grey[600],
+                                                  .withOpacity(0.1)
+                                              : Colors.grey[100],
+                                          borderRadius:
+                                              BorderRadius.circular(8.r),
+                                        ),
+                                        child: Text(
+                                          category['icon'],
+                                          style: TextStyle(
+                                            fontSize: 20.sp,
+                                            color: _selectedCategory ==
+                                                    category['name']
+                                                ? widget.themeColor
+                                                : Colors.grey[600],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    title: Text(
-                                      category['name'],
-                                      style: TextStyle(
-                                        fontWeight: _selectedCategory ==
-                                                category['name']
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                        color: _selectedCategory ==
-                                                category['name']
-                                            ? widget.themeColor
-                                            : const Color(0xFF2D3142),
+                                      title: Text(
+                                        category['name'],
+                                        style: TextStyle(
+                                          fontWeight: _selectedCategory ==
+                                                  category['name']
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                          color: _selectedCategory ==
+                                                  category['name']
+                                              ? widget.themeColor
+                                              : const Color(0xFF2D3142),
+                                        ),
                                       ),
-                                    ),
-                                    trailing:
-                                        _selectedCategory == category['name']
-                                            ? Icon(
-                                                Icons.check_circle,
-                                                color: widget.themeColor,
-                                              )
-                                            : null,
-                                    onTap: () {
-                                      setState(() {
-                                        _selectedCategory = category['name'];
-                                      });
-                                      Future.delayed(Duration.zero,
-                                          () => {Navigator.pop(context)});
-                                    },
-                                  );
-                                }).toList(),
-                                const SizedBox(height: 20),
-                              ],
-                            ),
+                                      trailing:
+                                          _selectedCategory == category['name']
+                                              ? Icon(
+                                                  Icons.check_circle,
+                                                  color: widget.themeColor,
+                                                )
+                                              : null,
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedCategory = category['name'];
+                                        });
+                                        Future.delayed(Duration.zero,
+                                            () => {Navigator.pop(context)});
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10.h,
+                              )
+                            ],
                           ),
                         ),
                       );
@@ -264,10 +274,10 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                         labelText: 'Danh mục',
                         labelStyle: TextStyle(color: widget.themeColor),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           borderSide: BorderSide(
                             color: widget.themeColor,
                             width: 2,
@@ -280,7 +290,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                               'Chọn danh mục',
                               style: TextStyle(
                                 color: Colors.grey[600],
-                                fontSize: 16,
+                                fontSize: 16.sp,
                               ),
                             )
                           : Row(
@@ -289,21 +299,21 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                                   categories.firstWhere(
                                     (cat) => cat['name'] == _selectedCategory,
                                   )['icon'],
-                                  style: const TextStyle(fontSize: 20),
+                                  style: TextStyle(fontSize: 20.sp),
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8.w),
                                 Text(
                                   _selectedCategory!,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0xFF2D3142),
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    color: const Color(0xFF2D3142),
                                   ),
                                 ),
                               ],
                             ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -336,23 +346,23 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: widget.themeColor,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
+                      child: Text(
                         'Thêm',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                 ],
               ),
             ),
