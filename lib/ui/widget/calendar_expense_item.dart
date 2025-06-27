@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/models_barrel.dart';
 import '../../providers/providers_barrel.dart';
 
@@ -60,12 +61,12 @@ class CalendarExpenseItem extends ConsumerWidget {
         '${weekdayMap[weekdayNumber]}, ${DateFormat('dd/MM').format(date)}';
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 15.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(12),
-          topRight: Radius.circular(12),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12.r),
+          topRight: Radius.circular(12.r),
         ),
       ),
       child: Column(
@@ -73,13 +74,13 @@ class CalendarExpenseItem extends ConsumerWidget {
         children: [
           /// 🔒 Header
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border(
                 bottom: BorderSide(
                   color: Colors.grey.withOpacity(0.1),
-                  width: 2,
+                  width: 2.w,
                 ),
               ),
             ),
@@ -88,20 +89,20 @@ class CalendarExpenseItem extends ConsumerWidget {
                 Icon(
                   Icons.calendar_today,
                   color: themeColor,
-                  size: 24,
+                  size: 24.sp,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 Text(
                   formattedDate,
-                  style: const TextStyle(
-                    fontSize: 15,
+                  style: TextStyle(
+                    fontSize: 15.sp,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   'Tổng: ${isAmountVisible ? (dayExpense >= 0 ? '+' : '-') + formatCurrency(dayExpense.abs(), ref.watch(currencyProvider)) : '•••••'}',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14.sp),
                 ),
               ],
             ),
@@ -109,9 +110,9 @@ class CalendarExpenseItem extends ConsumerWidget {
 
           /// 🧾 List Transactions
           SizedBox(
-            height: 240,
+            height: 240.h,
             child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.only(bottom: 8.h),
               itemCount: transactions.length,
               itemBuilder: (context, index) {
                 final transaction = transactions[index];
@@ -124,30 +125,29 @@ class CalendarExpenseItem extends ConsumerWidget {
                 final icon = _getIconFromEmoji(category['icon'] ?? '🏷️');
 
                 return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                   child: InkWell(
                     onTap: () => onTapTransaction(transaction),
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
                             color: themeColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             _getIconFromEmoji(category['icon'] ?? '🏷️'),
                             color: themeColor,
-                            size: 20,
+                            size: 20.sp,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: Text(
                             transaction.note,
-                            style: const TextStyle(
-                              fontSize: 15,
+                            style: TextStyle(
+                              fontSize: 15.sp,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -158,7 +158,7 @@ class CalendarExpenseItem extends ConsumerWidget {
                             color: transaction.type == 'expense'
                                 ? Colors.red
                                 : Colors.green,
-                            fontSize: 15,
+                            fontSize: 15.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

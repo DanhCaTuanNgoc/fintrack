@@ -3,64 +3,64 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../widget/widget_barrel.dart';
 import 'deposit_savings_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PeriodicSavingScreen extends ConsumerWidget {
   const PeriodicSavingScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final provider = ref.watch(savingsGoalsProvider.notifier);
     final Color themeColor = ref.watch(themeColorProvider);
     final savingsGoal = ref.watch(savingsGoalsProvider);
     final currencyType = ref.watch(currencyProvider);
 
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: themeColor,
-          elevation: 0,
-          title: const Text(
-            'Tiết kiệm định kỳ',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          leading: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(30),
-              onTap: () => Future.delayed(Duration.zero, () {
-                Navigator.pop(context);
-              }),
-              child: const Icon(Icons.arrow_back, color: Colors.white),
-            ),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: themeColor,
+        elevation: 0,
+        title: Text(
+          'Tiết kiệm định kỳ',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20.sp,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        body: Column(
-          children: [
-            Expanded(
-                child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
+        leading: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(30.r),
+            onTap: () => Future.delayed(Duration.zero, () {
+              Navigator.pop(context);
+            }),
+            child: Icon(Icons.arrow_back, color: Colors.white, size: 24.w),
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(12.w, 10.h, 12.w, 16.h),
               child: savingsGoal.when(
                 data: (goals) {
                   final periodicGoals =
                       goals.where((g) => g.type == 'periodic').toList();
                   if (periodicGoals.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.savings, // Hoặc Icons.account_balance_wallet
-                            size: 60,
+                            Icons.savings,
+                            size: 60.w,
                             color: Colors.grey,
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 16.h),
                           Text(
                             'Không có sổ tiết kiệm định kỳ nào',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                            style: TextStyle(fontSize: 16.sp, color: Colors.grey),
                           ),
                         ],
                       ),
@@ -69,104 +69,106 @@ class PeriodicSavingScreen extends ConsumerWidget {
 
                   // Hiển thị danh sách các mục tiêu tiết kiệm linh hoạt
                   return ListView.builder(
-                      itemCount: periodicGoals.length,
-                      itemBuilder: (context, index) {
-                        final goal = periodicGoals[index];
-                        return SavingCard(
-                          goal: goal,
-                          currencyType: currencyType,
-                          themeColor: themeColor,
-                          onTap: () {
-                            bool isOverdue = goal.targetDate != null &&
-                                goal.targetDate!.isBefore(DateTime.now()) &&
-                                !goal.isCompleted;
-                            bool isClosed = !goal.isActive;
+                    itemCount: periodicGoals.length,
+                    itemBuilder: (context, index) {
+                      final goal = periodicGoals[index];
+                      return SavingCard(
+                        goal: goal,
+                        currencyType: currencyType,
+                        themeColor: themeColor,
+                        onTap: () {
+                          bool isOverdue = goal.targetDate != null &&
+                              goal.targetDate!.isBefore(DateTime.now()) &&
+                              !goal.isCompleted;
+                          bool isClosed = !goal.isActive;
 
-                            if (isOverdue || isClosed) {
-                              String message = isOverdue
-                                  ? 'Sổ tiết kiệm này đã quá hạn.'
-                                  : 'Sổ tiết kiệm này đã được đóng.';
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(message),
-                                  backgroundColor:
-                                      isOverdue ? Colors.red : Colors.grey,
+                          if (isOverdue || isClosed) {
+                            String message = isOverdue
+                                ? 'Sổ tiết kiệm này đã quá hạn.'
+                                : 'Sổ tiết kiệm này đã được đóng.';
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(message),
+                                backgroundColor:
+                                    isOverdue ? Colors.red : Colors.grey,
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DepositSavingsScreen(
+                                  goal: goal,
+                                  themeColor: themeColor,
+                                  type: 'periodic',
                                 ),
-                              );
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DepositSavingsScreen(
-                                    goal: goal,
-                                    themeColor: themeColor,
-                                    type: 'periodic',
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        );
-                      });
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    },
+                  );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Center(
-                  child: Text('Đã xảy ra lỗi: $err'),
+                  child: Text('Đã xảy ra lỗi: $err', style: TextStyle(fontSize: 14.sp)),
                 ),
               ),
-            )),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 4,
-                    offset: const Offset(0, -2),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.all(16.w),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 1.r,
+                  blurRadius: 4.r,
+                  offset: Offset(0, -2.h),
+                ),
+              ],
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  _showAddSavingGoalModal(context, themeColor);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: themeColor,
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                ],
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    _showAddSavingGoalModal(context, themeColor);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: themeColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Tạo tiết kiệm mới',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Tạo tiết kiệm mới',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
             ),
-          ],
-        )
-        // floatingActionButton: Padding(
-        //   padding: const EdgeInsets.only(bottom: 24),
-        //   child: FloatingActionButton(
-        //     onPressed: () {
-        //       _showAddSavingGoalModal(context, themeColor);
-        //     },
-        //     backgroundColor: themeColor,
-        //     elevation: 4,
-        //     child: const Icon(Icons.add, size: 30, color: Colors.white),
-        //   ),
-        // ),
-        );
+          ),
+        ],
+      ),
+      // floatingActionButton: Padding(
+      //   padding: EdgeInsets.only(bottom: 24.h),
+      //   child: FloatingActionButton(
+      //     onPressed: () {
+      //       _showAddSavingGoalModal(context, themeColor);
+      //     },
+      //     backgroundColor: themeColor,
+      //     elevation: 4,
+      //     child: Icon(Icons.add, size: 30.w, color: Colors.white),
+      //   ),
+      // ),
+    );
   }
 }
 
@@ -181,18 +183,22 @@ class _AddAmountDialogState extends State<_AddAmountDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Nhập số tiền muốn nộp'),
+      title: Text('Nhập số tiền muốn nộp', style: TextStyle(fontSize: 18.sp)),
       content: TextField(
         controller: _controller,
         keyboardType: TextInputType.number,
-        decoration: const InputDecoration(hintText: 'Số tiền'),
+        decoration: InputDecoration(
+          hintText: 'Số tiền',
+          hintStyle: TextStyle(fontSize: 14.sp),
+        ),
+        style: TextStyle(fontSize: 16.sp),
       ),
       actions: [
         TextButton(
           onPressed: () => Future.delayed(Duration.zero, () {
             Navigator.pop(context);
           }),
-          child: const Text('Hủy'),
+          child: Text('Hủy', style: TextStyle(fontSize: 14.sp)),
         ),
         ElevatedButton(
           onPressed: () {
@@ -201,7 +207,7 @@ class _AddAmountDialogState extends State<_AddAmountDialog> {
               Navigator.pop(context);
             });
           },
-          child: const Text('Xác nhận'),
+          child: Text('Xác nhận', style: TextStyle(fontSize: 14.sp)),
         ),
       ],
     );

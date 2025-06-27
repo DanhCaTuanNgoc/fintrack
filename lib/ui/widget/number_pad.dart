@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NumberPad extends StatelessWidget {
   final Function(String) onNumberTap;
@@ -22,16 +23,16 @@ class NumberPad extends StatelessWidget {
     final background = backgroundColor ?? theme.scaffoldBackgroundColor;
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             spreadRadius: 0,
-            blurRadius: 20,
-            offset: const Offset(0, -5),
+            blurRadius: 20.r,
+            offset: Offset(0, -5.h),
           ),
         ],
       ),
@@ -42,11 +43,11 @@ class NumberPad extends StatelessWidget {
 
           // Number pad rows
           _buildNumberRow(['7', '8', '9'], primary),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           _buildNumberRow(['4', '5', '6'], primary),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           _buildNumberRow(['1', '2', '3'], primary),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
 
           // Bottom row with special buttons
           Row(
@@ -56,13 +57,13 @@ class NumberPad extends StatelessWidget {
                 child: _buildNumberButton('0', () => onNumberTap('0'), primary,
                     isWide: true),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16.w),
               Expanded(
                 flex: 2,
                 child: _buildNumberButton(
                     '000', () => onNumberTap('000'), primary),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16.w),
               _buildBackspaceButton(onBackspaceTap),
             ],
           ),
@@ -76,7 +77,7 @@ class NumberPad extends StatelessWidget {
       children: numbers.map((number) {
         return Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: EdgeInsets.symmetric(horizontal: 8.w),
             child: _buildNumberButton(
                 number, () => onNumberTap(number), primaryColor),
           ),
@@ -94,25 +95,25 @@ class NumberPad extends StatelessWidget {
           HapticFeedback.lightImpact();
           onTap();
         },
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         splashColor: primaryColor.withOpacity(0.1),
         highlightColor: primaryColor.withOpacity(0.05),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          height: 64,
+          height: 64.h,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: Colors.grey[200]!,
-              width: 1,
+              width: 1.w,
             ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.04),
                 spreadRadius: 0,
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                blurRadius: 8.r,
+                offset: Offset(0, 2.h),
               ),
             ],
           ),
@@ -120,10 +121,10 @@ class NumberPad extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                fontSize: text == '000' ? 20 : 28,
+                fontSize: text == '000' ? 20.sp : 28.sp,
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF1A1D29),
-                letterSpacing: text == '000' ? 1 : 0,
+                letterSpacing: text == '000' ? 1.sp : 0,
               ),
             ),
           ),
@@ -140,13 +141,13 @@ class NumberPad extends StatelessWidget {
           HapticFeedback.mediumImpact();
           onTap();
         },
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         splashColor: Colors.red.withOpacity(0.1),
         highlightColor: Colors.red.withOpacity(0.05),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          width: 64,
-          height: 64,
+          width: 64.w,
+          height: 64.h,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -156,25 +157,25 @@ class NumberPad extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: Colors.red[200]!,
-              width: 1,
+              width: 1.w,
             ),
             boxShadow: [
               BoxShadow(
                 color: Colors.red.withOpacity(0.2),
                 spreadRadius: 0,
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                blurRadius: 8.r,
+                offset: Offset(0, 2.h),
               ),
             ],
           ),
-          child: const Center(
+          child: Center(
             child: Icon(
               Icons.backspace_outlined,
-              size: 24,
-              color: Color(0xFFD32F2F),
+              size: 24.sp,
+              color: const Color(0xFFD32F2F),
             ),
           ),
         ),

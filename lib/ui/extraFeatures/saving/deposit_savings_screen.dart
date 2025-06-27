@@ -1,6 +1,7 @@
 import 'package:Fintrack/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../data/models/savings_goal.dart';
 import '../../../data/models/savings_transaction.dart';
 import '../../../providers/savings_goal_provider.dart';
@@ -51,67 +52,46 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
         backgroundColor: widget.themeColor,
         elevation: 0,
         title: widget.type == 'flexible'
-            ? const Text(
+            ? Text(
                 'Sổ tiết kiệm linh hoạt',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
                 ),
               )
-            : const Text(
+            : Text(
                 'Sổ tiết kiệm định kỳ',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
         leading: Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(30.r),
             onTap: () => Future.delayed(Duration.zero, () {
               Navigator.pop(context);
             }),
-            child: const Icon(Icons.arrow_back, color: Colors.white),
+            child: Icon(Icons.arrow_back, color: Colors.white, size: 24.sp),
           ),
         ),
         actions: [
           Material(
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(30.r),
               onTap: () {
                 _showUpdateModal(context, themeColor, widget.goal, widget.type);
               },
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(Icons.edit, color: Colors.white),
+              child: Padding(
+                padding: EdgeInsets.all(8.0.w),
+                child: Icon(Icons.edit, color: Colors.white, size: 24.sp),
               ),
             ),
           ),
-          // Material(
-          //   color: Colors.transparent,
-          //   child: InkWell(
-          //     borderRadius: BorderRadius.circular(30),
-          //     onTap: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => SavingsHistoryScreen(
-          //             goal: widget.goal,
-          //             themeColor: widget.themeColor,
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //     child: const Padding(
-          //       padding: EdgeInsets.all(8.0),
-          //       child: Icon(Icons.history, color: Colors.white),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
       body: savingsGoalAsync.when(
@@ -130,26 +110,26 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
               // Header với thông tin mục tiêu
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20.w),
                 decoration: BoxDecoration(
                   color: widget.themeColor,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30.r),
+                    bottomRight: Radius.circular(30.r),
                   ),
                 ),
                 child: Column(
                   children: [
                     Text(
                       currentGoal.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 26,
+                        fontSize: 26.sp,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -179,7 +159,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
 
               // Progress bar
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20.w),
                 child: Column(
                   children: [
                     Row(
@@ -188,7 +168,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                         Text(
                           'Tiến độ',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.grey[700],
                           ),
@@ -196,31 +176,31 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                         Text(
                           '${currentGoal.progressPercentage.toStringAsFixed(1)}%',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                             color: widget.themeColor,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10.r),
                       child: LinearProgressIndicator(
                         value: currentGoal.progressPercentage / 100,
-                        minHeight: 12,
+                        minHeight: 12.h,
                         backgroundColor: Colors.grey.shade300,
                         valueColor:
                             AlwaysStoppedAnimation<Color>(widget.themeColor),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     // Thông tin mục tiêu và định kỳ
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16.w),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         border: Border.all(color: Colors.grey.shade200),
                       ),
                       child: Column(
@@ -230,12 +210,12 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                             Row(
                               children: [
                                 Icon(Icons.event_available,
-                                    size: 18, color: widget.themeColor),
-                                const SizedBox(width: 8),
+                                    size: 18.sp, color: widget.themeColor),
+                                SizedBox(width: 8.w),
                                 Text(
                                   'Ngày mục tiêu:',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.grey.shade700,
                                   ),
@@ -244,7 +224,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                                 Text(
                                   _formatDate(currentGoal.targetDate!),
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.bold,
                                     color: widget.themeColor,
                                   ),
@@ -257,16 +237,16 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                               currentGoal.periodicAmount != null &&
                               currentGoal.periodicFrequency != null) ...[
                             if (currentGoal.targetDate != null)
-                              const SizedBox(height: 12),
+                              SizedBox(height: 12.h),
                             Row(
                               children: [
                                 Icon(Icons.repeat,
-                                    size: 18, color: widget.themeColor),
-                                const SizedBox(width: 8),
+                                    size: 18.sp, color: widget.themeColor),
+                                SizedBox(width: 8.w),
                                 Text(
                                   'Nạp định kỳ:',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.grey.shade700,
                                   ),
@@ -280,7 +260,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                                           currentGoal.periodicAmount!,
                                           currencyType),
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                         fontWeight: FontWeight.bold,
                                         color: widget.themeColor,
                                       ),
@@ -289,7 +269,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                                       _getFrequencyText(
                                           currentGoal.periodicFrequency!),
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 12.sp,
                                         color: Colors.grey.shade600,
                                         fontStyle: FontStyle.italic,
                                       ),
@@ -310,11 +290,11 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
               Container(
                 width: double.infinity,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 child: Text(
                   'Lịch sử nạp tiền',
                   style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.normal,
                       color: Colors.grey[600],
                       fontStyle: FontStyle.italic),
@@ -327,28 +307,28 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                           'Chưa có lịch sử nạp tiền',
                           style: TextStyle(
                             color: Colors.grey[600],
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
                       )
                     : ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 8.h),
                         itemCount: savingsTransactionsAsync.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 16),
+                        separatorBuilder: (_, __) => SizedBox(height: 16.h),
                         itemBuilder: (context, index) {
                           final tx = savingsTransactionsAsync[index];
                           return Container(
-                            padding: const EdgeInsets.all(16),
+                            padding: EdgeInsets.all(16.w),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.r),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.08),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
+                                  blurRadius: 4.r,
+                                  offset: Offset(0, 2.h),
                                 ),
                               ],
                             ),
@@ -362,32 +342,32 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                                     Text(
                                       '+${formatCurrency(tx.amount, currencyType)}',
                                       style: TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 20.sp,
                                         fontWeight: FontWeight.bold,
                                         color: widget.themeColor,
                                       ),
                                     ),
                                     Text(
                                       _formatDate(tx.savedAt),
-                                      style: const TextStyle(
-                                        fontSize: 14,
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
                                         color: Colors.grey,
                                       ),
                                     ),
                                   ],
                                 ),
                                 if (tx.note != null && tx.note!.isNotEmpty) ...[
-                                  const SizedBox(height: 8),
+                                  SizedBox(height: 8.h),
                                   Row(
                                     children: [
-                                      const Icon(Icons.note,
-                                          size: 18, color: Colors.grey),
-                                      const SizedBox(width: 6),
+                                      Icon(Icons.note,
+                                          size: 18.sp, color: Colors.grey),
+                                      SizedBox(width: 6.w),
                                       Expanded(
                                         child: Text(
                                           tx.note!,
-                                          style: const TextStyle(
-                                            fontSize: 15,
+                                          style: TextStyle(
+                                            fontSize: 15.sp,
                                             color: Colors.black87,
                                           ),
                                         ),
@@ -404,30 +384,30 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
 
               // Nút nạp tiền
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.w),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 4,
-                      offset: const Offset(0, -2),
+                      spreadRadius: 1.r,
+                      blurRadius: 4.r,
+                      offset: Offset(0, -2.h),
                     ),
                   ],
                 ),
                 child: SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  height: 56.h,
                   child: currentGoal.isCompleted
                       ? ElevatedButton.icon(
                           onPressed: null,
-                          icon: const Icon(Icons.check_circle,
-                              color: Colors.white),
-                          label: const Text(
+                          icon: Icon(Icons.check_circle,
+                              color: Colors.white, size: 24.sp),
+                          label: Text(
                             'Đã hoàn thành',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -436,26 +416,26 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                             backgroundColor: widget.themeColor,
                             disabledBackgroundColor: widget.themeColor,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(16.r),
                             ),
                           ),
                         )
                       : ElevatedButton(
                           onPressed: () {
-                            _showDepositModal(
+                            _onDepositPressed(
                                 context, widget.themeColor, currentGoal, ref);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: widget.themeColor,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(16.r),
                             ),
                             elevation: 2,
                           ),
-                          child: const Text(
+                          child: Text(
                             'Nạp tiền',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -476,28 +456,28 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
 
   Widget _buildInfoCard(String title, String value, IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
         children: [
-          Icon(icon, color: Colors.white, size: 24),
-          const SizedBox(height: 4),
+          Icon(icon, color: Colors.white, size: 24.sp),
+          SizedBox(height: 4.h),
           Text(
             title,
             style: TextStyle(
               color: Colors.white.withOpacity(0.8),
-              fontSize: 12,
+              fontSize: 12.sp,
             ),
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: 2.h),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 14,
+              fontSize: 14.sp,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -524,6 +504,144 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
         );
       },
     );
+  }
+
+  void _onDepositPressed(BuildContext context, Color themeColor,
+      SavingsGoal goal, WidgetRef ref) async {
+    if (widget.type == 'periodic') {
+      // Lấy lịch sử giao dịch tiết kiệm
+      final transactions = ref.read(savingsTransactionsProvider(goal.id!));
+      DateTime now = DateTime.now();
+      DateTime? lastDeposit;
+      if (transactions.isNotEmpty) {
+        // Lấy lần nạp gần nhất
+        transactions.sort((a, b) => b.savedAt.compareTo(a.savedAt));
+        lastDeposit = transactions.first.savedAt;
+      } else {
+        lastDeposit = goal.startedDate ?? goal.createdAt;
+      }
+      // Tính ngày nạp tiếp theo
+      DateTime nextDepositDate = _calculateNextDepositDate(
+          lastDeposit, goal.periodicFrequency ?? 'monthly');
+      // Nếu chưa đến ngày nạp tiếp theo thì hỏi xác nhận
+      if (now.isBefore(nextDepositDate)) {
+        bool? confirm = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => Dialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+            backgroundColor: Colors.white,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: themeColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    padding: EdgeInsets.all(16.w),
+                    child: Icon(Icons.warning_amber_rounded,
+                        color: themeColor, size: 48.sp),
+                  ),
+                  SizedBox(height: 18.h),
+                  Text(
+                    'Nạp trước kỳ tiếp theo?',
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Text(
+                    'Bạn đang nạp trước kỳ tiếp theo:',
+                    style: TextStyle(fontSize: 15.sp, color: Colors.black54),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    _formatDate(nextDepositDate),
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        color: themeColor,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(height: 18.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(ctx).pop(false),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Colors.grey.shade300),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.r)),
+                            padding: EdgeInsets.symmetric(vertical: 14.h),
+                          ),
+                          child: Text('Huỷ',
+                              style: TextStyle(
+                                  fontSize: 16.sp, fontWeight: FontWeight.w600)),
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(ctx).pop(true),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: themeColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.r)),
+                            padding: EdgeInsets.symmetric(vertical: 14.h),
+                          ),
+                          child: Text('Tiếp tục',
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        if (confirm != true) return;
+      }
+    }
+    _showDepositModal(context, themeColor, goal, ref);
+  }
+
+  DateTime _calculateNextDepositDate(DateTime lastDeposit, String frequency) {
+    switch (frequency) {
+      case 'daily':
+        return lastDeposit.add(const Duration(days: 1));
+      case 'weekly':
+        return lastDeposit.add(const Duration(days: 7));
+      case 'monthly':
+        int year = lastDeposit.year;
+        int month = lastDeposit.month + 1;
+        if (month > 12) {
+          month = 1;
+          year++;
+        }
+        int day = lastDeposit.day;
+        while (day > 28) {
+          try {
+            DateTime(year, month, day);
+            break;
+          } catch (e) {
+            day--;
+          }
+        }
+        return DateTime(year, month, day);
+      default:
+        return lastDeposit.add(const Duration(days: 7));
+    }
   }
 }
 
@@ -573,13 +691,13 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
       child: Container(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 16,
+          left: 16.w,
+          right: 16.w,
+          top: 16.h,
         ),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -588,22 +706,22 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
             children: [
               Center(
                 child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
+                  width: 40.w,
+                  height: 4.h,
+                  margin: EdgeInsets.only(bottom: 16.h),
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.r),
                   ),
                 ),
               ),
-              const Center(
+              Center(
                 child: Text(
                   'Bỏ tiền tiết kiệm',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               if (!isKeyboardVisible) ...[
                 Center(
                   child: Text(
@@ -613,14 +731,14 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                             double.tryParse(_modalAmount) ?? 0,
                             currency,
                           ),
-                    style: const TextStyle(
-                      fontSize: 36,
+                    style: TextStyle(
+                      fontSize: 36.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 NumberPad(
                   onNumberTap: (number) {
                     setState(() {
@@ -636,7 +754,7 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                     });
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
               ],
               TextField(
                 focusNode: _noteFocusNode,
@@ -644,13 +762,13 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                   labelText: 'Ghi chú (tùy chọn)',
                   labelStyle: TextStyle(color: widget.themeColor),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     borderSide: BorderSide(
                       color: widget.themeColor,
-                      width: 2,
+                      width: 2.w,
                     ),
                   ),
                 ),
@@ -658,10 +776,10 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                   _modalNote = value;
                 },
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               SizedBox(
                 width: double.infinity,
-                height: 48,
+                height: 48.h,
                 child: ElevatedButton(
                   onPressed: _modalAmount.isNotEmpty &&
                           double.tryParse(_modalAmount) != null &&
@@ -692,7 +810,7 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                                   SnackBar(
                                     content: Text(
                                       'Đã nạp ${formatCurrency(amount, currency)} vào sổ tiết kiệm!',
-                                      style: const TextStyle(fontSize: 14),
+                                      style: TextStyle(fontSize: 14.sp),
                                     ),
                                     backgroundColor: Colors.green,
                                   ),
@@ -714,20 +832,20 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: widget.themeColor,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Xác nhận nạp tiền',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
             ],
           ),
         ),

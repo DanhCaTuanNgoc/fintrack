@@ -90,8 +90,7 @@ class _SavingsGoalsScreenState extends ConsumerState<SavingsGoalsScreen>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const FlexibleSavingsScreen(),
+                          builder: (context) => const FlexibleSavingsScreen(),
                         ),
                       );
                     },

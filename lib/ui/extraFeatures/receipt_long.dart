@@ -5,6 +5,8 @@ import '../../providers/providers_barrel.dart';
 import 'package:flutter/scheduler.dart';
 import '../../data/models/more/periodic_invoice.dart';
 import 'package:intl/intl.dart';
+import '../widget/widget_barrel.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ReceiptLong extends ConsumerStatefulWidget {
   const ReceiptLong({super.key});
@@ -24,6 +26,8 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
   String? _selectedCategoryFilter;
   final TextEditingController _minAmountController = TextEditingController();
   final TextEditingController _maxAmountController = TextEditingController();
+  final _filterFormKey = GlobalKey<FormState>();
+  final _addInvoiceFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -86,12 +90,12 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Hóa đơn định kỳ',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Color.fromARGB(255, 255, 255, 255),
+            fontSize: 20.sp,
+            color: const Color.fromARGB(255, 255, 255, 255),
           ),
         ),
         backgroundColor: themeColor,
@@ -99,9 +103,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
         leading: Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(30.r),
             onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.arrow_back, color: Colors.white),
+            child: Icon(Icons.arrow_back, color: Colors.white, size: 24.w),
           ),
         ),
         titleSpacing: 0,
@@ -133,39 +137,39 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                   _buildFilterBar(),
                   Expanded(
                     child: filteredInvoices.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Text(
                               'Chưa có hóa đơn định kỳ nào',
                               style: TextStyle(
-                                color: Color(0xFF9E9E9E),
-                                fontSize: 16,
+                                color: const Color(0xFF9E9E9E),
+                                fontSize: 16.sp,
                               ),
                             ),
                           )
                         : ListView(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                            padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 0),
                             children: [
                               // Hiển thị section hóa đơn vừa làm mới
                               if (filteredInvoices.isNotEmpty) ...[
                                 // Duyệt và hiển thị từng hóa đơn vừa làm mới
                                 ...filteredInvoices.map((invoice) =>
                                     _buildInvoiceCard(context, invoice)),
-                                const SizedBox(height: 20),
+                                SizedBox(height: 20.h),
                               ],
                             ],
                           ),
                   ),
                   // Nút thêm hóa đơn mới
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16.w),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 1,
-                          blurRadius: 4,
-                          offset: const Offset(0, -2),
+                          spreadRadius: 1.r,
+                          blurRadius: 4.r,
+                          offset: Offset(0, -2.h),
                         ),
                       ],
                     ),
@@ -177,16 +181,16 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: themeColor,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.r),
                           ),
                           elevation: 0,
                         ),
-                        child: const Text(
+                        child: Text(
                           'Tạo hóa đơn mới',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -203,7 +207,8 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
               ),
             ),
             error: (error, stackTrace) => Center(
-              child: Text('Đã xảy ra lỗi: $error'),
+              child: Text('Đã xảy ra lỗi: $error',
+                  style: TextStyle(fontSize: 14.sp)),
             ),
           ),
     );
@@ -212,203 +217,233 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
   Widget _buildFilterBar() {
     final themeColor = ref.watch(themeColorProvider);
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            spreadRadius: 1.r,
+            blurRadius: 10.r,
+            offset: Offset(0, 2.h),
           ),
         ],
       ),
       child: ExpansionTile(
-        leading: Icon(Icons.filter_list, color: themeColor),
-        title: const Text(
+        leading: Icon(Icons.filter_list, color: themeColor, size: 24.w),
+        title: Text(
           'Bộ lọc',
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: Color(0xFF2D3142),
+            fontSize: 16.sp,
+            color: const Color(0xFF2D3142),
           ),
         ),
         shape: const Border(),
         collapsedShape: const Border(),
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<int>(
-                            value: _selectedBookFilterId,
-                            hint: const Text(
-                              'Tất cả sổ',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            isExpanded: true,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            items: [
-                              const DropdownMenuItem<int>(
-                                value: null,
-                                child: Text(
-                                  'Tất cả sổ',
-                                  style: TextStyle(fontSize: 14),
-                                ),
+            padding: EdgeInsets.all(16.w),
+            child: Form(
+              key: _filterFormKey,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<int>(
+                              value: _selectedBookFilterId,
+                              hint: Text(
+                                'Tất cả sổ',
+                                style: TextStyle(fontSize: 14.sp),
                               ),
-                              ...books
-                                  .map<DropdownMenuItem<int>>(
-                                      (book) => DropdownMenuItem(
-                                            value: book['id'],
-                                            child: Text(book['name']),
-                                          ))
-                                  .toList(),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedBookFilterId = value;
-                              });
-                            },
+                              isExpanded: true,
+                              padding: EdgeInsets.symmetric(horizontal: 16.w),
+                              items: [
+                                DropdownMenuItem<int>(
+                                  value: null,
+                                  child: Text(
+                                    'Tất cả sổ',
+                                    style: TextStyle(fontSize: 14.sp),
+                                  ),
+                                ),
+                                ...books
+                                    .map<DropdownMenuItem<int>>(
+                                        (book) => DropdownMenuItem(
+                                              value: book['id'],
+                                              child: Text(book['name']),
+                                            ))
+                                    .toList(),
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedBookFilterId = value;
+                                });
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: _selectedCategoryFilter,
-                            hint: const Text(
-                              'Tất cả danh mục',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            isExpanded: true,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            items: [
-                              const DropdownMenuItem<String>(
-                                value: null,
-                                child: Text(
-                                  'Tất cả danh mục',
-                                  style: TextStyle(fontSize: 14),
-                                ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: _selectedCategoryFilter,
+                              hint: Text(
+                                'Tất cả danh mục',
+                                style: TextStyle(fontSize: 14.sp),
                               ),
-                              ...receipLong
-                                  .map<DropdownMenuItem<String>>(
-                                    (category) => DropdownMenuItem<String>(
-                                      value: category['name'],
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(category['icon']),
-                                          const SizedBox(width: 8),
-                                          Flexible(
-                                            child: Text(
-                                              category['name'],
-                                              style:
-                                                  const TextStyle(fontSize: 13),
-                                              overflow: TextOverflow.ellipsis,
+                              isExpanded: true,
+                              padding: EdgeInsets.symmetric(horizontal: 16.w),
+                              items: [
+                                DropdownMenuItem<String>(
+                                  value: null,
+                                  child: Text(
+                                    'Tất cả danh mục',
+                                    style: TextStyle(fontSize: 14.sp),
+                                  ),
+                                ),
+                                ...receipLong
+                                    .map<DropdownMenuItem<String>>(
+                                      (category) => DropdownMenuItem<String>(
+                                        value: category['name'],
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(category['icon'],
+                                                style:
+                                                    TextStyle(fontSize: 16.sp)),
+                                            SizedBox(width: 8.w),
+                                            Flexible(
+                                              child: Text(
+                                                category['name'],
+                                                style:
+                                                    TextStyle(fontSize: 13.sp),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedCategoryFilter = value;
-                              });
-                            },
+                                    )
+                                    .toList(),
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedCategoryFilter = value;
+                                });
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _minAmountController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Số tiền tối thiểu',
-                          labelStyle: TextStyle(
-                              color: Colors.grey.shade600, fontSize: 13),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
+                    ],
+                  ),
+                  SizedBox(height: 16.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _minAmountController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Số tiền tối thiểu',
+                            labelStyle: TextStyle(
+                                color: Colors.grey.shade600, fontSize: 13.sp),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                              borderSide:
+                                  BorderSide(color: themeColor, width: 2.w),
+                            ),
+                            prefixIcon: Icon(Icons.attach_money,
+                                color: themeColor, size: 20.w),
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: themeColor, width: 2),
-                          ),
-                          prefixIcon:
-                              Icon(Icons.attach_money, color: themeColor),
+                          validator: (value) {
+                            if (value != null &&
+                                value.isNotEmpty &&
+                                double.tryParse(value) == null) {
+                              return 'Nhập số hợp lệ';
+                            }
+                            return null;
+                          },
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: TextField(
-                        controller: _maxAmountController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Số tiền tối đa',
-                          labelStyle: TextStyle(
-                              color: Colors.grey.shade600, fontSize: 13),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _maxAmountController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Số tiền tối đa',
+                            labelStyle: TextStyle(
+                                color: Colors.grey.shade600, fontSize: 13.sp),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                              borderSide:
+                                  BorderSide(color: themeColor, width: 2.w),
+                            ),
+                            prefixIcon: Icon(Icons.attach_money,
+                                color: themeColor, size: 20.w),
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: themeColor, width: 2),
-                          ),
-                          prefixIcon:
-                              Icon(Icons.attach_money, color: themeColor),
+                          validator: (value) {
+                            if (value != null &&
+                                value.isNotEmpty &&
+                                double.tryParse(value) == null) {
+                              return 'Nhập số hợp lệ';
+                            }
+                            return null;
+                          },
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _clearFilters,
-                    icon: const Icon(Icons.clear),
-                    label: const Text('Xóa bộ lọc'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade100,
-                      foregroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    ],
+                  ),
+                  SizedBox(height: 16.h),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (_filterFormKey.currentState!.validate()) {
+                          _clearFilters();
+                        }
+                      },
+                      icon: Icon(Icons.clear, size: 20.w),
+                      label:
+                          Text('Xóa bộ lọc', style: TextStyle(fontSize: 15.sp)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade100,
+                        foregroundColor: Colors.red,
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        elevation: 0,
                       ),
-                      elevation: 0,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -433,29 +468,29 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(60),
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.r),
+          topRight: Radius.circular(60.r),
+          bottomLeft: Radius.circular(20.r),
+          bottomRight: Radius.circular(20.r),
         ),
         color: Colors.white,
         border: Border.all(
           color: Colors.grey.shade200,
-          width: 1,
+          width: 1.w,
         ),
       ),
       child: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(60),
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.r),
+          topRight: Radius.circular(60.r),
+          bottomLeft: Radius.circular(20.r),
+          bottomRight: Radius.circular(20.r),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -464,26 +499,26 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 48.w,
+                    height: 48.w,
                     decoration: BoxDecoration(
                       color: themeColor,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16.r),
                       boxShadow: [
                         BoxShadow(
                           color: themeColor.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                          blurRadius: 8.r,
+                          offset: Offset(0, 4.h),
                         ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.receipt_long,
                       color: Colors.white,
-                      size: 24,
+                      size: 24.w,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -494,20 +529,20 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             Expanded(
                               child: Text(
                                 ' ${invoice.name}',
-                                style: const TextStyle(
-                                  fontSize: 19,
+                                style: TextStyle(
+                                  fontSize: 19.sp,
                                   fontWeight: FontWeight.w700,
-                                  color: Color(0xFF1A1A1A),
+                                  color: const Color(0xFF1A1A1A),
                                 ),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8.w),
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 3.h,
                               ),
                               decoration: BoxDecoration(
                                 color: isOverdue
@@ -515,7 +550,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                     : invoice.isPaid
                                         ? Colors.green.withOpacity(0.1)
                                         : Colors.blue.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(6),
+                                borderRadius: BorderRadius.circular(6.r),
                               ),
                               child: Text(
                                 isOverdue
@@ -524,7 +559,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                         ? 'Đã thanh toán'
                                         : 'Chờ thanh toán',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 13.sp,
                                   fontWeight: FontWeight.bold,
                                   color: isOverdue
                                       ? Colors.red
@@ -534,8 +569,8 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              width: 10,
+                            SizedBox(
+                              width: 10.w,
                             ),
                           ],
                         ),
@@ -544,17 +579,17 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
 
               // Amount section
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.w),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(16.r),
                   border: Border.all(
                     color: Colors.grey.shade200,
-                    width: 1,
+                    width: 1.w,
                   ),
                 ),
                 child: Row(
@@ -562,10 +597,10 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                     // Book name section
                     Icon(
                       Icons.book,
-                      size: 20,
+                      size: 20.w,
                       color: Colors.grey.shade600,
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -573,31 +608,31 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           Text(
                             'Sổ chi tiêu',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               color: Colors.grey.shade600,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2.h),
                           Text(
                             bookName ?? 'Không có tên sách',
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: TextStyle(
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF1A1A1A),
+                              color: const Color(0xFF1A1A1A),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h, width: 16.w),
                     // Amount section
                     Icon(
                       Icons.attach_money,
-                      size: 20,
+                      size: 20.w,
                       color: Colors.grey.shade600,
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -605,19 +640,19 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           Text(
                             'Số tiền',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               color: Colors.grey.shade600,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2.h),
                           Text(
                             formatCurrency(
                                 invoice.amount, ref.watch(currencyProvider)),
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: TextStyle(
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF1A1A1A),
+                              color: const Color(0xFF1A1A1A),
                             ),
                           ),
                         ],
@@ -626,7 +661,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
 
               // Details section
               Column(
@@ -641,16 +676,16 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             Text(
                               'Tần suất',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 color: Colors.grey.shade600,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4.h),
                             Text(
                               _getFrequencyText(invoice.frequency),
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w700,
                                 color: themeColor,
                               ),
@@ -659,11 +694,11 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                         ),
                       ),
                       Container(
-                        width: 1,
-                        height: 40,
+                        width: 1.w,
+                        height: 40.h,
                         color: Colors.grey.shade300,
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16.w),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -671,16 +706,16 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             Text(
                               'Danh mục',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 color: Colors.grey.shade600,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4.h),
                             Text(
                               invoice.category,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.grey.shade700,
                               ),
@@ -695,32 +730,32 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
 
               // Payment status section
               if (invoice.isPaid) ...[
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12.w),
                   decoration: BoxDecoration(
                     color: Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
                       color: Colors.green.shade200,
-                      width: 1,
+                      width: 1.w,
                     ),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8.w),
                         decoration: BoxDecoration(
                           color: Colors.green.shade100,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Icon(
                           Icons.check_circle,
-                          size: 16,
+                          size: 16.w,
                           color: Colors.green.shade700,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -728,17 +763,17 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             Text(
                               'Đã thanh toán',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 color: Colors.green.shade700,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            const SizedBox(height: 2),
+                            SizedBox(height: 2.h),
                             Text(
                               DateFormat('dd/MM/yyyy')
                                   .format(invoice.lastPaidDate!),
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.green.shade800,
                               ),
@@ -752,7 +787,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
               ],
 
               // Action buttons
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               Row(
                 children: [
                   if (!invoice.isPaid)
@@ -795,21 +830,23 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.red,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.r),
                           ),
                           elevation: 0,
                         ),
-                        child: const Text(
+                        child: Text(
                           'Xóa',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 15.sp),
                         ),
                       ),
                     ),
-                  const SizedBox(
-                    width: 10,
+                  SizedBox(
+                    width: 10.w,
                   ),
                   if (!invoice.isPaid)
                     Expanded(
@@ -859,16 +896,17 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: isOverdue ? Colors.red : themeColor,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.r),
                           ),
                           elevation: 0,
                         ),
                         child: Text(
                           isOverdue ? 'Thanh toán ngay' : 'Thanh toán',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
+                            fontSize: 15.sp,
                           ),
                         ),
                       ),
@@ -904,7 +942,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     String selectedFrequency = 'monthly';
     String? selectedCategory;
     Map<String, dynamic>? selectedBookForInvoice = selectedBook;
-
+    final currencyType = ref.watch(currencyProvider);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -912,401 +950,412 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(top: 12, bottom: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
+            return GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: SingleChildScrollView(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(30)),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Tạo hóa đơn định kỳ',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2D3142),
+                    child: Form(
+                      key: _addInvoiceFormKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 40.w,
+                            height: 4.h,
+                            margin: EdgeInsets.only(top: 12.h, bottom: 20.h),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(2.r),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                        TextField(
-                          controller: nameController,
-                          decoration: InputDecoration(
-                            labelText: 'Tên hóa đơn',
-                            labelStyle: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                                width: 2,
-                              ),
-                            ),
-                            prefixIcon: Icon(Icons.receipt, color: themeColor),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: amountController,
-                          decoration: InputDecoration(
-                            labelText: 'Số tiền',
-                            labelStyle: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                                width: 2,
-                              ),
-                            ),
-                            prefixIcon:
-                                Icon(Icons.attach_money, color: themeColor),
-                          ),
-                          keyboardType: TextInputType.number,
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: DropdownButtonFormField<String>(
-                                value: selectedFrequency,
-                                decoration: InputDecoration(
-                                  labelText: 'Tần suất',
-                                  labelStyle: TextStyle(
-                                    color: themeColor,
-                                    fontSize: 14,
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Tạo hóa đơn định kỳ',
+                                  style: TextStyle(
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF2D3142),
                                   ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: themeColor,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: themeColor,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  prefixIcon:
-                                      Icon(Icons.schedule, color: themeColor),
                                 ),
-                                items: const [
-                                  DropdownMenuItem(
-                                      value: 'daily',
-                                      child: Text(
-                                        'Hàng ngày',
-                                        style: TextStyle(fontSize: 13),
-                                      )),
-                                  DropdownMenuItem(
-                                      value: 'weekly',
-                                      child: Text(
-                                        'Hàng tuần',
-                                        style: TextStyle(fontSize: 13),
-                                      )),
-                                  DropdownMenuItem(
-                                      value: 'monthly',
-                                      child: Text(
-                                        'Hàng tháng',
-                                        style: TextStyle(fontSize: 13),
-                                      )),
-                                  DropdownMenuItem(
-                                      value: 'yearly',
-                                      child: Text(
-                                        'Hàng năm',
-                                        style: TextStyle(fontSize: 13),
-                                      )),
-                                ],
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setModalState(() {
-                                      selectedFrequency = value;
-                                    });
-                                  }
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: DropdownButtonFormField<String>(
-                                value: selectedCategory,
-                                decoration: InputDecoration(
-                                  labelText: 'Danh mục',
-                                  labelStyle: TextStyle(
-                                    color: themeColor,
-                                    fontSize: 14,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: themeColor,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: themeColor,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  prefixIcon:
-                                      Icon(Icons.category, color: themeColor),
-                                ),
-                                items: receipLong
-                                    .map<DropdownMenuItem<String>>(
-                                      (category) => DropdownMenuItem<String>(
-                                        value: category['name'],
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(category['icon']),
-                                            const SizedBox(width: 8),
-                                            Flexible(
-                                              child: Text(
-                                                category['name'],
-                                                style: const TextStyle(
-                                                    fontSize: 13),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
+                                SizedBox(height: 24.h),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: nameController,
+                                        decoration: InputDecoration(
+                                          labelText: 'Tên hóa đơn',
+                                          labelStyle: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 14.sp,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                            borderSide: BorderSide(
+                                              color: themeColor,
                                             ),
-                                          ],
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                            borderSide: BorderSide(
+                                              color: themeColor,
+                                              width: 2.w,
+                                            ),
+                                          ),
+                                          prefixIcon: Icon(Icons.receipt,
+                                              color: themeColor),
                                         ),
+                                        validator: (value) {
+                                          if (value == null ||
+                                              value.trim().isEmpty) {
+                                            return 'Vui lòng nhập tên hóa đơn';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 8.w,
+                                    ),
+                                    Expanded(
+                                      child: DropdownButtonFormField<int>(
+                                        value: selectedBookForInvoice?['id'],
+                                        decoration: InputDecoration(
+                                          labelText: 'Sổ chi tiêu',
+                                          labelStyle: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 14.sp,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                            borderSide: BorderSide(
+                                              color: themeColor,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                            borderSide: BorderSide(
+                                              color: themeColor,
+                                              width: 2.w,
+                                            ),
+                                          ),
+                                          prefixIcon: Icon(Icons.book,
+                                              color: themeColor),
+                                        ),
+                                        items: books
+                                            .map<DropdownMenuItem<int>>(
+                                              (book) => DropdownMenuItem<int>(
+                                                value: book['id'],
+                                                child: Text(book['name']),
+                                              ),
+                                            )
+                                            .toList(),
+                                        onChanged: (value) {
+                                          if (value != null) {
+                                            setModalState(() {
+                                              selectedBookForInvoice =
+                                                  books.firstWhere(
+                                                      (b) => b['id'] == value);
+                                            });
+                                          }
+                                        },
                                       ),
                                     )
-                                    .toList(),
-                                onChanged: (value) {
-                                  setModalState(() {
-                                    selectedCategory = value;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        DropdownButtonFormField<int>(
-                          value: selectedBookForInvoice?['id'],
-                          decoration: InputDecoration(
-                            labelText: 'Sổ chi tiêu',
-                            labelStyle: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                                width: 2,
-                              ),
-                            ),
-                            prefixIcon: Icon(Icons.book, color: themeColor),
-                          ),
-                          items: books
-                              .map<DropdownMenuItem<int>>(
-                                (book) => DropdownMenuItem<int>(
-                                  value: book['id'],
-                                  child: Text(book['name']),
+                                  ],
                                 ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              setModalState(() {
-                                selectedBookForInvoice =
-                                    books.firstWhere((b) => b['id'] == value);
-                              });
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: descriptionController,
-                          decoration: InputDecoration(
-                            labelText: 'Chi tiết',
-                            labelStyle: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
+                                SizedBox(height: 16.h),
+                                TextFormField(
+                                  controller: amountController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Số tiền thanh toán',
+                                    labelStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14.sp,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      borderSide: BorderSide(
+                                        color: themeColor,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      borderSide: BorderSide(
+                                        color: themeColor,
+                                        width: 2.w,
+                                      ),
+                                    ),
+                                    prefixIcon: Icon(Icons.attach_money,
+                                        color: themeColor),
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    CurrencyInputFormatter(currencyType)
+                                  ],
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Nhập số tiền';
+                                    }
+                                    final amount =
+                                        getNumericValueFromFormattedText(value);
+                                    if (amount <= 0) {
+                                      return 'Số tiền phải lớn hơn 0';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                SizedBox(height: 16.h),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: DropdownButtonFormField<String>(
+                                        value: selectedFrequency,
+                                        decoration: InputDecoration(
+                                          labelText: 'Tần suất',
+                                          labelStyle: TextStyle(
+                                            color: themeColor,
+                                            fontSize: 14.sp,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                            borderSide: BorderSide(
+                                              color: themeColor,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                            borderSide: BorderSide(
+                                              color: themeColor,
+                                              width: 2.w,
+                                            ),
+                                          ),
+                                          prefixIcon: Icon(Icons.schedule,
+                                              color: themeColor),
+                                        ),
+                                        items: const [
+                                          DropdownMenuItem(
+                                              value: 'daily',
+                                              child: Text(
+                                                'Hàng ngày',
+                                                style: TextStyle(fontSize: 13),
+                                              )),
+                                          DropdownMenuItem(
+                                              value: 'weekly',
+                                              child: Text(
+                                                'Hàng tuần',
+                                                style: TextStyle(fontSize: 13),
+                                              )),
+                                          DropdownMenuItem(
+                                              value: 'monthly',
+                                              child: Text(
+                                                'Hàng tháng',
+                                                style: TextStyle(fontSize: 13),
+                                              )),
+                                          DropdownMenuItem(
+                                              value: 'yearly',
+                                              child: Text(
+                                                'Hàng năm',
+                                                style: TextStyle(fontSize: 13),
+                                              )),
+                                        ],
+                                        onChanged: (value) {
+                                          if (value != null) {
+                                            setModalState(() {
+                                              selectedFrequency = value;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Expanded(
+                                      child: DropdownButtonFormField<String>(
+                                        value: selectedCategory,
+                                        decoration: InputDecoration(
+                                          labelText: 'Danh mục',
+                                          labelStyle: TextStyle(
+                                            color: themeColor,
+                                            fontSize: 14.sp,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                            borderSide: BorderSide(
+                                              color: themeColor,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                            borderSide: BorderSide(
+                                              color: themeColor,
+                                              width: 2.w,
+                                            ),
+                                          ),
+                                          prefixIcon: Icon(Icons.category,
+                                              color: themeColor),
+                                        ),
+                                        items: receipLong
+                                            .map<DropdownMenuItem<String>>(
+                                              (category) =>
+                                                  DropdownMenuItem<String>(
+                                                value: category['name'],
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Text(category['icon']),
+                                                    SizedBox(width: 8.w),
+                                                    Flexible(
+                                                      child: Text(
+                                                        category['name'],
+                                                        style: TextStyle(
+                                                            fontSize: 13.sp),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                        onChanged: (value) {
+                                          setModalState(() {
+                                            selectedCategory = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16.h),
+                                TextFormField(
+                                  controller: descriptionController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Chi tiết',
+                                    labelStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14.sp,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      borderSide: BorderSide(
+                                        color: themeColor,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      borderSide: BorderSide(
+                                        color: themeColor,
+                                        width: 2.w,
+                                      ),
+                                    ),
+                                    prefixIcon: Icon(Icons.description,
+                                        color: themeColor),
+                                  ),
+                                  maxLines: 1,
+                                ),
+                                SizedBox(height: 24.h),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      if (_addInvoiceFormKey.currentState!
+                                          .validate()) {
+                                        try {
+                                          final newInvoice = PeriodicInvoice(
+                                            id: DateTime.now()
+                                                .millisecondsSinceEpoch
+                                                .toString(),
+                                            name: nameController.text.trim(),
+                                            amount:
+                                                getNumericValueFromFormattedText(
+                                                    amountController.text),
+                                            startDate: DateTime.now(),
+                                            frequency: selectedFrequency,
+                                            category: selectedCategory!,
+                                            description: descriptionController
+                                                .text
+                                                .trim(),
+                                            bookId:
+                                                selectedBookForInvoice!['id'],
+                                          );
+
+                                          await ref
+                                              .read(periodicInvoicesProvider
+                                                  .notifier)
+                                              .addPeriodicInvoice(newInvoice);
+                                          Navigator.pop(context);
+
+                                          // Thông báo thành công
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Đã thêm hóa đơn định kỳ thành công vào sổ ${selectedBookForInvoice!['name']}'),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Lỗi khi tạo hóa đơn: \\${e.toString()}'),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: themeColor,
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 16.h),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12.r),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    child: Text(
+                                      'Tạo hóa đơn',
+                                      style: TextStyle(
+                                        fontSize: 18.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 16.h),
+                              ],
                             ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: themeColor,
-                                width: 2,
-                              ),
-                            ),
-                            prefixIcon:
-                                Icon(Icons.description, color: themeColor),
                           ),
-                          maxLines: 1,
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              // Kiểm tra dữ liệu đầu vào
-                              if (nameController.text.trim().isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Vui lòng nhập tên hóa đơn'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                                return;
-                              }
-
-                              if (amountController.text.trim().isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Vui lòng nhập số tiền'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                                return;
-                              }
-
-                              if (selectedCategory == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Vui lòng chọn danh mục'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                                return;
-                              }
-
-                              if (selectedBookForInvoice == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Vui lòng chọn sổ chi tiêu'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                                return;
-                              }
-
-                              // Parse số tiền
-                              double amount;
-                              try {
-                                amount = double.parse(
-                                    amountController.text.replaceAll(',', ''));
-                                if (amount <= 0) {
-                                  throw const FormatException(
-                                      'Số tiền phải lớn hơn 0');
-                                }
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Số tiền không hợp lệ'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                                return;
-                              }
-
-                              try {
-                                final newInvoice = PeriodicInvoice(
-                                  id: DateTime.now()
-                                      .millisecondsSinceEpoch
-                                      .toString(),
-                                  name: nameController.text.trim(),
-                                  amount: amount,
-                                  startDate: DateTime.now(),
-                                  frequency: selectedFrequency,
-                                  category: selectedCategory!,
-                                  description:
-                                      descriptionController.text.trim(),
-                                  bookId: selectedBookForInvoice!['id'],
-                                );
-
-                                await ref
-                                    .read(periodicInvoicesProvider.notifier)
-                                    .addPeriodicInvoice(newInvoice);
-                                Navigator.pop(context);
-
-                                // Thông báo thành công
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Đã thêm hóa đơn định kỳ thành công vào sổ ${selectedBookForInvoice!['name']}'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Lỗi khi tạo hóa đơn: ${e.toString()}'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: themeColor,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: const Text(
-                              'Tạo hóa đơn',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ],
+                ),
               ),
             );
           },

@@ -1,5 +1,6 @@
 import 'package:Fintrack/providers/providers_barrel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../data/models/savings_goal.dart';
 
 class SavingCard extends StatelessWidget {
@@ -43,37 +44,37 @@ class SavingCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(60),
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.r),
+            topRight: Radius.circular(60.r),
+            bottomLeft: Radius.circular(20.r),
+            bottomRight: Radius.circular(20.r),
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.08),
-              blurRadius: 15,
-              offset: const Offset(0, 4),
+              blurRadius: 15.r,
+              offset: Offset(0, 4.h),
               spreadRadius: 0,
             ),
           ],
           border: Border.all(
             color: Colors.grey.shade200,
-            width: 1,
+            width: 1.w,
           ),
         ),
         child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(60),
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.r),
+            topRight: Radius.circular(60.r),
+            bottomLeft: Radius.circular(20.r),
+            bottomRight: Radius.circular(20.r),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -82,26 +83,26 @@ class SavingCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 48,
-                      height: 48,
+                      width: 48.w,
+                      height: 48.w,
                       decoration: BoxDecoration(
                         color: themeColor,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(16.r),
                         boxShadow: [
                           BoxShadow(
                             color: themeColor.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
+                            blurRadius: 8.r,
+                            offset: Offset(0, 4.h),
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.savings_rounded,
                         color: Colors.white,
-                        size: 24,
+                        size: 24.sp,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,38 +114,38 @@ class SavingCard extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   goal.name,
-                                  style: const TextStyle(
-                                    fontSize: 19,
+                                  style: TextStyle(
+                                    fontSize: 19.sp,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xFF1A1A1A),
+                                    color: const Color(0xFF1A1A1A),
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 2,
                                 ),
                               ),
-                              const SizedBox(
-                                width: 5,
+                              SizedBox(
+                                width: 5.w,
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 3,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 3.h,
                                 ),
                                 decoration: BoxDecoration(
                                   color: statusColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(6),
+                                  borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Text(
                                   statusText,
                                   style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 13.sp,
                                     fontWeight: FontWeight.bold,
                                     color: statusColor,
                                   ),
                                 ),
                               ),
-                              const SizedBox(
-                                width: 10,
+                              SizedBox(
+                                width: 10.w,
                               ),
                             ],
                           ),
@@ -153,45 +154,45 @@ class SavingCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 10.h),
 
                 // Target amount
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16.w),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(16.r),
                     border: Border.all(
                       color: Colors.grey.shade200,
-                      width: 1,
+                      width: 1.w,
                     ),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.flag_outlined,
-                        size: 20,
+                        size: 20.sp,
                         color: Colors.grey.shade600,
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Mục tiêu',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               color: Colors.grey.shade600,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2.h),
                           Text(
                             formatCurrency(goal.targetAmount, currencyType),
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: TextStyle(
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF1A1A1A),
+                              color: const Color(0xFF1A1A1A),
                             ),
                           ),
                         ],
@@ -199,7 +200,7 @@ class SavingCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
 
                 // Progress section
                 Column(
@@ -211,7 +212,7 @@ class SavingCard extends StatelessWidget {
                         Text(
                           'Tiến độ',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.grey.shade700,
                           ),
@@ -219,26 +220,26 @@ class SavingCard extends StatelessWidget {
                         Text(
                           '${(percent * 100).toInt()}%',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w700,
                             color: themeColor,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
 
                     // Custom progress bar
                     Container(
-                      height: 10,
+                      height: 10.h,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         color: Colors.grey.shade200,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.05),
-                            blurRadius: 2,
-                            offset: const Offset(0, 1),
+                            blurRadius: 2.r,
+                            offset: Offset(0, 1.h),
                           ),
                         ],
                       ),
@@ -247,9 +248,9 @@ class SavingCard extends StatelessWidget {
                           // Base track
                           Container(
                             width: double.infinity,
-                            height: 10,
+                            height: 10.h,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.r),
                               color: Colors.grey.shade200,
                             ),
                           ),
@@ -259,15 +260,15 @@ class SavingCard extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               widthFactor: percent,
                               child: Container(
-                                height: 10,
+                                height: 10.h,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                   color: themeColor,
                                   boxShadow: [
                                     BoxShadow(
                                       color: themeColor.withOpacity(0.3),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
+                                      blurRadius: 4.r,
+                                      offset: Offset(0, 2.h),
                                     ),
                                   ],
                                 ),
@@ -281,32 +282,32 @@ class SavingCard extends StatelessWidget {
 
                 // Target date section
                 if (goal.targetDate != null) ...[
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.all(12.w),
                     decoration: BoxDecoration(
                       color: Colors.orange.shade50,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                       border: Border.all(
                         color: Colors.orange.shade200,
-                        width: 1,
+                        width: 1.w,
                       ),
                     ),
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
                             color: Colors.orange.shade100,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             Icons.access_time_rounded,
-                            size: 16,
+                            size: 16.sp,
                             color: Colors.orange.shade700,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,16 +315,16 @@ class SavingCard extends StatelessWidget {
                               Text(
                                 'Ngày hoàn thành mục tiêu',
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   color: Colors.orange.shade700,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              const SizedBox(height: 2),
+                              SizedBox(height: 2.h),
                               Text(
                                 '${goal.targetDate!.day}/${goal.targetDate!.month}/${goal.targetDate!.year}',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.orange.shade800,
                                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/more/notification_item.dart';
 import '../../providers/more/notifications_provider.dart';
 
@@ -42,29 +43,29 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Thông báo',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Color(0xFF2D3142),
+            fontSize: 20.sp,
+            color: const Color(0xFF2D3142),
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Color(0xFF2D3142)),
+            icon: Icon(Icons.refresh, color: const Color(0xFF2D3142), size: 24.sp),
             onPressed: () {
               ref.invalidate(notificationsProvider);
             },
             tooltip: 'Làm mới',
           ),
           IconButton(
-            icon: const Icon(Icons.done_all, color: Color(0xFF2D3142)),
+            icon: Icon(Icons.done_all, color: const Color(0xFF2D3142), size: 24.sp),
             onPressed: () => notifier.markAllAsRead(),
             tooltip: 'Đánh dấu tất cả đã đọc',
           ),
           IconButton(
-            icon: const Icon(Icons.delete_sweep, color: Color(0xFFE57373)),
+            icon: Icon(Icons.delete_sweep, color: const Color(0xFFE57373), size: 24.sp),
             onPressed: () => notifier.deleteAllReadNotifications(),
             tooltip: 'Xóa tất cả đã đọc',
           ),
@@ -75,17 +76,17 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
           ref.invalidate(notificationsProvider);
         },
         child: notifications.isEmpty
-            ? const Center(
+            ? Center(
                 child: Text(
                   'Không có thông báo nào !',
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF2D3142),
+                    fontSize: 16.sp,
+                    color: const Color(0xFF2D3142),
                   ),
                 ),
               )
             : ListView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.w),
                 itemCount: notifications.length,
                 itemBuilder: (context, index) {
                   final notification = notifications[index];
@@ -133,46 +134,47 @@ class NotificationTile extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: EdgeInsets.only(right: 20.w),
         color: Colors.red,
-        child: const Icon(
+        child: Icon(
           Icons.delete,
           color: Colors.white,
+          size: 28.sp,
         ),
       ),
       onDismissed: (_) => onDelete(),
       child: Card(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: EdgeInsets.only(bottom: 12.h),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
         ),
         elevation: 0,
         color: Colors.white,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.w),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.all(10.w),
                   decoration: BoxDecoration(
                     color: notification.isRead
                         ? const Color(0xFFF8F9FA)
                         : const Color(0xFF4CAF50).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(
                     Icons.notifications,
                     color: notification.isRead
                         ? const Color(0xFF9E9E9E)
                         : const Color(0xFF4CAF50),
-                    size: 24,
+                    size: 24.sp,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,27 +182,27 @@ class NotificationTile extends StatelessWidget {
                       Text(
                         notification.title,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: notification.isRead
                               ? FontWeight.normal
                               : FontWeight.bold,
                           color: const Color(0xFF2D3142),
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4.h),
                       Text(
                         notification.message,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF9E9E9E),
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: const Color(0xFF9E9E9E),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       Text(
                         _getTimeAgo(),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF9E9E9E),
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: const Color(0xFF9E9E9E),
                         ),
                       ),
                     ],

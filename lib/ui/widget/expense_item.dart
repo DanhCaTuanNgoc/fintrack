@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../providers/providers_barrel.dart';
 
 class ExpenseItem extends StatefulWidget {
@@ -66,22 +67,22 @@ class _ExpenseItemState extends State<ExpenseItem> {
         '${weekdayMap[weekdayNumber]}, ${DateFormat('dd/MM').format(date)}';
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            spreadRadius: 2.r,
+            blurRadius: 8.r,
+            offset: Offset(0, 4.h),
           ),
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 2,
-            offset: const Offset(0, 2),
+            spreadRadius: 1.r,
+            blurRadius: 2.r,
+            offset: Offset(0, 2.h),
           ),
         ],
       ),
@@ -93,13 +94,13 @@ class _ExpenseItemState extends State<ExpenseItem> {
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               decoration: BoxDecoration(
                 border: isExpanded
                     ? Border(
                         bottom: BorderSide(
                           color: Colors.grey.withOpacity(0.1),
-                          width: 1,
+                          width: 1.w,
                         ),
                       )
                     : null,
@@ -112,28 +113,28 @@ class _ExpenseItemState extends State<ExpenseItem> {
                     child: Icon(
                       Icons.keyboard_arrow_right,
                       color: widget.themeColor,
-                      size: 24,
+                      size: 24.sp,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   Text(
                     formattedDate,
-                    style: const TextStyle(
-                      fontSize: 13.5,
+                    style: TextStyle(
+                      fontSize: 13.5.sp,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     'Tổng: ${widget.isAmountVisible ? (widget.dayExpense > 0 ? '+' : '-') + formatCurrency(widget.dayExpense.abs(), widget.currencySymbol) : '•••••'}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14.sp),
                   ),
                 ],
               ),
             ),
           ),
           AnimatedCrossFade(
-            firstChild: const SizedBox(height: 0),
+            firstChild: SizedBox(height: 0.h),
             secondChild: Column(
               children: widget.transactions.map((transaction) {
                 final category = widget.categories.firstWhere(
@@ -144,32 +145,32 @@ class _ExpenseItemState extends State<ExpenseItem> {
                 final bgColor = widget.themeColor.withOpacity(0.1);
 
                 return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
                   ),
                   child: InkWell(
                     onTap: () => widget.onTransactionTap(transaction),
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
                             color: bgColor,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Icon(
                             _getIconFromEmoji(category['icon'] ?? '🏷️'),
                             color: widget.themeColor,
-                            size: 20,
+                            size: 20.sp,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: Text(
                             transaction.note,
-                            style: const TextStyle(
-                              fontSize: 15,
+                            style: TextStyle(
+                              fontSize: 15.sp,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -180,7 +181,7 @@ class _ExpenseItemState extends State<ExpenseItem> {
                             color: transaction.type == 'expense'
                                 ? Colors.red
                                 : Colors.green,
-                            fontSize: 15,
+                            fontSize: 15.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

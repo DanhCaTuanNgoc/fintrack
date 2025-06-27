@@ -2,6 +2,7 @@ import 'package:Fintrack/providers/providers_barrel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../providers/savings_goal_provider.dart';
 import '../../../data/models/savings_goal.dart';
 import '../../../providers/currency_provider.dart';
@@ -63,9 +64,9 @@ class _UpdatePeriodicSavingGoalDialogState
       child: Container(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 16,
+          left: 16.w,
+          right: 16.w,
+          top: 16.h,
         ),
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -78,22 +79,25 @@ class _UpdatePeriodicSavingGoalDialogState
             children: [
               Center(
                 child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
+                  width: 40.w,
+                  height: 4.h,
+                  margin: EdgeInsets.only(bottom: 16.h),
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.r),
                   ),
                 ),
               ),
-              const Center(
+              Center(
                 child: Text(
                   'Chỉnh sửa sổ tiết kiệm định kỳ',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              const SizedBox(height: 26),
+              SizedBox(height: 26.h),
               Form(
                 key: _formKey,
                 child: Column(
@@ -102,45 +106,47 @@ class _UpdatePeriodicSavingGoalDialogState
                       controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Tên sổ tiết kiệm',
-                        labelStyle: const TextStyle(
+                        labelStyle: TextStyle(
                           color: Colors.black,
+                          fontSize: 14.sp,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           borderSide: BorderSide(
                             color: widget.themeColor,
-                            width: 2,
+                            width: 2.w,
                           ),
                         ),
                         prefixIcon:
-                            Icon(Icons.savings, color: widget.themeColor),
+                            Icon(Icons.savings, color: widget.themeColor, size: 24.sp),
                       ),
                       validator: (value) =>
                           value == null || value.isEmpty ? 'Nhập tên' : null,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     TextFormField(
                       controller: _targetAmountController,
                       decoration: InputDecoration(
                         labelText: 'Số tiền mục tiêu',
-                        labelStyle: const TextStyle(
+                        labelStyle: TextStyle(
                           color: Colors.black,
+                          fontSize: 14.sp,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           borderSide: BorderSide(
                             color: widget.themeColor,
-                            width: 2,
+                            width: 2.w,
                           ),
                         ),
                         prefixIcon:
-                            Icon(Icons.attach_money, color: widget.themeColor),
+                            Icon(Icons.attach_money, color: widget.themeColor, size: 24.sp),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
@@ -163,7 +169,7 @@ class _UpdatePeriodicSavingGoalDialogState
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Row(
                       children: [
                         Expanded(
@@ -172,21 +178,22 @@ class _UpdatePeriodicSavingGoalDialogState
                             controller: _periodicAmountController,
                             decoration: InputDecoration(
                               labelText: 'Số tiền định kỳ',
-                              labelStyle: const TextStyle(
+                              labelStyle: TextStyle(
                                 color: Colors.black,
+                                fontSize: 14.sp,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12.r),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12.r),
                                 borderSide: BorderSide(
                                   color: widget.themeColor,
-                                  width: 2,
+                                  width: 2.w,
                                 ),
                               ),
                               prefixIcon:
-                                  Icon(Icons.repeat, color: widget.themeColor),
+                                  Icon(Icons.repeat, color: widget.themeColor, size: 24.sp),
                             ),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
@@ -203,7 +210,7 @@ class _UpdatePeriodicSavingGoalDialogState
                             },
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           flex: 2,
                           child: GestureDetector(
@@ -222,25 +229,25 @@ class _UpdatePeriodicSavingGoalDialogState
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Container(
-                                        width: 40,
-                                        height: 4,
-                                        margin: const EdgeInsets.only(
-                                            top: 12, bottom: 20),
+                                        width: 40.w,
+                                        height: 4.h,
+                                        margin: EdgeInsets.only(
+                                            top: 12.h, bottom: 20.h),
                                         decoration: BoxDecoration(
                                           color: Colors.grey[300],
                                           borderRadius:
-                                              BorderRadius.circular(2),
+                                              BorderRadius.circular(2.r),
                                         ),
                                       ),
-                                      const Text(
+                                      Text(
                                         'Chọn tần suất',
                                         style: TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 18.sp,
                                           fontWeight: FontWeight.bold,
-                                          color: Color(0xFF2D3142),
+                                          color: const Color(0xFF2D3142),
                                         ),
                                       ),
-                                      const SizedBox(height: 20),
+                                      SizedBox(height: 20.h),
                                       ...['daily', 'weekly', 'monthly']
                                           .map((frequency) {
                                         final labels = {
@@ -256,7 +263,7 @@ class _UpdatePeriodicSavingGoalDialogState
 
                                         return ListTile(
                                           leading: Container(
-                                            padding: const EdgeInsets.all(8),
+                                            padding: EdgeInsets.all(8.w),
                                             decoration: BoxDecoration(
                                               color: _periodicFrequency ==
                                                       frequency
@@ -264,7 +271,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                                       .withOpacity(0.1)
                                                   : Colors.grey[100],
                                               borderRadius:
-                                                  BorderRadius.circular(8),
+                                                  BorderRadius.circular(8.r),
                                             ),
                                             child: Icon(
                                               icons[frequency],
@@ -272,7 +279,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                                       frequency
                                                   ? widget.themeColor
                                                   : Colors.grey[600],
-                                              size: 20,
+                                              size: 20.sp,
                                             ),
                                           ),
                                           title: Text(
@@ -286,6 +293,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                                       frequency
                                                   ? widget.themeColor
                                                   : const Color(0xFF2D3142),
+                                              fontSize: 14.sp,
                                             ),
                                           ),
                                           trailing:
@@ -293,6 +301,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                                   ? Icon(
                                                       Icons.check_circle,
                                                       color: widget.themeColor,
+                                                      size: 20.sp,
                                                     )
                                                   : null,
                                           onTap: () {
@@ -303,7 +312,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                           },
                                         );
                                       }).toList(),
-                                      const SizedBox(height: 20),
+                                      SizedBox(height: 20.h),
                                     ],
                                   ),
                                 ),
@@ -313,21 +322,21 @@ class _UpdatePeriodicSavingGoalDialogState
                               decoration: InputDecoration(
                                 labelText: 'Tần suất',
                                 labelStyle:
-                                    const TextStyle(color: Colors.black),
+                                    TextStyle(color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                   borderSide: BorderSide(
                                     color: widget.themeColor,
-                                    width: 2,
+                                    width: 2.w,
                                   ),
                                 ),
                                 prefixIcon: Icon(Icons.schedule,
-                                    color: widget.themeColor),
+                                    color: widget.themeColor, size: 24.sp),
                                 suffixIcon:
-                                    const Icon(Icons.keyboard_arrow_down),
+                                    Icon(Icons.keyboard_arrow_down, size: 20.sp),
                               ),
                               child: Text(
                                 _periodicFrequency == null
@@ -341,7 +350,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                   color: _periodicFrequency == null
                                       ? Colors.grey
                                       : Colors.black,
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                 ),
                               ),
                             ),
@@ -349,7 +358,7 @@ class _UpdatePeriodicSavingGoalDialogState
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     Row(
                       children: [
                         Expanded(
@@ -370,23 +379,23 @@ class _UpdatePeriodicSavingGoalDialogState
                               decoration: InputDecoration(
                                 labelText: 'Ngày bắt đầu',
                                 labelStyle:
-                                    const TextStyle(color: Colors.black),
+                                    TextStyle(color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                   borderSide: BorderSide(
                                     color: widget.themeColor,
-                                    width: 2,
+                                    width: 2.w,
                                   ),
                                 ),
                                 prefixIcon: Icon(Icons.calendar_today,
-                                    color: widget.themeColor),
+                                    color: widget.themeColor, size: 24.sp),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 0),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _startedDate == null
                                       ? 'Chọn ngày'
@@ -395,14 +404,14 @@ class _UpdatePeriodicSavingGoalDialogState
                                     color: _startedDate == null
                                         ? Colors.grey
                                         : Colors.black,
-                                    fontSize: 16,
+                                    fontSize: 16.sp,
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: GestureDetector(
                             onTap: () async {
@@ -421,23 +430,23 @@ class _UpdatePeriodicSavingGoalDialogState
                               decoration: InputDecoration(
                                 labelText: 'Ngày mục tiêu',
                                 labelStyle:
-                                    const TextStyle(color: Colors.black),
+                                    TextStyle(color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                   borderSide: BorderSide(
                                     color: widget.themeColor,
-                                    width: 2,
+                                    width: 2.w,
                                   ),
                                 ),
                                 prefixIcon:
-                                    Icon(Icons.flag, color: widget.themeColor),
+                                    Icon(Icons.flag, color: widget.themeColor, size: 24.sp),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 0),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _targetDate == null
                                       ? 'Chọn ngày (tùy chọn)'
@@ -446,7 +455,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                     color: _targetDate == null
                                         ? Colors.grey
                                         : Colors.black,
-                                    fontSize: 16,
+                                    fontSize: 16.sp,
                                   ),
                                 ),
                               ),
@@ -455,7 +464,7 @@ class _UpdatePeriodicSavingGoalDialogState
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     savingsGoalAsync.when(
                       data: (goals) {
                         final currentGoal = goals.firstWhere(
@@ -463,10 +472,10 @@ class _UpdatePeriodicSavingGoalDialogState
                           orElse: () => widget.goal,
                         );
                         return Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(16.w),
                           decoration: BoxDecoration(
                             color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.r),
                             border: Border.all(color: Colors.grey.shade200),
                           ),
                           child: Column(
@@ -475,12 +484,12 @@ class _UpdatePeriodicSavingGoalDialogState
                               Text(
                                 'Thông tin hiện tại:',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.grey[700],
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: 8.h),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -488,7 +497,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                   Text(
                                     'Đã tiết kiệm:',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       color: Colors.grey[600],
                                     ),
                                   ),
@@ -496,14 +505,14 @@ class _UpdatePeriodicSavingGoalDialogState
                                     formatCurrency(currentGoal.currentAmount,
                                         currencyType),
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       fontWeight: FontWeight.bold,
                                       color: widget.themeColor,
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4.h),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -511,14 +520,14 @@ class _UpdatePeriodicSavingGoalDialogState
                                   Text(
                                     'Tiến độ:',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       color: Colors.grey[600],
                                     ),
                                   ),
                                   Text(
                                     '${currentGoal.progressPercentage.toStringAsFixed(1)}%',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       fontWeight: FontWeight.bold,
                                       color: widget.themeColor,
                                     ),
@@ -530,19 +539,19 @@ class _UpdatePeriodicSavingGoalDialogState
                         );
                       },
                       loading: () => Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
                           color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(color: Colors.grey.shade200),
                         ),
                         child: const Center(child: CircularProgressIndicator()),
                       ),
                       error: (_, __) => Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
                           color: Colors.red[50],
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(color: Colors.red.shade200),
                         ),
                         child: const Text(
@@ -554,7 +563,7 @@ class _UpdatePeriodicSavingGoalDialogState
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               Row(
                 children: [
                   Expanded(
@@ -563,28 +572,28 @@ class _UpdatePeriodicSavingGoalDialogState
                         backgroundColor: Colors.red[400],
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
                       ),
                       onPressed: () {
                         _showDeleteConfirmation(context);
                       },
-                      child: const Text('Xóa sổ tiết kiệm',
+                      child: Text('Xóa sổ tiết kiệm',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
+                              fontWeight: FontWeight.bold, fontSize: 16.sp)),
                     ),
                   ),
-                  const SizedBox(width: 15),
+                  SizedBox(width: 15.w),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: widget.themeColor,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
                       ),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
@@ -629,10 +638,10 @@ class _UpdatePeriodicSavingGoalDialogState
 
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text(
                                   'Cập nhật thành công!',
-                                  style: TextStyle(fontSize: 14),
+                                  style: TextStyle(fontSize: 14.sp),
                                 ),
                                 backgroundColor: Colors.green,
                               ),
@@ -643,14 +652,14 @@ class _UpdatePeriodicSavingGoalDialogState
                           }
                         }
                       },
-                      child: const Text('Cập nhật',
+                      child: Text('Cập nhật',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
+                              fontWeight: FontWeight.bold, fontSize: 16.sp)),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
             ],
           ),
         ),
@@ -663,15 +672,16 @@ class _UpdatePeriodicSavingGoalDialogState
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Xác nhận xóa'),
+          title: Text('Xác nhận xóa', style: TextStyle(fontSize: 18.sp)),
           content: Text(
             'Bạn có chắc chắn muốn xóa sổ tiết kiệm "${widget.goal.name}"?\n\n'
             'Hành động này không thể hoàn tác và sẽ xóa tất cả lịch sử giao dịch liên quan.',
+            style: TextStyle(fontSize: 14.sp),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Hủy'),
+              child: Text('Hủy', style: TextStyle(fontSize: 14.sp)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -686,8 +696,8 @@ class _UpdatePeriodicSavingGoalDialogState
 
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Đã xóa sổ tiết kiệm!'),
+                    SnackBar(
+                      content: Text('Đã xóa sổ tiết kiệm!', style: TextStyle(fontSize: 14.sp)),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -696,7 +706,7 @@ class _UpdatePeriodicSavingGoalDialogState
                   });
                 }
               },
-              child: const Text('Xóa'),
+              child: Text('Xóa', style: TextStyle(fontSize: 14.sp)),
             ),
           ],
         );

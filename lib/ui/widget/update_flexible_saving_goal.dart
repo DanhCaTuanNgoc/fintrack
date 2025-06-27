@@ -2,6 +2,7 @@ import 'package:Fintrack/providers/providers_barrel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../providers/savings_goal_provider.dart';
 import '../../../data/models/savings_goal.dart';
 import '../../../providers/currency_provider.dart';
@@ -58,9 +59,9 @@ class _UpdateFlexibleSavingGoalDialogState
       child: Container(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 16,
+          left: 16.w,
+          right: 16.w,
+          top: 16.h,
         ),
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -73,22 +74,25 @@ class _UpdateFlexibleSavingGoalDialogState
             children: [
               Center(
                 child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
+                  width: 40.w,
+                  height: 4.h,
+                  margin: EdgeInsets.only(bottom: 16.h),
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.r),
                   ),
                 ),
               ),
-              const Center(
+              Center(
                 child: Text(
                   'Chỉnh sửa sổ tiết kiệm',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              const SizedBox(height: 26),
+              SizedBox(height: 26.h),
               Form(
                 key: _formKey,
                 child: Column(
@@ -97,46 +101,50 @@ class _UpdateFlexibleSavingGoalDialogState
                       controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Tên sổ tiết kiệm',
-                        labelStyle: const TextStyle(
+                        labelStyle: TextStyle(
                           color: Colors.black,
+                          fontSize: 14.sp,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           borderSide: BorderSide(
                             color: widget.themeColor,
-                            width: 2,
+                            width: 2.w,
                           ),
                         ),
                         prefixIcon:
-                            Icon(Icons.savings, color: widget.themeColor),
+                            Icon(Icons.savings, color: widget.themeColor, size: 24.sp),
                       ),
+                      style: TextStyle(fontSize: 16.sp),
                       validator: (value) =>
                           value == null || value.isEmpty ? 'Nhập tên' : null,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     TextFormField(
                       controller: _targetAmountController,
                       decoration: InputDecoration(
                         labelText: 'Số tiền mục tiêu',
-                        labelStyle: const TextStyle(
+                        labelStyle: TextStyle(
                           color: Colors.black,
+                          fontSize: 14.sp,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           borderSide: BorderSide(
                             color: widget.themeColor,
-                            width: 2,
+                            width: 2.w,
                           ),
                         ),
                         prefixIcon:
-                            Icon(Icons.attach_money, color: widget.themeColor),
+                            Icon(Icons.attach_money, color: widget.themeColor, size: 24.sp),
                       ),
+                      style: TextStyle(fontSize: 16.sp),
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
                       validator: (value) {
@@ -164,7 +172,7 @@ class _UpdateFlexibleSavingGoalDialogState
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     Row(
                       children: [
                         Expanded(
@@ -185,23 +193,23 @@ class _UpdateFlexibleSavingGoalDialogState
                               decoration: InputDecoration(
                                 labelText: 'Ngày bắt đầu',
                                 labelStyle:
-                                    const TextStyle(color: Colors.black),
+                                    TextStyle(color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                   borderSide: BorderSide(
                                     color: widget.themeColor,
-                                    width: 2,
+                                    width: 2.w,
                                   ),
                                 ),
                                 prefixIcon: Icon(Icons.calendar_today,
-                                    color: widget.themeColor),
+                                    color: widget.themeColor, size: 24.sp),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 0),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _startedDate == null
                                       ? 'Chọn ngày'
@@ -210,14 +218,14 @@ class _UpdateFlexibleSavingGoalDialogState
                                     color: _startedDate == null
                                         ? Colors.grey
                                         : Colors.black,
-                                    fontSize: 16,
+                                    fontSize: 16.sp,
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: GestureDetector(
                             onTap: () async {
@@ -236,23 +244,23 @@ class _UpdateFlexibleSavingGoalDialogState
                               decoration: InputDecoration(
                                 labelText: 'Ngày mục tiêu',
                                 labelStyle:
-                                    const TextStyle(color: Colors.black),
+                                    TextStyle(color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                   borderSide: BorderSide(
                                     color: widget.themeColor,
-                                    width: 2,
+                                    width: 2.w,
                                   ),
                                 ),
                                 prefixIcon:
-                                    Icon(Icons.flag, color: widget.themeColor),
+                                    Icon(Icons.flag, color: widget.themeColor, size: 24.sp),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 0),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _targetDate == null
                                       ? 'Chọn ngày (tùy chọn)'
@@ -261,7 +269,7 @@ class _UpdateFlexibleSavingGoalDialogState
                                     color: _targetDate == null
                                         ? Colors.grey
                                         : Colors.black,
-                                    fontSize: 16,
+                                    fontSize: 16.sp,
                                   ),
                                 ),
                               ),
@@ -270,7 +278,7 @@ class _UpdateFlexibleSavingGoalDialogState
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
 
                     // Hiển thị thông tin hiện tại với dữ liệu real-time
                     savingsGoalAsync.when(
@@ -281,10 +289,10 @@ class _UpdateFlexibleSavingGoalDialogState
                         );
 
                         return Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(16.w),
                           decoration: BoxDecoration(
                             color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.r),
                             border: Border.all(color: Colors.grey.shade200),
                           ),
                           child: Column(
@@ -293,12 +301,12 @@ class _UpdateFlexibleSavingGoalDialogState
                               Text(
                                 'Thông tin hiện tại:',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.grey[700],
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: 8.h),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -306,7 +314,7 @@ class _UpdateFlexibleSavingGoalDialogState
                                   Text(
                                     'Đã tiết kiệm:',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       color: Colors.grey[600],
                                     ),
                                   ),
@@ -314,14 +322,14 @@ class _UpdateFlexibleSavingGoalDialogState
                                     formatCurrency(currentGoal.currentAmount,
                                         currencyType),
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       fontWeight: FontWeight.bold,
                                       color: widget.themeColor,
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4.h),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -329,14 +337,14 @@ class _UpdateFlexibleSavingGoalDialogState
                                   Text(
                                     'Tiến độ:',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       color: Colors.grey[600],
                                     ),
                                   ),
                                   Text(
                                     '${currentGoal.progressPercentage.toStringAsFixed(1)}%',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       fontWeight: FontWeight.bold,
                                       color: widget.themeColor,
                                     ),
@@ -348,31 +356,31 @@ class _UpdateFlexibleSavingGoalDialogState
                         );
                       },
                       loading: () => Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
                           color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(color: Colors.grey.shade200),
                         ),
                         child: const Center(child: CircularProgressIndicator()),
                       ),
                       error: (_, __) => Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
                           color: Colors.red[50],
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(color: Colors.red.shade200),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Lỗi tải dữ liệu',
-                          style: TextStyle(color: Colors.red),
+                          style: TextStyle(color: Colors.red, fontSize: 14.sp),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
 
               // Expanded(
               //   child: ElevatedButton(
@@ -392,7 +400,7 @@ class _UpdateFlexibleSavingGoalDialogState
               //             fontWeight: FontWeight.bold, fontSize: 18)),
               //   ),
               // ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12.w),
               Row(
                 children: [
                   Expanded(
@@ -401,28 +409,28 @@ class _UpdateFlexibleSavingGoalDialogState
                         backgroundColor: Colors.red[400],
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
                       ),
                       onPressed: () {
                         _showDeleteConfirmation(context);
                       },
-                      child: const Text('Xóa sổ tiết kiệm',
+                      child: Text('Xóa sổ tiết kiệm',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
+                              fontWeight: FontWeight.bold, fontSize: 16.sp)),
                     ),
                   ),
-                  const SizedBox(width: 15),
+                  SizedBox(width: 15.w),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: widget.themeColor,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
                       ),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
@@ -467,15 +475,15 @@ class _UpdateFlexibleSavingGoalDialogState
                           }
                         }
                       },
-                      child: const Text('Cập nhật',
+                      child: Text('Cập nhật',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
+                              fontWeight: FontWeight.bold, fontSize: 16.sp)),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               )
             ],
           ),
@@ -489,15 +497,16 @@ class _UpdateFlexibleSavingGoalDialogState
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Xác nhận xóa'),
+          title: Text('Xác nhận xóa', style: TextStyle(fontSize: 18.sp)),
           content: Text(
             'Bạn có chắc chắn muốn xóa sổ tiết kiệm "${widget.goal.name}"?\n\n'
             'Hành động này không thể hoàn tác và sẽ xóa tất cả lịch sử giao dịch liên quan.',
+            style: TextStyle(fontSize: 14.sp),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Hủy'),
+              child: Text('Hủy', style: TextStyle(fontSize: 14.sp)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -512,15 +521,15 @@ class _UpdateFlexibleSavingGoalDialogState
 
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Đã xóa sổ tiết kiệm!'),
+                    SnackBar(
+                      content: Text('Đã xóa sổ tiết kiệm!', style: TextStyle(fontSize: 14.sp)),
                       backgroundColor: Colors.red,
                     ),
                   );
                   Navigator.pop(context); // Đóng modal cập nhật
                 }
               },
-              child: const Text('Xóa'),
+              child: Text('Xóa', style: TextStyle(fontSize: 14.sp)),
             ),
           ],
         );

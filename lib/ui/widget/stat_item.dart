@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../providers/currency_provider.dart';
 
 class StatItem extends ConsumerWidget {
@@ -36,18 +37,18 @@ class StatItem extends ConsumerWidget {
                 : '•••••',
             style: TextStyle(
               color: textColor,
-              fontSize: 18,
+              fontSize: 18.sp,
               fontWeight: FontWeight.w600,
               height: 1.2,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4.h),
           Text(
             title,
             style: TextStyle(
               color: Colors.grey[600],
-              fontSize: 13,
+              fontSize: 13.sp,
               fontWeight: FontWeight.w400,
             ),
             textAlign: TextAlign.center,
