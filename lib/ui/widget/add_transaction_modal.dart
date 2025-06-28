@@ -6,6 +6,7 @@ import '../../utils/localization.dart';
 import '../widget/type_button.dart';
 import '../widget/number_pad.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../utils/category_helper.dart';
 
 class AddTransactionModal extends ConsumerStatefulWidget {
   final Book currentBook;
@@ -211,12 +212,15 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                               SingleChildScrollView(
                                 child: Column(
                                   children: categories.map((category) {
+                                    final localizedName =
+                                        CategoryHelper.getLocalizedCategoryName(
+                                            category['icon'], l10n);
                                     return ListTile(
                                       leading: Container(
                                         padding: EdgeInsets.all(8.w),
                                         decoration: BoxDecoration(
                                           color: _selectedCategory ==
-                                                  category['name']
+                                                  category['icon']
                                               ? widget.themeColor
                                                   .withOpacity(0.1)
                                               : Colors.grey[100],
@@ -228,27 +232,27 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                                           style: TextStyle(
                                             fontSize: 20.sp,
                                             color: _selectedCategory ==
-                                                    category['name']
+                                                    category['icon']
                                                 ? widget.themeColor
                                                 : Colors.grey[600],
                                           ),
                                         ),
                                       ),
                                       title: Text(
-                                        category['name'],
+                                        localizedName,
                                         style: TextStyle(
                                           fontWeight: _selectedCategory ==
-                                                  category['name']
+                                                  category['icon']
                                               ? FontWeight.bold
                                               : FontWeight.normal,
                                           color: _selectedCategory ==
-                                                  category['name']
+                                                  category['icon']
                                               ? widget.themeColor
                                               : const Color(0xFF2D3142),
                                         ),
                                       ),
                                       trailing:
-                                          _selectedCategory == category['name']
+                                          _selectedCategory == category['icon']
                                               ? Icon(
                                                   Icons.check_circle,
                                                   color: widget.themeColor,
@@ -256,7 +260,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                                               : null,
                                       onTap: () {
                                         setState(() {
-                                          _selectedCategory = category['name'];
+                                          _selectedCategory = category['icon'];
                                         });
                                         Future.delayed(Duration.zero,
                                             () => {Navigator.pop(context)});
@@ -301,13 +305,18 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                               children: [
                                 Text(
                                   categories.firstWhere(
-                                    (cat) => cat['name'] == _selectedCategory,
+                                    (cat) => cat['icon'] == _selectedCategory,
                                   )['icon'],
                                   style: TextStyle(fontSize: 20.sp),
                                 ),
                                 SizedBox(width: 8.w),
                                 Text(
-                                  _selectedCategory!,
+                                  CategoryHelper.getLocalizedCategoryName(
+                                    categories.firstWhere((cat) =>
+                                        cat['icon'] ==
+                                        _selectedCategory)['icon'],
+                                    l10n,
+                                  ),
                                   style: TextStyle(
                                     fontSize: 16.sp,
                                     color: const Color(0xFF2D3142),
@@ -327,7 +336,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                               ref.read(transactionsProvider.notifier);
 
                           final selected = categories.firstWhere(
-                            (cat) => cat['name'] == _selectedCategory,
+                            (cat) => cat['icon'] == _selectedCategory,
                           );
 
                           await notifier.createTransaction(

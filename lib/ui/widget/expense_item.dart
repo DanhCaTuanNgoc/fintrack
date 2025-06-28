@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../providers/providers_barrel.dart';
 import '../../utils/localization.dart';
+import '../../utils/category_helper.dart';
 
 class ExpenseItem extends StatefulWidget {
   final String dateKey;
@@ -142,8 +143,10 @@ class _ExpenseItemState extends State<ExpenseItem> {
               children: widget.transactions.map((transaction) {
                 final category = widget.categories.firstWhere(
                   (cat) => cat['id'] == transaction.categoryId,
-                  orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
+                  orElse: () => {'name': '', 'icon': ''},
                 );
+                final categoryName = CategoryHelper.getLocalizedCategoryName(
+                    category['icon'], l10n);
 
                 final bgColor = widget.themeColor.withOpacity(0.1);
 

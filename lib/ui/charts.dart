@@ -7,6 +7,7 @@ import '../providers/providers_barrel.dart';
 import '../utils/localization.dart';
 import './widget/widget_barrel.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../utils/category_helper.dart';
 
 class Charts extends ConsumerStatefulWidget {
   const Charts({super.key});
@@ -475,7 +476,8 @@ class _ChartsState extends ConsumerState<Charts>
                           SizedBox(width: 12.w),
                           Expanded(
                             child: Text(
-                              category.key,
+                              CategoryHelper.getLocalizedCategoryName(
+                                  _getCategoryIconFromName(category.key), l10n),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
@@ -592,7 +594,8 @@ class _ChartsState extends ConsumerState<Charts>
                           SizedBox(width: 12.w),
                           Expanded(
                             child: Text(
-                              category.key,
+                              CategoryHelper.getLocalizedCategoryName(
+                                  _getCategoryIconFromName(category.key), l10n),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
@@ -617,6 +620,33 @@ class _ChartsState extends ConsumerState<Charts>
         );
       },
     );
+  }
+
+  String _getCategoryIconFromName(String categoryName) {
+    switch (categoryName) {
+      case 'Ăn uống':
+        return '🍔';
+      case 'Di chuyển':
+        return '🚗';
+      case 'Mua sắm':
+        return '🛍';
+      case 'Giải trí':
+        return '🎮';
+      case 'Học tập':
+        return '📚';
+      case 'Làm đẹp':
+        return '💅';
+      case 'Sinh hoạt':
+        return '🏠';
+      case 'Lương':
+        return '💰';
+      case 'Thưởng':
+        return '🎁';
+      case 'Đầu tư':
+        return '📈';
+      default:
+        return '💸';
+    }
   }
 }
 
