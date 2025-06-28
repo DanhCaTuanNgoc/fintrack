@@ -40,6 +40,7 @@ class VietnameseStrings {
   static const String success = 'Thành công';
   static const String warning = 'Cảnh báo';
   static const String info = 'Thông tin';
+  static const String total = 'Tổng';
 
   // Home
   static const String home = 'Trang chủ';
@@ -90,6 +91,8 @@ class VietnameseStrings {
   static const String currentAmount = 'Số tiền hiện tại';
   static const String progress = 'Tiến độ';
   static const String deadline = 'Hạn chót';
+  static const String savingsOverdue = 'Sổ tiết kiệm này đã quá hạn.';
+  static const String savingsClosed = 'Sổ tiết kiệm này đã được đóng.';
 
   // Charts
   static const String charts = 'Biểu đồ';
@@ -310,8 +313,6 @@ class VietnameseStrings {
   static const String flexibleSavings = 'Tiết kiệm linh hoạt';
   static const String noFlexibleSavings = 'Không có sổ tiết kiệm linh hoạt nào';
   static const String createNewSavings = 'Tạo tiết kiệm mới';
-  static const String savingsOverdue = 'Sổ tiết kiệm này đã quá hạn.';
-  static const String savingsClosed = 'Sổ tiết kiệm này đã được đóng.';
 
   // Periodic Savings Screen
   static const String periodicSavings = 'Tiết kiệm định kỳ';
@@ -336,4 +337,13 @@ class VietnameseStrings {
   static const String daysAgo = '{days} ngày trước';
   static const String hoursAgo = '{hours} giờ trước';
   static const String minutesAgo = '{minutes} phút trước';
+
+  // Weekdays
+  static const String monday = 'Th 2';
+  static const String tuesday = 'Th 3';
+  static const String wednesday = 'Th 4';
+  static const String thursday = 'Th 5';
+  static const String friday = 'Th 6';
+  static const String saturday = 'Th 7';
+  static const String sunday = 'CN';
 }

@@ -86,8 +86,8 @@ class PeriodicSavingScreen extends ConsumerWidget {
 
                           if (isOverdue || isClosed) {
                             String message = isOverdue
-                                ? 'Sổ tiết kiệm này đã quá hạn.'
-                                : 'Sổ tiết kiệm này đã được đóng.';
+                                ? AppLocalizations.of(context).savingsOverdue
+                                : AppLocalizations.of(context).savingsClosed;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(message),

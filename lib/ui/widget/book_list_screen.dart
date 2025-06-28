@@ -234,7 +234,7 @@ class BookListScreen extends ConsumerWidget {
                       elevation: 0,
                     ),
                     child: Text(
-                      'Tạo sổ mới',
+                      l10n.createBook,
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,

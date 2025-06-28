@@ -40,6 +40,7 @@ class EnglishStrings {
   static const String success = 'Success';
   static const String warning = 'Warning';
   static const String info = 'Information';
+  static const String total = 'Total';
 
   // Home
   static const String home = 'Home';
@@ -89,6 +90,8 @@ class EnglishStrings {
   static const String currentAmount = 'Current Amount';
   static const String progress = 'Progress';
   static const String deadline = 'Deadline';
+  static const String savingsOverdue = 'This savings book is overdue.';
+  static const String savingsClosed = 'This savings book is closed.';
 
   // Charts
   static const String charts = 'Charts';
@@ -307,8 +310,6 @@ class EnglishStrings {
   static const String flexibleSavings = 'Flexible Savings';
   static const String noFlexibleSavings = 'No flexible savings books yet';
   static const String createNewSavings = 'Create New Savings';
-  static const String savingsOverdue = 'This savings book is overdue.';
-  static const String savingsClosed = 'This savings book is closed.';
 
   // Periodic Savings Screen
   static const String periodicSavings = 'Periodic Savings';
@@ -333,4 +334,13 @@ class EnglishStrings {
   static const String daysAgo = '{days} days ago';
   static const String hoursAgo = '{hours} hours ago';
   static const String minutesAgo = '{minutes} minutes ago';
+
+  // Weekdays
+  static const String monday = 'Mon';
+  static const String tuesday = 'Tue';
+  static const String wednesday = 'Wed';
+  static const String thursday = 'Thu';
+  static const String friday = 'Fri';
+  static const String saturday = 'Sat';
+  static const String sunday = 'Sun';
 }

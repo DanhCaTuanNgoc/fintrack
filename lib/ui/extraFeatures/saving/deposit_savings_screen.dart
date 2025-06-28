@@ -269,7 +269,8 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                                     ),
                                     Text(
                                       _getFrequencyText(
-                                          currentGoal.periodicFrequency!),
+                                          currentGoal.periodicFrequency!,
+                                          context),
                                       style: TextStyle(
                                         fontSize: 12.sp,
                                         color: Colors.grey.shade600,
@@ -688,6 +689,7 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
   Widget build(BuildContext context) {
     final currency = ref.watch(currencyProvider);
     final bool isKeyboardVisible = _noteFocusNode.hasFocus;
+    final l10n = AppLocalizations.of(context);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -720,7 +722,7 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
               ),
               Center(
                 child: Text(
-                  'Bỏ tiền tiết kiệm',
+                  l10n.depositMoney,
                   style:
                       TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
                 ),
@@ -763,7 +765,7 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
               TextField(
                 focusNode: _noteFocusNode,
                 decoration: InputDecoration(
-                  labelText: 'Ghi chú (tùy chọn)',
+                  labelText: l10n.noteOptional,
                   labelStyle: TextStyle(color: widget.themeColor),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.r),
@@ -813,7 +815,8 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      'Đã nạp ${formatCurrency(amount, currency)} vào sổ tiết kiệm!',
+                                      l10n.depositSuccessWith(
+                                          formatCurrency(amount, currency)),
                                       style: TextStyle(fontSize: 14.sp),
                                     ),
                                     backgroundColor: Colors.green,
@@ -825,7 +828,7 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Có lỗi xảy ra: $e'),
+                                  content: Text('${l10n.error}: $e'),
                                   backgroundColor: Colors.red,
                                 ),
                               );
@@ -840,7 +843,7 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                     ),
                   ),
                   child: Text(
-                    'Xác nhận nạp tiền',
+                    l10n.confirmDeposit,
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
@@ -873,14 +876,15 @@ void _showUpdateModal(
   );
 }
 
-String _getFrequencyText(String frequency) {
+String _getFrequencyText(String frequency, BuildContext context) {
+  final l10n = AppLocalizations.of(context);
   switch (frequency) {
     case 'daily':
-      return 'hàng ngày';
+      return l10n.daily;
     case 'weekly':
-      return 'hàng tuần';
+      return l10n.weekly;
     case 'monthly':
-      return 'hàng tháng';
+      return l10n.monthly;
     default:
       return frequency;
   }

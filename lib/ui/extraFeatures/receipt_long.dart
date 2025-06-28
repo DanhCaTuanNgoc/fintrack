@@ -687,7 +687,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             ),
                             SizedBox(height: 4.h),
                             Text(
-                              _getFrequencyText(invoice.frequency),
+                              _getFrequencyText(invoice.frequency, context),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w700,
@@ -924,16 +924,17 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     );
   }
 
-  String _getFrequencyText(String frequency) {
+  String _getFrequencyText(String frequency, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     switch (frequency) {
       case 'daily':
-        return 'Hàng ngày';
+        return l10n.daily;
       case 'weekly':
-        return 'Hàng tuần';
+        return l10n.weekly;
       case 'monthly':
-        return 'Hàng tháng';
+        return l10n.monthly;
       case 'yearly':
-        return 'Hàng năm';
+        return l10n.yearly;
       default:
         return frequency;
     }
