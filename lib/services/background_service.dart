@@ -1,5 +1,4 @@
 import 'package:workmanager/workmanager.dart';
-import '../data/models/more/periodic_invoice.dart';
 import '../data/models/savings_goal.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../data/database/database_helper.dart';
@@ -8,6 +7,9 @@ import 'dart:typed_data';
 import '../data/repositories/more/notification_repository.dart';
 import '../data/models/more/notification_item.dart';
 import '../data/repositories/more/periodic_invoice_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/localization.dart';
+import '../utils/languages.dart';
 
 // Khởi tạo plugin thông báo
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -32,6 +34,14 @@ void callbackDispatcher() {
 // Hàm kiểm tra hóa đơn định kỳ
 Future<bool> _checkPeriodicInvoices() async {
   try {
+    // Lấy ngôn ngữ hiện tại từ SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final languageCode = prefs.getString('language_code') ??
+        SupportedLanguages.defaultLanguage.languageCode;
+    final appLanguage = SupportedLanguages.fromLanguageCode(languageCode) ??
+        SupportedLanguages.defaultLanguage;
+    final l10n = AppLocalizations(appLanguage.locale);
+
     // Khởi tạo thông báo với cấu hình đầy đủ
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -54,7 +64,8 @@ Future<bool> _checkPeriodicInvoices() async {
     // Tạo notification channel với cấu hình đầy đủ
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'periodic_invoices',
-      'Hóa đơn định kỳ',
+      // Sử dụng tên kênh theo ngôn ngữ
+      'Hóa đơn định kỳ', // Sẽ không hiển thị cho user, chỉ dùng khi tạo channel lần đầu
       description: 'Thông báo về hóa đơn định kỳ',
       importance: Importance.max,
       playSound: true,
@@ -72,8 +83,8 @@ Future<bool> _checkPeriodicInvoices() async {
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'periodic_invoices',
-      'Hóa đơn định kỳ',
-      channelDescription: 'Thông báo về hóa đơn định kỳ',
+      l10n.periodicInvoices,
+      channelDescription: l10n.periodicInvoices,
       importance: Importance.max,
       priority: Priority.high,
       showWhen: true,
@@ -81,8 +92,8 @@ Future<bool> _checkPeriodicInvoices() async {
       playSound: true,
       enableLights: true,
       icon: '@mipmap/ic_launcher',
-      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-      color: Color(0xFF6C63FF),
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+      color: const Color(0xFF6C63FF),
       category: AndroidNotificationCategory.reminder,
       visibility: NotificationVisibility.public,
       autoCancel: true,
@@ -95,7 +106,7 @@ Future<bool> _checkPeriodicInvoices() async {
       indeterminate: false,
       onlyAlertOnce: false,
       vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
-      ledColor: Color(0xFF6C63FF),
+      ledColor: const Color(0xFF6C63FF),
       ledOnMs: 1000,
       ledOffMs: 500,
     );
@@ -115,17 +126,17 @@ Future<bool> _checkPeriodicInvoices() async {
 
           await flutterLocalNotificationsPlugin.show(
             notificationId,
-            'Hóa đơn sắp đến hạn',
-            'Hóa đơn ${invoice.name} sẽ đến hạn vào ${nextDue.day}/${nextDue.month}/${nextDue.year}',
+            l10n.periodicInvoices, // Title
+            '${l10n.invoiceName} "${invoice.name}" ${l10n.overdue}: ${nextDue.day}/${nextDue.month}/${nextDue.year}',
             platformChannelSpecifics,
           );
 
           // Lưu thông báo vào database
           await NotificationRepository(DatabaseHelper.instance)
               .addNotification(NotificationItem(
-            title: 'Hóa đơn sắp đến hạn',
+            title: l10n.periodicInvoices,
             message:
-                'Hóa đơn ${invoice.name} sẽ đến hạn vào ${nextDue.day}/${nextDue.month}/${nextDue.year}',
+                '${l10n.invoiceName} "${invoice.name}" ${l10n.overdue}: ${nextDue.day}/${nextDue.month}/${nextDue.year}',
             time: DateTime.now(),
             isRead: false,
             invoiceId: invoice.id,
@@ -142,16 +153,16 @@ Future<bool> _checkPeriodicInvoices() async {
 
           await flutterLocalNotificationsPlugin.show(
             notificationId,
-            'Hóa đơn quá hạn',
-            'Hóa đơn ${invoice.name} đã quá hạn thanh toán',
+            l10n.periodicInvoices,
+            '${l10n.invoiceName} "${invoice.name}" ${l10n.overdue}',
             platformChannelSpecifics,
           );
 
           // Lưu thông báo vào database
           await NotificationRepository(DatabaseHelper.instance)
               .addNotification(NotificationItem(
-            title: 'Hóa đơn quá hạn',
-            message: 'Hóa đơn ${invoice.name} đã quá hạn thanh toán',
+            title: l10n.periodicInvoices,
+            message: '${l10n.invoiceName} "${invoice.name}" ${l10n.overdue}',
             time: DateTime.now(),
             isRead: false,
             invoiceId: invoice.id,
@@ -179,16 +190,16 @@ Future<bool> _checkPeriodicInvoices() async {
 
           await flutterLocalNotificationsPlugin.show(
             notificationId,
-            'Đến hạn thanh toán mới',
-            'Hóa đơn ${invoice.name} đã đến hạn thanh toán mới',
+            l10n.periodicInvoices,
+            '${l10n.invoiceName} "${invoice.name}" ${l10n.overdue}',
             platformChannelSpecifics,
           );
 
           // Lưu thông báo vào database
           await NotificationRepository(DatabaseHelper.instance)
               .addNotification(NotificationItem(
-            title: 'Đến hạn thanh toán mới',
-            message: 'Hóa đơn ${invoice.name} đã đến hạn thanh toán mới',
+            title: l10n.periodicInvoices,
+            message: '${l10n.invoiceName} "${invoice.name}" ${l10n.overdue}',
             time: DateTime.now(),
             isRead: false,
             invoiceId: invoice.id,
@@ -215,6 +226,13 @@ Future<bool> _checkPeriodicInvoices() async {
 // Hàm kiểm tra mục tiêu tiết kiệm
 Future<bool> _checkSavingsGoals() async {
   try {
+    final prefs = await SharedPreferences.getInstance();
+    final languageCode = prefs.getString('language_code') ??
+        SupportedLanguages.defaultLanguage.languageCode;
+    final appLanguage = SupportedLanguages.fromLanguageCode(languageCode) ??
+        SupportedLanguages.defaultLanguage;
+    final l10n = AppLocalizations(appLanguage.locale);
+
     // Khởi tạo thông báo với cấu hình đầy đủ
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -256,8 +274,8 @@ Future<bool> _checkSavingsGoals() async {
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'savings_goals',
-      'Mục tiêu tiết kiệm',
-      channelDescription: 'Thông báo về mục tiêu tiết kiệm',
+      l10n.savingsGoals,
+      channelDescription: l10n.savingsGoals,
       importance: Importance.max,
       priority: Priority.high,
       showWhen: true,
@@ -265,8 +283,8 @@ Future<bool> _checkSavingsGoals() async {
       playSound: true,
       enableLights: true,
       icon: '@mipmap/ic_launcher',
-      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-      color: Color(0xFF4CAF50),
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+      color: const Color(0xFF4CAF50),
       category: AndroidNotificationCategory.reminder,
       visibility: NotificationVisibility.public,
       autoCancel: true,
@@ -278,7 +296,7 @@ Future<bool> _checkSavingsGoals() async {
       indeterminate: false,
       onlyAlertOnce: false,
       vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
-      ledColor: Color(0xFF4CAF50),
+      ledColor: const Color(0xFF4CAF50),
       ledOnMs: 1000,
       ledOffMs: 500,
     );
@@ -291,12 +309,13 @@ Future<bool> _checkSavingsGoals() async {
         final notificationId =
             DateTime.now().millisecondsSinceEpoch % 100000 + 1000;
 
-        String title = 'Nhắc nhở tiết kiệm';
-        String message = 'Đừng quên tiết kiệm cho mục tiêu "${goal.name}"!';
+        String title = l10n.savingsGoals;
+        String message = '${l10n.savingsGoals}: "${goal.name}"';
 
         // Nếu là mục tiêu định kỳ, thêm thông tin về số tiền cần tiết kiệm
         if (goal.type == 'periodic' && goal.periodicAmount != null) {
-          message += ' Số tiền: ${goal.periodicAmount!.toStringAsFixed(0)} VND';
+          message +=
+              ' - ${l10n.periodicAmount}: ${goal.periodicAmount!.toStringAsFixed(0)} VND';
         }
 
         await flutterLocalNotificationsPlugin.show(
@@ -331,17 +350,17 @@ Future<bool> _checkSavingsGoals() async {
 
         await flutterLocalNotificationsPlugin.show(
           notificationId,
-          'Mục tiêu sắp đến hạn',
-          'Mục tiêu "${goal.name}" còn ${remainingDays} ngày nữa! Tiến độ: ${goal.progressPercentage.toStringAsFixed(1)}%',
+          l10n.savingsGoals,
+          '${l10n.savingsGoals}: "${goal.name}" - ${l10n.deadline}: $remainingDays ${l10n.daysAgoWith(remainingDays.abs())}',
           platformChannelSpecifics,
         );
 
         // Lưu thông báo vào database
         await NotificationRepository(DatabaseHelper.instance)
             .addNotification(NotificationItem(
-          title: 'Mục tiêu sắp đến hạn',
+          title: l10n.savingsGoals,
           message:
-              'Mục tiêu "${goal.name}" còn ${remainingDays} ngày nữa! Tiến độ: ${goal.progressPercentage.toStringAsFixed(1)}%',
+              '${l10n.savingsGoals}: "${goal.name}" - ${l10n.deadline}: $remainingDays ${l10n.daysAgoWith(remainingDays.abs())}',
           time: DateTime.now(),
           isRead: false,
           goalId: goal.id?.toString(),
@@ -355,16 +374,16 @@ Future<bool> _checkSavingsGoals() async {
 
         await flutterLocalNotificationsPlugin.show(
           notificationId,
-          'Chúc mừng!',
-          'Bạn đã hoàn thành mục tiêu "${goal.name}"! 🎉',
+          l10n.savingsGoals,
+          '${l10n.completed}: "${goal.name}" 🎉',
           platformChannelSpecifics,
         );
 
         // Lưu thông báo vào database
         await NotificationRepository(DatabaseHelper.instance)
             .addNotification(NotificationItem(
-          title: 'Chúc mừng!',
-          message: 'Bạn đã hoàn thành mục tiêu "${goal.name}"! 🎉',
+          title: l10n.savingsGoals,
+          message: '${l10n.completed}: "${goal.name}" 🎉',
           time: DateTime.now(),
           isRead: false,
           goalId: goal.id?.toString(),
@@ -402,7 +421,7 @@ class BackgroundService {
     await Workmanager().registerPeriodicTask(
       'checkSavingsGoals', // Tên task
       'checkSavingsGoals', // Tên task (phải giống nhau)
-      frequency: const Duration(hours: 6), // Tần suất chạy task (6 giờ/lần)
+      frequency: const Duration(days: 1),
       initialDelay: const Duration(minutes: 5),
       constraints: Constraints(
         // Các điều kiện để chạy task
