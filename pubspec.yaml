@@ -1,4 +1,4 @@
-name: fintrack
+name: Fintrack
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.0
+  sdk: '>=3.2.3 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,37 +30,45 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   logging: ^1.2.0
   path_provider: ^2.1.2
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  flutter_launcher_icons: ^0.13.1
+  workmanager: ^0.6.0
+  flutter_local_notifications: ^19.2.1
+  intl: ^0.19.0
+  cupertino_icons: ^1.0.2
   sqflite : ^2.3.0
   path : ^1.8.3
   get_it: ^7.6.7 
   shared_preferences: ^2.2.2
-  
+  google_fonts: ^6.1.0
+  table_calendar: ^3.0.9
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+  fl_chart: ^0.65.0
+  flutter_native_splash: ^2.4.1
+  flutter_screenutil: ^5.8.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^2.0.0
+  build_runner: ^2.4.8
+  riverpod_generator: ^2.3.9
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
@@ -93,3 +101,36 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  assets:
+    - assets/images/splashscreen.png # Đường dẫn đến hình ảnh splash
+    - assets/images/icon_white_final.png # Đường đẫn đến hình ảnh icon
+
+# Thêm cấu hình flutter_native_splash ở đây (ngoài phần flutter)
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/Fintrack.png
+  android: true
+  ios: true
+  web: false
+  android_12:
+    image: assets/images/Fintrack.png
+    icon_background_color: "#ffffff"
+  fullscreen: true
+  android_gravity: center
+  ios_content_mode: center
+
+# Thêm cấu hình flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icon_white_final.png"  # Đảm bảo file icon có kích thước 1024x1024
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  remove_alpha_ios: true
+  adaptive_icon_background: "#ffffff"  # Background cho adaptive icon trên Android
+  adaptive_icon_foreground: "assets/images/icon_white_final.png"  # Foreground cho adaptive icon
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false

@@ -26,8 +26,8 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
+        name TEXT,
+        email TEXT UNIQUE,
         premium INTEGER DEFAULT 0
       )
     ''');
@@ -37,7 +37,6 @@ class DatabaseHelper {
       CREATE TABLE IF NOT EXISTS books (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        description TEXT,
         balance REAL DEFAULT 0,
         user_id INTEGER,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -45,16 +44,26 @@ class DatabaseHelper {
       )
     ''');
 
+    // Bảng Wallets
+    await db.execute("""
+    CREATE TABLE IF NOT EXISTS wallets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nameBalance TEXT NOT NULL,
+        walletBalance REAL DEFAULT 0,
+        type Text,
+        user_id INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES books (id) ON DELETE CASCADE
+      )
+    """);
+
     // Bảng Categories
     await db.execute('''
       CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         icon TEXT,
-        color TEXT,
-        type TEXT CHECK(type IN ('income', 'expense')),
-        user_id INTEGER,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        type TEXT CHECK(type IN ('income', 'expense'))
       )
     ''');
 
@@ -75,6 +84,84 @@ class DatabaseHelper {
       )
     ''');
 
+    // Bảng Periodic Invoices
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS periodic_invoices (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        amount REAL NOT NULL,
+        start_date TEXT NOT NULL,
+        frequency TEXT NOT NULL,
+        category TEXT NOT NULL,
+        description TEXT,
+        is_paid INTEGER NOT NULL,
+        last_paid_date TEXT,
+        next_due_date TEXT,
+        book_id INTEGER,
+        FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE SET NULL
+      )
+    ''');
+
+    // Bảng Notifications
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        time TEXT NOT NULL,
+        is_read INTEGER NOT NULL,
+        invoice_id TEXT,
+        invoice_due_date TEXT,
+        goal_id TEXT
+      )
+    ''');
+
+    // Bảng Savings Goals
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS savings_goals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      target_amount REAL NOT NULL,
+      current_amount REAL DEFAULT 0,
+      type TEXT CHECK(type IN ('flexible', 'periodic')) NOT NULL,
+      periodic_amount REAL,                         -- Chỉ dùng nếu type = periodic
+      periodic_frequency TEXT CHECK(periodic_frequency IN ('daily', 'weekly', 'monthly')),
+      started_date TIMESTAMP,                       -- Ngày bắt đầu tiết kiệm
+      target_date TIMESTAMP,                        -- Ngày mong muốn đạt mục tiêu
+      next_reminder_date TIMESTAMP,                -- Dùng để nhắc lần tiếp theo
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      is_active INTEGER DEFAULT 1
+    )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS savings_transactions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          goal_id INTEGER NOT NULL,
+          amount REAL NOT NULL,
+          note TEXT,
+          saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (goal_id) REFERENCES savings_goals(id) ON DELETE CASCADE
+      );
+    ''');
+
+    // Bảng Recurring Bills
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS recurring_bills (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        amount REAL NOT NULL,
+        day_of_month INTEGER NOT NULL,
+        category TEXT NOT NULL,
+        note TEXT,
+        is_active INTEGER DEFAULT 1,
+        book_id INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_paid_date TIMESTAMP,
+        FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
+      )
+    ''');
+
     // Thêm một số category mặc định
     await _insertDefaultCategories(db);
   }
@@ -87,6 +174,7 @@ class DatabaseHelper {
       {'name': 'Giải trí', 'type': 'expense', 'icon': '🎮'},
       {'name': 'Học tập', 'type': 'expense', 'icon': '📚'},
       {'name': 'Làm đẹp', 'type': 'expense', 'icon': '💅'},
+      {'name': 'Sinh hoạt', 'type': 'expense', 'icon': '🏠'},
       {'name': 'Lương', 'type': 'income', 'icon': '💰'},
       {'name': 'Thưởng', 'type': 'income', 'icon': '🎁'},
       {'name': 'Đầu tư', 'type': 'income', 'icon': '📈'},
@@ -97,7 +185,6 @@ class DatabaseHelper {
     }
   }
 
-  // CRUD operations cho User
   Future<int> insertUser(Map<String, dynamic> user) async {
     final db = await database;
     return await db.insert('users', user);
@@ -119,10 +206,26 @@ class DatabaseHelper {
     return await db.query('books', where: 'user_id = ?', whereArgs: [userId]);
   }
 
+  // CRUD operations cho Wallets
+  Future<int> insertWallet(Map<String, dynamic> wallet) async {
+    final db = await database;
+    return await db.insert('wallets', wallet);
+  }
+
+  Future<List<Map<String, dynamic>>> getWalletByUser(int userId) async {
+    final db = await database;
+    return await db.query('wallets', where: 'user_id = ?', whereArgs: [userId]);
+  }
+
   // CRUD operations cho Categories
   Future<List<Map<String, dynamic>>> getCategoriesByType(String type) async {
     final db = await database;
     return await db.query('categories', where: 'type = ?', whereArgs: [type]);
+  }
+
+  Future<List<Map<String, dynamic>>> getCategoriesById(int id) async {
+    final db = await database;
+    return await db.query('categories', where: 'id = ?', whereArgs: [id]);
   }
 
   // CRUD operations cho Transactions
@@ -145,21 +248,8 @@ class DatabaseHelper {
   Future<void> showAllTables() async {
     final db = await database;
     final logger = Logger('DatabaseHelper');
-    
+
     logger.info('\n=== DATABASE TABLES ===\n');
-
-    // Hiển thị bảng Users
-    logger.info('📊 USERS TABLE:');
-    logger.info('----------------');
-    final users = await db.query('users');
-    for (var user in users) {
-      logger.info('ID: ${user['id']}');
-      logger.info('Name: ${user['name']}');
-      logger.info('Email: ${user['email']}');
-      logger.info('Premium: ${user['premium'] == 1 ? 'Yes' : 'No'}');
-      logger.info('----------------');
-    }
-
     // Hiển thị bảng Books
     logger.info('\n📚 BOOKS TABLE:');
     logger.info('----------------');
@@ -182,9 +272,7 @@ class DatabaseHelper {
       logger.info('ID: ${category['id']}');
       logger.info('Name: ${category['name']}');
       logger.info('Icon: ${category['icon']}');
-      logger.info('Color: ${category['color']}');
       logger.info('Type: ${category['type']}');
-      logger.info('User ID: ${category['user_id']}');
       logger.info('----------------');
     }
 
@@ -204,6 +292,53 @@ class DatabaseHelper {
       logger.info('----------------');
     }
 
+    // Hiển thị bảng Notifications
+    logger.info('\n🔔 NOTIFICATIONS TABLE:');
+    logger.info('----------------');
+    final notifications = await db.query('notifications');
+    for (var notification in notifications) {
+      logger.info('ID: ${notification['id']}');
+      logger.info('Title: ${notification['title']}');
+      logger.info('Message: ${notification['message']}');
+      logger.info('Time: ${notification['time']}');
+      logger.info('Is Read: ${notification['is_read'] == 1 ? 'Yes' : 'No'}');
+      logger.info('Invoice ID: ${notification['invoice_id']}');
+      logger.info('Invoice Due Date: ${notification['invoice_due_date']}');
+      logger.info('Goal ID: ${notification['goal_id']}');
+      logger.info('----------------');
+    }
+
     logger.info('\n=== END OF DATABASE ===\n');
+  }
+
+  Future<List<Map<String, dynamic>>> getCategories() async {
+    final db = await database;
+    return await db.query('categories');
+  }
+
+  // Lấy toàn bộ danh sách mục tiêu tiết kiệm
+  Future<List<Map<String, dynamic>>> getAllSavingsGoals() async {
+    final db = await database;
+    return await db.query('savings_goals', where: 'is_active = 1');
+  }
+
+  // Lấy toàn bộ danh sách mục tiêu tiết kiệm
+  Future<List<Map<String, dynamic>>> getAllNotifications() async {
+    final db = await database;
+    return await db.query('notifications');
+  }
+
+  // Cập nhật ngày nhắc nhở tiếp theo cho mục tiêu tiết kiệm
+  Future<int> updateSavingsGoalNextReminder(
+      int id, DateTime nextReminderDate) async {
+    final db = await database;
+    return await db.update(
+      'savings_goals',
+      {
+        'next_reminder_date': nextReminderDate.toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }
