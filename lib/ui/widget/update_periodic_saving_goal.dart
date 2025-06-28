@@ -7,6 +7,7 @@ import '../../../providers/savings_goal_provider.dart';
 import '../../../data/models/savings_goal.dart';
 import '../../../providers/currency_provider.dart';
 import 'add_flexible_saving_goal.dart';
+import '../../../utils/localization.dart';
 
 class UpdatePeriodicSavingGoalDialog extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -58,6 +59,7 @@ class _UpdatePeriodicSavingGoalDialogState
   Widget build(BuildContext context) {
     final currencyType = ref.watch(currencyProvider);
     final savingsGoalAsync = ref.watch(savingsGoalsProvider);
+    final l10n = AppLocalizations.of(context);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -90,7 +92,7 @@ class _UpdatePeriodicSavingGoalDialogState
               ),
               Center(
                 child: Text(
-                  'Chỉnh sửa sổ tiết kiệm định kỳ',
+                  l10n.editPeriodicSavingsGoal,
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
@@ -105,9 +107,9 @@ class _UpdatePeriodicSavingGoalDialogState
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                        labelText: 'Tên sổ tiết kiệm',
+                        labelText: l10n.savingsBookName,
                         labelStyle: TextStyle(
-                          color: Colors.black,
+                          color: const Color.fromARGB(255, 0, 0, 0),
                           fontSize: 14.sp,
                         ),
                         border: OutlineInputBorder(
@@ -120,8 +122,8 @@ class _UpdatePeriodicSavingGoalDialogState
                             width: 2.w,
                           ),
                         ),
-                        prefixIcon:
-                            Icon(Icons.savings, color: widget.themeColor, size: 24.sp),
+                        prefixIcon: Icon(Icons.savings,
+                            color: widget.themeColor, size: 24.sp),
                       ),
                       validator: (value) =>
                           value == null || value.isEmpty ? 'Nhập tên' : null,
@@ -130,7 +132,7 @@ class _UpdatePeriodicSavingGoalDialogState
                     TextFormField(
                       controller: _targetAmountController,
                       decoration: InputDecoration(
-                        labelText: 'Số tiền mục tiêu',
+                        labelText: l10n.targetAmount,
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 14.sp,
@@ -145,8 +147,8 @@ class _UpdatePeriodicSavingGoalDialogState
                             width: 2.w,
                           ),
                         ),
-                        prefixIcon:
-                            Icon(Icons.attach_money, color: widget.themeColor, size: 24.sp),
+                        prefixIcon: Icon(Icons.attach_money,
+                            color: widget.themeColor, size: 24.sp),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
@@ -177,7 +179,7 @@ class _UpdatePeriodicSavingGoalDialogState
                           child: TextFormField(
                             controller: _periodicAmountController,
                             decoration: InputDecoration(
-                              labelText: 'Số tiền định kỳ',
+                              labelText: l10n.periodicAmount,
                               labelStyle: TextStyle(
                                 color: Colors.black,
                                 fontSize: 14.sp,
@@ -192,8 +194,8 @@ class _UpdatePeriodicSavingGoalDialogState
                                   width: 2.w,
                                 ),
                               ),
-                              prefixIcon:
-                                  Icon(Icons.repeat, color: widget.themeColor, size: 24.sp),
+                              prefixIcon: Icon(Icons.repeat,
+                                  color: widget.themeColor, size: 24.sp),
                             ),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
@@ -321,8 +323,8 @@ class _UpdatePeriodicSavingGoalDialogState
                             child: InputDecorator(
                               decoration: InputDecoration(
                                 labelText: 'Tần suất',
-                                labelStyle:
-                                    TextStyle(color: Colors.black, fontSize: 14.sp),
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
@@ -335,8 +337,8 @@ class _UpdatePeriodicSavingGoalDialogState
                                 ),
                                 prefixIcon: Icon(Icons.schedule,
                                     color: widget.themeColor, size: 24.sp),
-                                suffixIcon:
-                                    Icon(Icons.keyboard_arrow_down, size: 20.sp),
+                                suffixIcon: Icon(Icons.keyboard_arrow_down,
+                                    size: 20.sp),
                               ),
                               child: Text(
                                 _periodicFrequency == null
@@ -378,8 +380,8 @@ class _UpdatePeriodicSavingGoalDialogState
                             child: InputDecorator(
                               decoration: InputDecoration(
                                 labelText: 'Ngày bắt đầu',
-                                labelStyle:
-                                    TextStyle(color: Colors.black, fontSize: 14.sp),
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
@@ -429,8 +431,8 @@ class _UpdatePeriodicSavingGoalDialogState
                             child: InputDecorator(
                               decoration: InputDecoration(
                                 labelText: 'Ngày mục tiêu',
-                                labelStyle:
-                                    TextStyle(color: Colors.black, fontSize: 14.sp),
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
@@ -441,8 +443,8 @@ class _UpdatePeriodicSavingGoalDialogState
                                     width: 2.w,
                                   ),
                                 ),
-                                prefixIcon:
-                                    Icon(Icons.flag, color: widget.themeColor, size: 24.sp),
+                                prefixIcon: Icon(Icons.flag,
+                                    color: widget.themeColor, size: 24.sp),
                               ),
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
@@ -697,7 +699,8 @@ class _UpdatePeriodicSavingGoalDialogState
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Đã xóa sổ tiết kiệm!', style: TextStyle(fontSize: 14.sp)),
+                      content: Text('Đã xóa sổ tiết kiệm!',
+                          style: TextStyle(fontSize: 14.sp)),
                       backgroundColor: Colors.red,
                     ),
                   );

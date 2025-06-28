@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../providers/savings_goal_provider.dart';
 import '../../../data/models/savings_goal.dart';
 import '../../../providers/currency_provider.dart';
+import '../../../utils/localization.dart';
 import 'add_flexible_saving_goal.dart';
 
 class UpdateFlexibleSavingGoalDialog extends ConsumerStatefulWidget {
@@ -51,6 +52,7 @@ class _UpdateFlexibleSavingGoalDialogState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final currencyType = ref.watch(currencyProvider);
     final savingsGoalAsync = ref.watch(savingsGoalsProvider);
 
@@ -85,7 +87,7 @@ class _UpdateFlexibleSavingGoalDialogState
               ),
               Center(
                 child: Text(
-                  'Chỉnh sửa sổ tiết kiệm',
+                  l10n.editSavingsGoal,
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
@@ -100,7 +102,7 @@ class _UpdateFlexibleSavingGoalDialogState
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                        labelText: 'Tên sổ tiết kiệm',
+                        labelText: l10n.savingsBookName,
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 14.sp,
@@ -115,12 +117,13 @@ class _UpdateFlexibleSavingGoalDialogState
                             width: 2.w,
                           ),
                         ),
-                        prefixIcon:
-                            Icon(Icons.savings, color: widget.themeColor, size: 24.sp),
+                        prefixIcon: Icon(Icons.savings,
+                            color: widget.themeColor, size: 24.sp),
                       ),
                       style: TextStyle(fontSize: 16.sp),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Nhập tên' : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? l10n.enterName
+                          : null,
                     ),
                     SizedBox(height: 16.h),
                     TextFormField(
@@ -141,8 +144,8 @@ class _UpdateFlexibleSavingGoalDialogState
                             width: 2.w,
                           ),
                         ),
-                        prefixIcon:
-                            Icon(Icons.attach_money, color: widget.themeColor, size: 24.sp),
+                        prefixIcon: Icon(Icons.attach_money,
+                            color: widget.themeColor, size: 24.sp),
                       ),
                       style: TextStyle(fontSize: 16.sp),
                       keyboardType: TextInputType.number,
@@ -192,8 +195,8 @@ class _UpdateFlexibleSavingGoalDialogState
                             child: InputDecorator(
                               decoration: InputDecoration(
                                 labelText: 'Ngày bắt đầu',
-                                labelStyle:
-                                    TextStyle(color: Colors.black, fontSize: 14.sp),
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
@@ -243,8 +246,8 @@ class _UpdateFlexibleSavingGoalDialogState
                             child: InputDecorator(
                               decoration: InputDecoration(
                                 labelText: 'Ngày mục tiêu',
-                                labelStyle:
-                                    TextStyle(color: Colors.black, fontSize: 14.sp),
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
@@ -255,8 +258,8 @@ class _UpdateFlexibleSavingGoalDialogState
                                     width: 2.w,
                                   ),
                                 ),
-                                prefixIcon:
-                                    Icon(Icons.flag, color: widget.themeColor, size: 24.sp),
+                                prefixIcon: Icon(Icons.flag,
+                                    color: widget.themeColor, size: 24.sp),
                               ),
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
@@ -522,7 +525,8 @@ class _UpdateFlexibleSavingGoalDialogState
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Đã xóa sổ tiết kiệm!', style: TextStyle(fontSize: 14.sp)),
+                      content: Text('Đã xóa sổ tiết kiệm!',
+                          style: TextStyle(fontSize: 14.sp)),
                       backgroundColor: Colors.red,
                     ),
                   );

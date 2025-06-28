@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/book.dart';
 import '../../providers/book_provider.dart';
+import '../../utils/localization.dart';
 
 class CreateBookModal extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -43,21 +44,21 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                 borderRadius: BorderRadius.circular(20.r),
               ),
               title: Text(
-                'Tên sổ đã tồn tại',
+                AppLocalizations.of(context).bookNameExists,
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               content: Text(
-                'Vui lòng chọn một tên khác cho sổ chi tiêu của bạn.',
+                AppLocalizations.of(context).pleaseChooseDifferentName,
                 style: TextStyle(fontSize: 16.sp),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    'Đóng',
+                    AppLocalizations.of(context).close,
                     style: TextStyle(
                       color: widget.themeColor,
                       fontSize: 16.sp,
@@ -86,7 +87,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Tạo sổ chi tiêu thành công',
+              AppLocalizations.of(context).updateSuccess,
               style: TextStyle(fontSize: 15.sp),
             ),
             backgroundColor: const Color(0xFF4CAF50),
@@ -97,7 +98,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Đã xảy ra lỗi khi tạo sổ. Vui lòng thử lại.',
+              AppLocalizations.of(context).updateBookError,
               style: TextStyle(fontSize: 15.sp),
             ),
             backgroundColor: Colors.red,
@@ -134,7 +135,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                   ),
                 ),
                 Text(
-                  'Tạo sổ chi tiêu mới',
+                  AppLocalizations.of(context).createBook,
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
@@ -149,7 +150,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                       TextFormField(
                         controller: _bookNameController,
                         decoration: InputDecoration(
-                          labelText: 'Tên sổ chi tiêu',
+                          labelText: AppLocalizations.of(context).newBookName,
                           labelStyle: TextStyle(
                             color: widget.themeColor,
                             fontSize: 14.sp,
@@ -179,7 +180,8 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Vui lòng nhập tên sổ chi tiêu';
+                            return AppLocalizations.of(context)
+                                .pleaseEnterBookName;
                           }
                           // if (value.trim().length < 3) {
                           //   return 'Tên sổ phải có ít nhất 3 ký tự';
@@ -204,7 +206,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                       ),
                     ),
                     child: Text(
-                      'Tạo sổ',
+                      AppLocalizations.of(context).createBook,
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,

@@ -7,6 +7,7 @@ import '../../../data/models/savings_transaction.dart';
 import '../../../providers/savings_goal_provider.dart';
 import '../../../providers/savings_transaction_provider.dart';
 import '../../../providers/currency_provider.dart';
+import '../../../utils/localization.dart';
 import '../../widget/widget_barrel.dart';
 
 class DepositSavingsScreen extends ConsumerStatefulWidget {
@@ -53,7 +54,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
         elevation: 0,
         title: widget.type == 'flexible'
             ? Text(
-                'Sổ tiết kiệm linh hoạt',
+                AppLocalizations.of(context).flexibleSavingsBook,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20.sp,
@@ -61,7 +62,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                 ),
               )
             : Text(
-                'Sổ tiết kiệm định kỳ',
+                AppLocalizations.of(context).periodicSavingsBook,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20.sp,
@@ -134,19 +135,19 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _buildInfoCard(
-                          'Mục tiêu',
+                          AppLocalizations.of(context).target,
                           formatCurrency(
                               currentGoal.targetAmount, currencyType),
                           Icons.flag,
                         ),
                         _buildInfoCard(
-                          'Đã tiết kiệm',
+                          AppLocalizations.of(context).saved,
                           formatCurrency(
                               currentGoal.currentAmount, currencyType),
                           Icons.account_balance_wallet,
                         ),
                         _buildInfoCard(
-                          'Còn lại',
+                          AppLocalizations.of(context).remaining,
                           formatCurrency(
                               currentGoal.remainingAmount, currencyType),
                           Icons.trending_up,
@@ -166,7 +167,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Tiến độ',
+                          AppLocalizations.of(context).progress,
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
@@ -213,7 +214,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                                     size: 18.sp, color: widget.themeColor),
                                 SizedBox(width: 8.w),
                                 Text(
-                                  'Ngày mục tiêu:',
+                                  AppLocalizations.of(context).targetDateLabel,
                                   style: TextStyle(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
@@ -244,7 +245,8 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                                     size: 18.sp, color: widget.themeColor),
                                 SizedBox(width: 8.w),
                                 Text(
-                                  'Nạp định kỳ:',
+                                  AppLocalizations.of(context)
+                                      .periodicDepositLabel,
                                   style: TextStyle(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
@@ -289,10 +291,9 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
               // Lịch sử nạp tiền
               Container(
                 width: double.infinity,
-                padding:
-                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 child: Text(
-                  'Lịch sử nạp tiền',
+                  AppLocalizations.of(context).depositHistory,
                   style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.normal,
@@ -304,7 +305,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                 child: (savingsTransactionsAsync.isEmpty)
                     ? Center(
                         child: Text(
-                          'Chưa có lịch sử nạp tiền',
+                          AppLocalizations.of(context).noDepositHistory,
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 16.sp,
@@ -405,7 +406,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                           icon: Icon(Icons.check_circle,
                               color: Colors.white, size: 24.sp),
                           label: Text(
-                            'Đã hoàn thành',
+                            AppLocalizations.of(context).completed,
                             style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
@@ -433,7 +434,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                             elevation: 2,
                           ),
                           child: Text(
-                            'Nạp tiền',
+                            AppLocalizations.of(context).continueDeposit,
                             style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
@@ -448,7 +449,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(
-          child: Text('Đã xảy ra lỗi: $err'),
+          child: Text('${AppLocalizations.of(context).error}: $err'),
         ),
       ),
     );
@@ -529,8 +530,8 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
           context: context,
           barrierDismissible: false,
           builder: (ctx) => Dialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.r)),
             backgroundColor: Colors.white,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
@@ -549,7 +550,7 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                   ),
                   SizedBox(height: 18.h),
                   Text(
-                    'Nạp trước kỳ tiếp theo?',
+                    AppLocalizations.of(context).depositBeforeNextPeriod,
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
@@ -558,7 +559,8 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                   ),
                   SizedBox(height: 12.h),
                   Text(
-                    'Bạn đang nạp trước kỳ tiếp theo:',
+                    AppLocalizations.of(context)
+                        .youAreDepositingBeforeNextPeriod,
                     style: TextStyle(fontSize: 15.sp, color: Colors.black54),
                   ),
                   SizedBox(height: 4.h),
@@ -581,9 +583,10 @@ class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
                                 borderRadius: BorderRadius.circular(12.r)),
                             padding: EdgeInsets.symmetric(vertical: 14.h),
                           ),
-                          child: Text('Huỷ',
+                          child: Text(AppLocalizations.of(context).cancel,
                               style: TextStyle(
-                                  fontSize: 16.sp, fontWeight: FontWeight.w600)),
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600)),
                         ),
                       ),
                       SizedBox(width: 16.w),
@@ -718,7 +721,8 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
               Center(
                 child: Text(
                   'Bỏ tiền tiết kiệm',
-                  style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+                  style:
+                      TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(height: 20.h),

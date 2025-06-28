@@ -6,6 +6,7 @@ import 'charts.dart';
 import 'more.dart';
 import 'extra_features_screen.dart';
 import '../providers/theme_provider.dart';
+import '../utils/localization.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -49,6 +50,7 @@ class _MyHomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final themeColor = ref.watch(themeColorProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -75,19 +77,19 @@ class _MyHomePageState extends ConsumerState<HomePage> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.book_outlined,
                     size: 25.w), // Sử dụng .w cho size
-                label: 'Sổ',
+                label: l10n.books,
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.analytics_outlined, size: 25.w),
-                label: 'Phân tích',
+                label: l10n.charts,
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.more_horiz_outlined, size: 25.w),
-                label: 'Tiện ích',
+                label: l10n.more,
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings_outlined, size: 25.w),
-                label: 'Cài đặt',
+                label: l10n.settings,
               ),
             ],
             currentIndex: _selectedIndex,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/models_barrel.dart';
 import '../../providers/providers_barrel.dart';
+import '../../utils/localization.dart';
 import '../widget/type_button.dart';
 import '../widget/number_pad.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -41,6 +42,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final currency = ref.watch(currencyProvider);
 
     final categories =
@@ -73,7 +75,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Thêm giao dịch',
+                        l10n.addTransaction,
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
@@ -83,7 +85,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                       Row(
                         children: [
                           TypeButton(
-                            text: 'Chi tiêu',
+                            text: l10n.expense,
                             isSelected: _isExpense,
                             onTap: () {
                               setState(() {
@@ -95,7 +97,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                           ),
                           SizedBox(width: 8.w),
                           TypeButton(
-                            text: 'Thu nhập',
+                            text: l10n.income,
                             isSelected: !_isExpense,
                             onTap: () {
                               setState(() {
@@ -112,7 +114,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                   SizedBox(height: 18.h),
                   TextField(
                     decoration: InputDecoration(
-                      labelText: 'Ghi chú',
+                      labelText: l10n.note,
                       labelStyle: const TextStyle(color: Colors.black),
                       prefixIcon: Icon(
                         Icons.note,
@@ -196,7 +198,9 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                                 ),
                               ),
                               Text(
-                                'Chọn danh mục ${_isExpense ? 'chi tiêu' : 'thu nhập'}',
+                                _isExpense
+                                    ? l10n.selectExpenseCategory
+                                    : l10n.selectIncomeCategory,
                                 style: TextStyle(
                                   fontSize: 18.sp,
                                   fontWeight: FontWeight.bold,
@@ -271,7 +275,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                     },
                     child: InputDecorator(
                       decoration: InputDecoration(
-                        labelText: 'Danh mục',
+                        labelText: l10n.category,
                         labelStyle: TextStyle(color: widget.themeColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.r),
@@ -287,7 +291,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                       ),
                       child: _selectedCategory == null
                           ? Text(
-                              'Chọn danh mục',
+                              l10n.chooseCategory,
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 16.sp,
@@ -353,7 +357,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                         elevation: 0,
                       ),
                       child: Text(
-                        'Thêm',
+                        l10n.add,
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../widget/widget_barrel.dart';
 import 'deposit_savings_screen.dart';
+import '../../../utils/localization.dart';
 
 class FlexibleSavingsScreen extends ConsumerWidget {
   const FlexibleSavingsScreen({super.key});
@@ -20,7 +21,7 @@ class FlexibleSavingsScreen extends ConsumerWidget {
           backgroundColor: themeColor,
           elevation: 0,
           title: Text(
-            'Tiết kiệm linh hoạt',
+            AppLocalizations.of(context).flexibleSavings,
             style: TextStyle(
               color: Colors.white,
               fontSize: 20.sp,
@@ -59,8 +60,9 @@ class FlexibleSavingsScreen extends ConsumerWidget {
                           ),
                           SizedBox(height: 16.h),
                           Text(
-                            'Không có sổ tiết kiệm linh hoạt nào',
-                            style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                            AppLocalizations.of(context).noFlexibleSavings,
+                            style:
+                                TextStyle(fontSize: 16.sp, color: Colors.grey),
                           ),
                         ],
                       ),
@@ -84,8 +86,8 @@ class FlexibleSavingsScreen extends ConsumerWidget {
 
                             if (isOverdue || isClosed) {
                               String message = isOverdue
-                                  ? 'Sổ tiết kiệm này đã quá hạn.'
-                                  : 'Sổ tiết kiệm này đã được đóng.';
+                                  ? AppLocalizations.of(context).savingsOverdue
+                                  : AppLocalizations.of(context).savingsClosed;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
@@ -114,7 +116,8 @@ class FlexibleSavingsScreen extends ConsumerWidget {
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) => Center(
-                  child: Text('Đã xảy ra lỗi: $err', style: TextStyle(fontSize: 14.sp)),
+                  child: Text('Đã xảy ra lỗi: $err',
+                      style: TextStyle(fontSize: 14.sp)),
                 ),
               ),
             )),
@@ -146,7 +149,7 @@ class FlexibleSavingsScreen extends ConsumerWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Tạo tiết kiệm mới',
+                    AppLocalizations.of(context).createNewSavings,
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
@@ -172,12 +175,13 @@ class _AddAmountDialogState extends State<_AddAmountDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Nhập số tiền muốn nộp', style: TextStyle(fontSize: 18.sp)),
+      title: Text(AppLocalizations.of(context).enterAmountToDeposit,
+          style: TextStyle(fontSize: 18.sp)),
       content: TextField(
         controller: _controller,
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
-          hintText: 'Số tiền',
+          hintText: AppLocalizations.of(context).amountHint,
           hintStyle: TextStyle(fontSize: 14.sp),
         ),
         style: TextStyle(fontSize: 16.sp),
@@ -185,14 +189,16 @@ class _AddAmountDialogState extends State<_AddAmountDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Hủy', style: TextStyle(fontSize: 14.sp)),
+          child: Text(AppLocalizations.of(context).cancel,
+              style: TextStyle(fontSize: 14.sp)),
         ),
         ElevatedButton(
           onPressed: () {
             final value = double.tryParse(_controller.text);
             Navigator.pop(context, value);
           },
-          child: Text('Xác nhận', style: TextStyle(fontSize: 14.sp)),
+          child: Text(AppLocalizations.of(context).confirm,
+              style: TextStyle(fontSize: 14.sp)),
         ),
       ],
     );

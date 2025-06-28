@@ -6,6 +6,7 @@ import '../../../data/models/savings_goal.dart';
 import '../../widget/widget_barrel.dart';
 import './flexible_savings.dart';
 import './periodic_saving.dart';
+import '../../../utils/localization.dart';
 
 class SavingsGoalsScreen extends ConsumerStatefulWidget {
   const SavingsGoalsScreen({super.key});
@@ -41,7 +42,7 @@ class _SavingsGoalsScreenState extends ConsumerState<SavingsGoalsScreen>
         backgroundColor: themeColor,
         elevation: 0,
         title: Text(
-          'Mục tiêu tiết kiệm',
+          AppLocalizations.of(context).savingsGoalsTitle,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20.sp,
@@ -116,7 +117,7 @@ class _SavingsGoalsScreenState extends ConsumerState<SavingsGoalsScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Tiết kiệm linh hoạt',
+                                  AppLocalizations.of(context).flexibleSavings,
                                   style: TextStyle(
                                     fontSize: 17.sp,
                                     fontWeight: FontWeight.w600,
@@ -125,7 +126,8 @@ class _SavingsGoalsScreenState extends ConsumerState<SavingsGoalsScreen>
                                 ),
                                 SizedBox(height: 4.h),
                                 Text(
-                                  'Không có kế hoạch, gửi tiền theo tâm trạng của bạn',
+                                  AppLocalizations.of(context)
+                                      .flexibleSavingsDescription,
                                   style: TextStyle(
                                     fontSize: 14.sp,
                                     color: Colors.grey[600],
@@ -196,7 +198,7 @@ class _SavingsGoalsScreenState extends ConsumerState<SavingsGoalsScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Tiết kiệm định kỳ',
+                                  AppLocalizations.of(context).periodicSavings,
                                   style: TextStyle(
                                     fontSize: 17.sp,
                                     fontWeight: FontWeight.w600,
@@ -205,7 +207,8 @@ class _SavingsGoalsScreenState extends ConsumerState<SavingsGoalsScreen>
                                 ),
                                 SizedBox(height: 4.h),
                                 Text(
-                                  'Gửi tiền theo định kỳ',
+                                  AppLocalizations.of(context)
+                                      .periodicSavingsDescription,
                                   style: TextStyle(
                                     fontSize: 14.sp,
                                     color: Colors.grey[600],

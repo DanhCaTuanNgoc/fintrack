@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../data/models/savings_goal.dart';
+import '../../../utils/localization.dart';
 import './add_flexible_saving_goal.dart';
 
 class AddPeriodicSavingGoalDialog extends ConsumerStatefulWidget {
@@ -35,6 +36,7 @@ class _AddPeriodicSavingGoalDialogState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final currencyType = ref.watch(currencyProvider);
     final savingsGoal = ref.watch(savingsGoalsProvider);
 
@@ -69,8 +71,9 @@ class _AddPeriodicSavingGoalDialogState
               ),
               Center(
                 child: Text(
-                  'Tạo sổ tiết kiệm định kỳ',
-                  style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+                  l10n.createPeriodicSavingsGoal,
+                  style:
+                      TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(height: 26.h),
@@ -81,7 +84,7 @@ class _AddPeriodicSavingGoalDialogState
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                        labelText: 'Tên sổ tiết kiệm',
+                        labelText: l10n.savingsBookName,
                         labelStyle: TextStyle(
                           color: const Color.fromARGB(255, 0, 0, 0),
                           fontSize: 14.sp,
@@ -96,7 +99,8 @@ class _AddPeriodicSavingGoalDialogState
                             width: 2.w,
                           ),
                         ),
-                        prefixIcon: Icon(Icons.book, color: widget.themeColor, size: 24.sp),
+                        prefixIcon: Icon(Icons.book,
+                            color: widget.themeColor, size: 24.sp),
                       ),
                       validator: (value) =>
                           value == null || value.isEmpty ? 'Nhập tên' : null,
@@ -105,7 +109,7 @@ class _AddPeriodicSavingGoalDialogState
                     TextFormField(
                       controller: _targetAmountController,
                       decoration: InputDecoration(
-                        labelText: 'Số tiền mục tiêu',
+                        labelText: l10n.targetAmount,
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 14.sp,
@@ -120,8 +124,8 @@ class _AddPeriodicSavingGoalDialogState
                             width: 2.w,
                           ),
                         ),
-                        prefixIcon:
-                            Icon(Icons.attach_money, color: widget.themeColor, size: 24.sp),
+                        prefixIcon: Icon(Icons.attach_money,
+                            color: widget.themeColor, size: 24.sp),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
@@ -140,7 +144,7 @@ class _AddPeriodicSavingGoalDialogState
                           child: TextFormField(
                             controller: _periodicAmountController,
                             decoration: InputDecoration(
-                              labelText: 'Nạp định kỳ',
+                              labelText: l10n.periodicDeposit,
                               labelStyle: TextStyle(
                                 color: Colors.black,
                                 fontSize: 14.sp,
@@ -155,8 +159,8 @@ class _AddPeriodicSavingGoalDialogState
                                   width: 2.w,
                                 ),
                               ),
-                              prefixIcon:
-                                  Icon(Icons.repeat, color: widget.themeColor, size: 24.sp),
+                              prefixIcon: Icon(Icons.repeat,
+                                  color: widget.themeColor, size: 24.sp),
                             ),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
@@ -282,9 +286,9 @@ class _AddPeriodicSavingGoalDialogState
                             },
                             child: InputDecorator(
                               decoration: InputDecoration(
-                                labelText: 'Tần suất nhắc nhở',
-                                labelStyle:
-                                    TextStyle(color: Colors.black, fontSize: 14.sp),
+                                labelText: l10n.reminderFrequency,
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
@@ -297,8 +301,8 @@ class _AddPeriodicSavingGoalDialogState
                                 ),
                                 prefixIcon: Icon(Icons.schedule,
                                     color: widget.themeColor, size: 24.sp),
-                                suffixIcon:
-                                    Icon(Icons.keyboard_arrow_down, size: 20.sp),
+                                suffixIcon: Icon(Icons.keyboard_arrow_down,
+                                    size: 20.sp),
                               ),
                               child: Text(
                                 _periodicFrequency == null
@@ -339,9 +343,9 @@ class _AddPeriodicSavingGoalDialogState
                             },
                             child: InputDecorator(
                               decoration: InputDecoration(
-                                labelText: 'Ngày bắt đầu',
-                                labelStyle:
-                                    TextStyle(color: Colors.black, fontSize: 14.sp),
+                                labelText: l10n.startDate,
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
@@ -360,7 +364,7 @@ class _AddPeriodicSavingGoalDialogState
                                     vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _startedDate == null
-                                      ? 'Chọn ngày'
+                                      ? l10n.chooseDate
                                       : '${_startedDate!.day}/${_startedDate!.month}/${_startedDate!.year}',
                                   style: TextStyle(
                                     color: _startedDate == null
@@ -390,9 +394,9 @@ class _AddPeriodicSavingGoalDialogState
                             },
                             child: InputDecorator(
                               decoration: InputDecoration(
-                                labelText: 'Ngày mục tiêu',
-                                labelStyle:
-                                    TextStyle(color: Colors.black, fontSize: 14.sp),
+                                labelText: l10n.targetDate,
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
@@ -403,15 +407,15 @@ class _AddPeriodicSavingGoalDialogState
                                     width: 2.w,
                                   ),
                                 ),
-                                prefixIcon:
-                                    Icon(Icons.flag, color: widget.themeColor, size: 24.sp),
+                                prefixIcon: Icon(Icons.flag,
+                                    color: widget.themeColor, size: 24.sp),
                               ),
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _targetDate == null
-                                      ? 'Chọn ngày'
+                                      ? l10n.chooseDate
                                       : '${_targetDate!.day}/${_targetDate!.month}/${_targetDate!.year}',
                                   style: TextStyle(
                                     color: _targetDate == null
@@ -456,15 +460,15 @@ class _AddPeriodicSavingGoalDialogState
 
                           if (startedDate == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Vui lòng chọn ngày bắt đầu')),
+                              SnackBar(
+                                  content: Text(l10n.pleaseSelectStartDate)),
                             );
                             return;
                           }
                           if (periodicFrequency == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Vui lòng chọn tần suất')),
+                              SnackBar(
+                                  content: Text(l10n.pleaseSelectFrequency)),
                             );
                             return;
                           }
@@ -487,7 +491,7 @@ class _AddPeriodicSavingGoalDialogState
                           Navigator.pop(context);
                         }
                       },
-                      child: Text('Tạo sổ',
+                      child: Text(l10n.createBook,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18.sp)),
                     ),

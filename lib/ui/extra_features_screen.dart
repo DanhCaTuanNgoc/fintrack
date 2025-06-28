@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/providers_barrel.dart';
+import '../utils/localization.dart';
 import './widget/widget_barrel.dart';
 import 'extraFeatures/saving/savings_goals_screen.dart';
 import 'extraFeatures/receipt_long.dart';
@@ -29,6 +30,8 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
   @override
   Widget build(BuildContext context) {
     final themeColor = ref.watch(themeColorProvider);
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -38,7 +41,7 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Tiện ích bổ sung',
+              l10n.extraFeatures,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 22.sp,
@@ -112,7 +115,7 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Mục tiêu tiết kiệm',
+                                    l10n.savingsGoals,
                                     style: TextStyle(
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
@@ -121,7 +124,7 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                                   ),
                                   SizedBox(height: 4.h),
                                   Text(
-                                    'Thiết lập và theo dõi mục tiêu tiết kiệm',
+                                    l10n.setupAndTrack,
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       color: Colors.grey[600],
@@ -192,7 +195,7 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Hóa đơn định kỳ',
+                                    l10n.periodicInvoices,
                                     style: TextStyle(
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
@@ -201,7 +204,7 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
                                   ),
                                   SizedBox(height: 4.h),
                                   Text(
-                                    'Quản lý các hóa đơn định kỳ hàng tháng',
+                                    l10n.managePeriodicBills,
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       color: Colors.grey[600],

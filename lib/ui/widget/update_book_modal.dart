@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/book.dart';
 import '../../providers/book_provider.dart';
+import '../../utils/localization.dart';
 
 class UpdateBookModal extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -52,21 +53,21 @@ class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
                 borderRadius: BorderRadius.circular(20.r),
               ),
               title: Text(
-                'Tên sổ đã tồn tại',
+                AppLocalizations.of(context).bookNameExists,
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               content: Text(
-                'Vui lòng chọn một tên khác cho sổ chi tiêu của bạn.',
+                AppLocalizations.of(context).pleaseChooseDifferentName,
                 style: TextStyle(fontSize: 16.sp),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    'Đóng',
+                    AppLocalizations.of(context).close,
                     style: TextStyle(
                       color: widget.themeColor,
                       fontSize: 16.sp,
@@ -99,7 +100,7 @@ class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Cập nhật tên sổ chi tiêu thành công',
+              AppLocalizations.of(context).updateBookNameSuccess,
               style: TextStyle(fontSize: 15.sp),
             ),
             backgroundColor: const Color(0xFF4CAF50),
@@ -110,7 +111,7 @@ class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Đã xảy ra lỗi khi cập nhật sổ. Vui lòng thử lại.',
+              AppLocalizations.of(context).updateBookError,
               style: TextStyle(fontSize: 15.sp),
             ),
             backgroundColor: Colors.red,
@@ -122,6 +123,8 @@ class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -147,7 +150,7 @@ class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
                   ),
                 ),
                 Text(
-                  'Chỉnh sửa tên sổ chi tiêu',
+                  l10n.editBookName,
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
@@ -162,7 +165,7 @@ class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
                       TextFormField(
                         controller: _bookNameController,
                         decoration: InputDecoration(
-                          labelText: 'Tên sổ chi tiêu mới',
+                          labelText: l10n.newBookName,
                           labelStyle: TextStyle(
                             color: widget.themeColor,
                             fontSize: 14.sp,
@@ -192,7 +195,7 @@ class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Vui lòng nhập tên sổ chi tiêu';
+                            return l10n.pleaseEnterBookName;
                           }
                           return null;
                         },
@@ -214,7 +217,7 @@ class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
                       ),
                     ),
                     child: Text(
-                      'Lưu thay đổi',
+                      l10n.saveChanges,
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
