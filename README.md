@@ -185,9 +185,8 @@ This project is distributed under the MIT License. See the `LICENSE` file for mo
 
 ## 📞 Contact
 
-- Email: your.email@example.com
+- Email: ngoctuan090904@gmail.com
 - GitHub: [DanhCaTuanNgoc](https://github.com/DanhCaTuanNgoc)
-- Gmail: [ngoctuan090904@gmail.com]
 - LinkedIn: [Nguyễn Ngọc Tuấn](https://www.linkedin.com/in/tu%E1%BA%A5n-nguyen-b7a49934a/)
 
 ---
