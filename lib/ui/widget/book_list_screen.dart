@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/models_barrel.dart';
 import '../../providers/book_provider.dart';
+import '../../utils/localization.dart';
 import './create_book_modal.dart';
 import '../../providers/providers_barrel.dart';
 
@@ -17,6 +18,7 @@ class BookListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final booksState = ref.watch(booksProvider);
 
     return Scaffold(
@@ -25,7 +27,7 @@ class BookListScreen extends ConsumerWidget {
         backgroundColor: themeColor,
         elevation: 0,
         title: Text(
-          'Danh sách sổ chi tiêu',
+          l10n.expenseBookList,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20.sp,
@@ -55,7 +57,7 @@ class BookListScreen extends ConsumerWidget {
                         ),
                         SizedBox(height: 16.h),
                         Text(
-                          'Không có sổ chi tiêu',
+                          l10n.noBook,
                           style: TextStyle(
                             fontSize: 18.sp,
                             color: Colors.grey[600],
@@ -94,7 +96,7 @@ class BookListScreen extends ConsumerWidget {
                           elevation: 0,
                         ),
                         child: Text(
-                          'Tạo sổ mới',
+                          l10n.createBook,
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
@@ -262,7 +264,7 @@ class BookListScreen extends ConsumerWidget {
               SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: () => ref.refresh(booksProvider),
-                child: const Text('Thử lại'),
+                child: Text(l10n.tryAgain),
               ),
             ],
           ),

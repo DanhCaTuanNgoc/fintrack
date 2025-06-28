@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/more/transaction.dart';
 import '../../providers/more/transaction_provider.dart';
 import '../../providers/currency_provider.dart';
+import '../../utils/localization.dart';
 import './number_pad.dart';
 import './type_button.dart';
 
@@ -48,6 +49,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final currency = ref.watch(currencyProvider);
 
     final categories =
@@ -81,7 +83,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Chỉnh sửa giao dịch',
+                        l10n.editTransaction,
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
@@ -91,7 +93,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                       Row(
                         children: [
                           TypeButton(
-                            text: 'Chi tiêu',
+                            text: l10n.expense,
                             isSelected: _isExpense,
                             themeColor: widget.themeColor,
                             onTap: () {
@@ -103,7 +105,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                           ),
                           SizedBox(width: 8.w),
                           TypeButton(
-                            text: 'Thu nhập',
+                            text: l10n.income,
                             isSelected: !_isExpense,
                             themeColor: widget.themeColor,
                             onTap: () {
@@ -121,7 +123,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                   TextField(
                     controller: TextEditingController(text: _note),
                     decoration: InputDecoration(
-                      labelText: 'Ghi chú',
+                      labelText: l10n.note,
                       labelStyle: TextStyle(color: widget.themeColor),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.r),
@@ -203,7 +205,9 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                 ),
                               ),
                               Text(
-                                'Chọn danh mục ${_isExpense ? 'chi tiêu' : 'thu nhập'}',
+                                _isExpense
+                                    ? l10n.selectExpenseCategory
+                                    : l10n.selectIncomeCategory,
                                 style: TextStyle(
                                   fontSize: 18.sp,
                                   fontWeight: FontWeight.bold,
@@ -276,7 +280,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                     },
                     child: InputDecorator(
                       decoration: InputDecoration(
-                        labelText: 'Danh mục',
+                        labelText: l10n.category,
                         labelStyle: TextStyle(color: widget.themeColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.r),
@@ -292,7 +296,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                       ),
                       child: _selectedCategory == null
                           ? Text(
-                              'Chọn danh mục',
+                              l10n.chooseCategory,
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 16.sp,
@@ -349,7 +353,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                         ),
                       ),
                       child: Text(
-                        'Chỉnh sửa',
+                        l10n.edit,
                         style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../data/models/savings_goal.dart';
+import '../../../utils/localization.dart';
 
 class AddFlexibleSavingGoalDialog extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -31,6 +32,7 @@ class _AddFlexibleSavingGoalDialogState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final currencyType = ref.watch(currencyProvider);
     final savingsGoal = ref.watch(savingsGoalsProvider);
 
@@ -65,8 +67,9 @@ class _AddFlexibleSavingGoalDialogState
               ),
               Center(
                 child: Text(
-                  'Tạo sổ tiết kiệm linh hoạt',
-                  style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+                  l10n.createFlexibleSavingsGoal,
+                  style:
+                      TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(height: 26.h),
@@ -77,9 +80,10 @@ class _AddFlexibleSavingGoalDialogState
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                        labelText: 'Tên sổ chi tiêu',
+                        labelText: l10n.savingsBookName,
                         labelStyle: TextStyle(
-                            color: const Color.fromARGB(255, 0, 0, 0), fontSize: 14.sp),
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 14.sp),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.r),
                         ),
@@ -90,10 +94,12 @@ class _AddFlexibleSavingGoalDialogState
                             width: 2.w,
                           ),
                         ),
-                        prefixIcon: Icon(Icons.book, color: widget.themeColor, size: 24.w),
+                        prefixIcon: Icon(Icons.book,
+                            color: widget.themeColor, size: 24.w),
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Nhập tên' : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? l10n.enterName
+                          : null,
                     ),
                     SizedBox(
                       height: 16.h,
@@ -101,7 +107,7 @@ class _AddFlexibleSavingGoalDialogState
                     TextFormField(
                       controller: _targetAmountController,
                       decoration: InputDecoration(
-                        labelText: 'Số tiền mục tiêu',
+                        labelText: l10n.targetAmount,
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 14.sp,
@@ -116,17 +122,18 @@ class _AddFlexibleSavingGoalDialogState
                             width: 2.w,
                           ),
                         ),
-                        prefixIcon:
-                            Icon(Icons.attach_money, color: widget.themeColor, size: 24.w),
+                        prefixIcon: Icon(Icons.attach_money,
+                            color: widget.themeColor, size: 24.w),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
                       validator: (value) {
                         if (value == null || value.isEmpty)
-                          return 'Nhập số tiền';
+                          return l10n.enterAmount;
 
                         final amount = getNumericValueFromFormattedText(value);
-                        if (amount <= 0) return 'Số tiền phải lớn hơn 0';
+                        if (amount <= 0)
+                          return l10n.amountMustBeGreaterThanZero;
                         return null;
                       },
                     ),
@@ -149,9 +156,9 @@ class _AddFlexibleSavingGoalDialogState
                             },
                             child: InputDecorator(
                               decoration: InputDecoration(
-                                labelText: 'Ngày bắt đầu',
-                                labelStyle:
-                                    TextStyle(color: Colors.black, fontSize: 14.sp),
+                                labelText: l10n.startDate,
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
@@ -170,7 +177,7 @@ class _AddFlexibleSavingGoalDialogState
                                     vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _startedDate == null
-                                      ? 'Chọn ngày'
+                                      ? l10n.chooseDate
                                       : '${_startedDate!.day}/${_startedDate!.month}/${_startedDate!.year}',
                                   style: TextStyle(
                                     color: _startedDate == null
@@ -200,9 +207,9 @@ class _AddFlexibleSavingGoalDialogState
                             },
                             child: InputDecorator(
                               decoration: InputDecoration(
-                                labelText: 'Ngày mục tiêu',
-                                labelStyle:
-                                    TextStyle(color: Colors.black, fontSize: 14.sp),
+                                labelText: l10n.targetAmount,
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
@@ -213,15 +220,15 @@ class _AddFlexibleSavingGoalDialogState
                                     width: 2.w,
                                   ),
                                 ),
-                                prefixIcon:
-                                    Icon(Icons.flag, color: widget.themeColor, size: 24.w),
+                                prefixIcon: Icon(Icons.flag,
+                                    color: widget.themeColor, size: 24.w),
                               ),
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _targetDate == null
-                                      ? 'Chọn ngày'
+                                      ? l10n.chooseDate
                                       : '${_targetDate!.day}/${_targetDate!.month}/${_targetDate!.year}',
                                   style: TextStyle(
                                     color: _targetDate == null
@@ -262,8 +269,8 @@ class _AddFlexibleSavingGoalDialogState
 
                           if (startedDate == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Vui lòng chọn ngày bắt đầu')),
+                              SnackBar(
+                                  content: Text(l10n.pleaseSelectStartDate)),
                             );
                             return;
                           }
@@ -284,7 +291,7 @@ class _AddFlexibleSavingGoalDialogState
                           Navigator.pop(context);
                         }
                       },
-                      child: Text('Tạo sổ',
+                      child: Text(l10n.createBook,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18.sp)),
                     ),

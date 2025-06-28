@@ -68,6 +68,18 @@ class VietnameseStrings {
   static const String walletName = 'Tên ví';
   static const String balance = 'Số dư';
   static const String totalBalance = 'Tổng số dư';
+  static const String expenseBookList = 'Danh sách sổ chi tiêu';
+  static const String editBookName = 'Chỉnh sửa tên sổ chi tiêu';
+  static const String newBookName = 'Tên sổ chi tiêu mới';
+  static const String bookNameExists = 'Tên sổ đã tồn tại';
+  static const String pleaseChooseDifferentName =
+      'Vui lòng chọn một tên khác cho sổ chi tiêu của bạn.';
+  static const String updateBookNameSuccess =
+      'Cập nhật tên sổ chi tiêu thành công';
+  static const String updateBookError =
+      'Đã xảy ra lỗi khi cập nhật sổ. Vui lòng thử lại.';
+  static const String pleaseEnterBookName = 'Vui lòng nhập tên sổ chi tiêu';
+  static const String saveChanges = 'Lưu thay đổi';
 
   // Savings
   static const String savings = 'Tiết kiệm';
@@ -147,6 +159,62 @@ class VietnameseStrings {
       'Thiết lập và theo dõi mục tiêu tiết kiệm';
   static const String managePeriodicBills = 'Quản lý hóa đơn định kỳ';
 
+  // Wallet
+  static const String myWallet = 'Ví của tôi';
+  static const String noWallets = 'Chưa có ví nào';
+  static const String createFirstWallet = 'Hãy tạo ví đầu tiên của bạn';
+  static const String createNewWallet = 'Tạo ví mới';
+  static const String addNewWallet = 'Thêm ví mới';
+  static const String initialBalance = 'Số dư ban đầu';
+  static const String walletType = 'Loại ví';
+  static const String cashWallet = 'Ví tiền mặt';
+  static const String bankWallet = 'Ví ngân hàng';
+  static const String walletDetails = 'Chi tiết ví';
+  static const String walletBalance = 'Số dư:';
+  static const String walletTypeLabel = 'Loại ví:';
+  static const String updateWallet = 'Cập nhật';
+  static const String noName = 'Không tên';
+
+  // Transaction Modal
+  static const String addTransaction = 'Thêm giao dịch';
+  static const String editTransaction = 'Chỉnh sửa giao dịch';
+  static const String selectCategory = 'Chọn danh mục';
+  static const String selectExpenseCategory = 'Chọn danh mục chi tiêu';
+  static const String selectIncomeCategory = 'Chọn danh mục thu nhập';
+  static const String chooseCategory = 'Chọn danh mục';
+
+  // Saving Goals
+  static const String createFlexibleSavingsGoal = 'Tạo sổ tiết kiệm linh hoạt';
+  static const String createPeriodicSavingsGoal = 'Tạo sổ tiết kiệm định kỳ';
+  static const String savingsBookName = 'Tên sổ tiết kiệm';
+  static const String enterName = 'Nhập tên';
+  static const String enterAmount = 'Nhập số tiền';
+  static const String amountMustBeGreaterThanZero = 'Số tiền phải lớn hơn 0';
+  static const String startDate = 'Ngày bắt đầu';
+  static const String chooseDate = 'Chọn ngày';
+  static const String targetDate = 'Ngày mục tiêu';
+  static const String chooseDateOptional = 'Chọn ngày (tùy chọn)';
+  static const String pleaseSelectStartDate = 'Vui lòng chọn ngày bắt đầu';
+  static const String targetAmountCannotBeLessThanSaved =
+      'Số tiền mục tiêu không được nhỏ hơn số tiền đã tiết kiệm ({savedAmount})';
+  static const String completed = 'Đã hoàn thành';
+  static const String overdue = 'Đã quá hạn';
+  static const String closed = 'Đã đóng';
+  static const String inProgress = 'Đang tiến hành';
+  static const String target = 'Mục tiêu';
+  static const String targetCompletionDate = 'Ngày hoàn thành mục tiêu';
+  static const String editSavingsGoal = 'Chỉnh sửa sổ tiết kiệm';
+  static const String deleteSavingsGoal = 'Xóa sổ tiết kiệm';
+  static const String confirmDelete = 'Xác nhận xóa';
+  static const String confirmDeleteMessage =
+      'Bạn có chắc chắn muốn xóa sổ tiết kiệm "{goalName}"?\n\nHành động này không thể hoàn tác và sẽ xóa tất cả lịch sử giao dịch liên quan.';
+  static const String deleteSuccess = 'Đã xóa sổ tiết kiệm!';
+  static const String updateSuccess = 'Cập nhật thành công!';
+  static const String currentInformation = 'Thông tin hiện tại:';
+  static const String savedAmount = 'Đã tiết kiệm:';
+  static const String progressLabel = 'Tiến độ:';
+  static const String dataLoadError = 'Lỗi tải dữ liệu';
+
   // // Welcome Screen
   // static const String welcome = 'Chào mừng';
   // static const String welcomeToFintrack = 'Chào mừng đến với Fintrack';
@@ -159,4 +227,103 @@ class VietnameseStrings {
   // static const String bookNameHint = 'Nhập tên sổ chi tiêu';
   // static const String getStarted = 'Bắt đầu';
   // static const String skip = 'Bỏ qua';
+
+  static const String noBook = 'Chưa có sổ chi tiêu nào';
+  static const String createFirstBook = 'Hãy tạo sổ chi tiêu đầu tiên của bạn';
+  static const String noExpenseThisMonth = 'Không có chi tiêu trong tháng này';
+  static const String totalExpense = 'Tổng chi tiêu';
+  static const String totalIncome = 'Tổng thu nhập';
+  static const String noIncomeThisMonth = 'Không có thu nhập trong tháng này';
+  static const String analysis = 'Phân tích chi tiêu';
+
+  // Additional strings
+  static const String pleaseSelectFrequency = 'Vui lòng chọn tần suất';
+  static const String tryAgain = 'Thử lại';
+  static const String confirmDeleteInvoice = 'Xác nhận xóa';
+  static const String paidSuccessfully = 'Đã thanh toán {invoiceName}';
+  static const String paymentError = 'Lỗi khi thanh toán: {error}';
+  static const String errorOccurred = 'Có lỗi xảy ra: {error}';
+  static const String minimumAmount = 'Số tiền tối thiểu';
+  static const String maximumAmount = 'Số tiền tối đa';
+  static const String invoiceName = 'Tên hóa đơn';
+  static const String expenseBook = 'Sổ chi tiêu';
+  static const String paymentAmount = 'Số tiền thanh toán';
+  static const String details = 'Chi tiết';
+  static const String noteOptional = 'Ghi chú (tùy chọn)';
+  static const String periodicDeposit = 'Nạp định kỳ';
+  static const String reminderFrequency = 'Tần suất nhắc nhở';
+  static const String editPeriodicSavingsGoal =
+      'Chỉnh sửa sổ tiết kiệm định kỳ';
+  static const String periodicAmount = 'Số tiền định kỳ';
+  static const String chooseFrequency = 'Chọn tần suất';
+  static const String enterPeriodicAmount = 'Nhập số tiền định kỳ';
+  static const String periodicAmountMustBeGreaterThanZero =
+      'Số tiền định kỳ phải lớn hơn 0';
+  static const String updateBook = 'Cập nhật sổ';
+  static const String invoice = 'Hóa đơn';
+  static const String calendar = 'Lịch';
+  static const String all = 'Toàn bộ';
+  static const String noExpenseYet = 'Hiện chưa có chi tiêu';
+  static const String noPeriodicInvoicesYet = 'Chưa có hóa đơn định kỳ nào';
+  static const String createNewInvoice = 'Tạo hóa đơn mới';
+  static const String filter = 'Bộ lọc';
+  static const String allBooks = 'Tất cả sổ';
+  static const String allCategories = 'Tất cả danh mục';
+  static const String enterValidNumber = 'Nhập số hợp lệ';
+  static const String clearFilter = 'Xóa bộ lọc';
+  static const String paid = 'Đã thanh toán';
+  static const String pendingPayment = 'Chờ thanh toán';
+  static const String frequency = 'Tần suất';
+  static const String createPeriodicInvoice = 'Tạo hóa đơn định kỳ';
+  static const String pleaseEnterInvoiceName = 'Vui lòng nhập tên hóa đơn';
+  static const String createInvoice = 'Tạo hóa đơn';
+  static const String invoiceAddedSuccessfully =
+      'Đã thêm hóa đơn định kỳ thành công vào sổ {bookName}';
+  static const String errorCreatingInvoice = 'Lỗi khi tạo hóa đơn: {error}';
+  static const String bookNotExists = 'Sổ không tồn tại';
+
+  static const String pay = 'Thanh toán';
+  static const String payNow = 'Thanh toán ngay';
+
+  // Deposit Savings Screen
+  static const String flexibleSavingsBook = 'Sổ tiết kiệm linh hoạt';
+  static const String periodicSavingsBook = 'Sổ tiết kiệm định kỳ';
+  static const String saved = 'Đã tiết kiệm';
+  static const String remaining = 'Còn lại';
+  static const String targetDateLabel = 'Ngày mục tiêu:';
+  static const String periodicDepositLabel = 'Nạp định kỳ:';
+  static const String depositHistory = 'Lịch sử nạp tiền';
+  static const String noDepositHistory = 'Chưa có lịch sử nạp tiền';
+  static const String deposit = 'Nạp tiền';
+  static const String depositMoney = 'Bỏ tiền tiết kiệm';
+  static const String confirmDeposit = 'Xác nhận nạp tiền';
+  static const String depositSuccess = 'Đã nạp {amount} vào sổ tiết kiệm!';
+  static const String depositBeforeNextPeriod = 'Nạp trước kỳ tiếp theo?';
+  static const String youAreDepositingBeforeNextPeriod =
+      'Bạn đang nạp trước kỳ tiếp theo:';
+  static const String continueDeposit = 'Tiếp tục';
+  static const String frequencyDaily = 'hàng ngày';
+  static const String frequencyWeekly = 'hàng tuần';
+  static const String frequencyMonthly = 'hàng tháng';
+
+  // Flexible Savings Screen
+  static const String flexibleSavings = 'Tiết kiệm linh hoạt';
+  static const String noFlexibleSavings = 'Không có sổ tiết kiệm linh hoạt nào';
+  static const String createNewSavings = 'Tạo tiết kiệm mới';
+  static const String savingsOverdue = 'Sổ tiết kiệm này đã quá hạn.';
+  static const String savingsClosed = 'Sổ tiết kiệm này đã được đóng.';
+
+  // Periodic Savings Screen
+  static const String periodicSavings = 'Tiết kiệm định kỳ';
+  static const String noPeriodicSavings = 'Không có sổ tiết kiệm định kỳ nào';
+
+  // Savings Goals Screen
+  static const String savingsGoalsTitle = 'Mục tiêu tiết kiệm';
+  static const String flexibleSavingsDescription =
+      'Không có kế hoạch, gửi tiền theo tâm trạng của bạn';
+  static const String periodicSavingsDescription = 'Gửi tiền theo định kỳ';
+
+  // Add Amount Dialog
+  static const String enterAmountToDeposit = 'Nhập số tiền muốn nộp';
+  static const String amountHint = 'Số tiền';
 }

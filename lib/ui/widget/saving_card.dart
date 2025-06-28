@@ -2,6 +2,7 @@ import 'package:Fintrack/providers/providers_barrel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../data/models/savings_goal.dart';
+import '../../../utils/localization.dart';
 
 class SavingCard extends StatelessWidget {
   final SavingsGoal goal;
@@ -19,6 +20,7 @@ class SavingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final percent = goal.targetAmount > 0
         ? (goal.currentAmount / goal.targetAmount).clamp(0.0, 1.0)
         : 0.0;
@@ -27,17 +29,17 @@ class SavingCard extends StatelessWidget {
     Color statusColor;
 
     if (goal.isCompleted) {
-      statusText = 'Đã hoàn thành';
+      statusText = l10n.completed;
       statusColor = const Color.fromARGB(255, 53, 177, 57);
     } else if (goal.targetDate != null &&
         goal.targetDate!.isBefore(DateTime.now())) {
-      statusText = 'Đã quá hạn';
+      statusText = l10n.overdue;
       statusColor = Colors.red;
     } else if (!goal.isActive) {
-      statusText = 'Đã đóng';
+      statusText = l10n.closed;
       statusColor = Colors.grey;
     } else {
-      statusText = 'Đang tiến hành';
+      statusText = l10n.inProgress;
       statusColor = Colors.blueAccent;
     }
 
@@ -179,7 +181,7 @@ class SavingCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Mục tiêu',
+                            l10n.target,
                             style: TextStyle(
                               fontSize: 12.sp,
                               color: Colors.grey.shade600,
@@ -210,7 +212,7 @@ class SavingCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Tiến độ',
+                          l10n.progress,
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
@@ -313,7 +315,7 @@ class SavingCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Ngày hoàn thành mục tiêu',
+                                l10n.targetCompletionDate,
                                 style: TextStyle(
                                   fontSize: 12.sp,
                                   color: Colors.orange.shade700,

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../data/database/database_helper.dart';
-import '../ui/more.dart';
 import '../providers/providers_barrel.dart';
 import '../utils/localization.dart';
 import './widget/widget_barrel.dart';
@@ -86,6 +85,7 @@ class _ChartsState extends ConsumerState<Charts>
         onMonthChanged: _updateSelectedMonth,
         onMonthTap: () => _selectMonth(context),
         themeColor: themeColor,
+        l10n: l10n,
       ),
       body: currentBook.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -108,7 +108,7 @@ class _ChartsState extends ConsumerState<Charts>
                         ),
                         SizedBox(height: 20.h),
                         Text(
-                          'Chưa có sổ chi tiêu nào',
+                          l10n.noBook,
                           style: TextStyle(
                             fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class _ChartsState extends ConsumerState<Charts>
                         ),
                         SizedBox(height: 10.h),
                         Text(
-                          'Hãy tạo sổ chi tiêu đầu tiên của bạn',
+                          l10n.createFirstBook,
                           style: TextStyle(fontSize: 16.sp, color: Colors.grey),
                         ),
                         SizedBox(height: 20.h),
@@ -136,7 +136,7 @@ class _ChartsState extends ConsumerState<Charts>
                             ),
                           ),
                           child: Text(
-                            l10n.createBook,
+                            l10n.createFirstBook,
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
@@ -223,7 +223,7 @@ class _ChartsState extends ConsumerState<Charts>
                                 ),
                                 SizedBox(width: 8.w),
                                 Text(
-                                  index == 0 ? 'Chi tiêu' : 'Thu nhập',
+                                  index == 0 ? l10n.expense : l10n.income,
                                   style: TextStyle(
                                     color: isSelected
                                         ? Colors.white
@@ -244,9 +244,9 @@ class _ChartsState extends ConsumerState<Charts>
                   Expanded(
                     child: _selectedTab == 0
                         ? _buildExpenseAnalysis(
-                            transactions, currencyType, book.id!)
+                            transactions, currencyType, book.id!, l10n)
                         : _buildIncomeAnalysis(
-                            transactions, currencyType, book.id!),
+                            transactions, currencyType, book.id!, l10n),
                   ),
                 ],
               ),
@@ -270,6 +270,7 @@ class _ChartsState extends ConsumerState<Charts>
     Map<String, double> data,
     CurrencyType currencyType,
     bool isExpense,
+    AppLocalizations l10n,
   ) {
     final total = data.values.fold(0.0, (sum, amount) => sum + amount);
     final sortedData = data.entries.toList()
@@ -330,7 +331,7 @@ class _ChartsState extends ConsumerState<Charts>
                     ),
                   ),
                   Text(
-                    isExpense ? 'Tổng chi tiêu' : 'Tổng thu nhập',
+                    isExpense ? l10n.totalExpense : l10n.totalIncome,
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: Colors.grey[600],
@@ -385,7 +386,7 @@ class _ChartsState extends ConsumerState<Charts>
   }
 
   Widget _buildExpenseAnalysis(AsyncValue<List<dynamic>> transactions,
-      CurrencyType currencyType, int bookId) {
+      CurrencyType currencyType, int bookId, AppLocalizations l10n) {
     return transactions.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
@@ -415,7 +416,7 @@ class _ChartsState extends ConsumerState<Charts>
 
         return Column(
           children: [
-            _buildPieChart(_categoryExpenses, currencyType, true),
+            _buildPieChart(_categoryExpenses, currencyType, true, l10n),
             SizedBox(
               height: 20.h,
             ),
@@ -423,7 +424,7 @@ class _ChartsState extends ConsumerState<Charts>
               Padding(
                 padding: EdgeInsets.all(16.0.w),
                 child: Text(
-                  'Không có chi tiêu trong tháng này',
+                  l10n.noExpenseThisMonth,
                   style: TextStyle(
                     fontSize: 16.sp,
                     color: Colors.grey[600],
@@ -502,7 +503,7 @@ class _ChartsState extends ConsumerState<Charts>
   }
 
   Widget _buildIncomeAnalysis(AsyncValue<List<dynamic>> transactions,
-      CurrencyType currencyType, int bookId) {
+      CurrencyType currencyType, int bookId, AppLocalizations l10n) {
     return transactions.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
@@ -532,7 +533,7 @@ class _ChartsState extends ConsumerState<Charts>
 
         return Column(
           children: [
-            _buildPieChart(_categoryIncomes, currencyType, false),
+            _buildPieChart(_categoryIncomes, currencyType, false, l10n),
             SizedBox(
               height: 20.h,
             ),
@@ -540,7 +541,7 @@ class _ChartsState extends ConsumerState<Charts>
               Padding(
                 padding: EdgeInsets.all(16.0.w),
                 child: Text(
-                  'Không có thu nhập trong tháng này',
+                  l10n.noIncomeThisMonth,
                   style: TextStyle(
                     fontSize: 16.sp,
                     color: Colors.grey[600],
@@ -624,12 +625,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function(DateTime) onMonthChanged;
   final VoidCallback onMonthTap;
   final Color themeColor;
+  final AppLocalizations l10n;
   const CustomAppBar(
       {super.key,
       required this.selectedMonth,
       required this.onMonthChanged,
       required this.onMonthTap,
-      required this.themeColor});
+      required this.themeColor,
+      required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -640,7 +643,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Phân tích chi tiêu',
+            l10n.analysis,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 22.sp,

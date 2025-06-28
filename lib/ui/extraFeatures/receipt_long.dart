@@ -7,6 +7,7 @@ import '../../data/models/more/periodic_invoice.dart';
 import 'package:intl/intl.dart';
 import '../widget/widget_barrel.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../utils/localization.dart';
 
 class ReceiptLong extends ConsumerStatefulWidget {
   const ReceiptLong({super.key});
@@ -87,11 +88,12 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
   Widget build(BuildContext context) {
     final allInvoices = ref.watch(periodicInvoicesProvider);
     final themeColor = ref.watch(themeColorProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Hóa đơn định kỳ',
+          l10n.periodicInvoices,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20.sp,
@@ -139,7 +141,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                     child: filteredInvoices.isEmpty
                         ? Center(
                             child: Text(
-                              'Chưa có hóa đơn định kỳ nào',
+                              l10n.noPeriodicInvoicesYet,
                               style: TextStyle(
                                 color: const Color(0xFF9E9E9E),
                                 fontSize: 16.sp,
@@ -188,7 +190,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           elevation: 0,
                         ),
                         child: Text(
-                          'Tạo hóa đơn mới',
+                          l10n.createNewInvoice,
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
@@ -216,6 +218,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
 
   Widget _buildFilterBar() {
     final themeColor = ref.watch(themeColorProvider);
+    final l10n = AppLocalizations.of(context);
     return Container(
       margin: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
@@ -233,7 +236,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
       child: ExpansionTile(
         leading: Icon(Icons.filter_list, color: themeColor, size: 24.w),
         title: Text(
-          'Bộ lọc',
+          l10n.filter,
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 16.sp,
@@ -261,7 +264,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             child: DropdownButton<int>(
                               value: _selectedBookFilterId,
                               hint: Text(
-                                'Tất cả sổ',
+                                l10n.allBooks,
                                 style: TextStyle(fontSize: 14.sp),
                               ),
                               isExpanded: true,
@@ -270,7 +273,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                 DropdownMenuItem<int>(
                                   value: null,
                                   child: Text(
-                                    'Tất cả sổ',
+                                    l10n.allBooks,
                                     style: TextStyle(fontSize: 14.sp),
                                   ),
                                 ),
@@ -302,7 +305,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             child: DropdownButton<String>(
                               value: _selectedCategoryFilter,
                               hint: Text(
-                                'Tất cả danh mục',
+                                l10n.allCategories,
                                 style: TextStyle(fontSize: 14.sp),
                               ),
                               isExpanded: true,
@@ -311,7 +314,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                 DropdownMenuItem<String>(
                                   value: null,
                                   child: Text(
-                                    'Tất cả danh mục',
+                                    l10n.allCategories,
                                     style: TextStyle(fontSize: 14.sp),
                                   ),
                                 ),
@@ -359,7 +362,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           controller: _minAmountController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            labelText: 'Số tiền tối thiểu',
+                            labelText: l10n.minimumAmount,
                             labelStyle: TextStyle(
                                 color: Colors.grey.shade600, fontSize: 13.sp),
                             border: OutlineInputBorder(
@@ -379,7 +382,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             if (value != null &&
                                 value.isNotEmpty &&
                                 double.tryParse(value) == null) {
-                              return 'Nhập số hợp lệ';
+                              return l10n.enterValidNumber;
                             }
                             return null;
                           },
@@ -391,7 +394,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           controller: _maxAmountController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            labelText: 'Số tiền tối đa',
+                            labelText: l10n.maximumAmount,
                             labelStyle: TextStyle(
                                 color: Colors.grey.shade600, fontSize: 13.sp),
                             border: OutlineInputBorder(
@@ -411,7 +414,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             if (value != null &&
                                 value.isNotEmpty &&
                                 double.tryParse(value) == null) {
-                              return 'Nhập số hợp lệ';
+                              return l10n.enterValidNumber;
                             }
                             return null;
                           },
@@ -429,8 +432,8 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                         }
                       },
                       icon: Icon(Icons.clear, size: 20.w),
-                      label:
-                          Text('Xóa bộ lọc', style: TextStyle(fontSize: 15.sp)),
+                      label: Text(l10n.clearFilter,
+                          style: TextStyle(fontSize: 15.sp)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey.shade100,
                         foregroundColor: Colors.red,
@@ -455,15 +458,16 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     final isOverdue = invoice.isOverdue();
     final nextDueDate = invoice.nextDueDate ?? invoice.calculateNextDueDate();
     final themeColor = ref.watch(themeColorProvider);
+    final l10n = AppLocalizations.of(context);
 
     // Tìm tên sổ chi tiêu dựa trên bookId
-    String bookName = 'Chưa có sổ';
+    String bookName = l10n.noBook;
     if (invoice.bookId != null && books.isNotEmpty) {
       try {
         final book = books.firstWhere((b) => b['id'] == invoice.bookId);
         bookName = book['name'];
       } catch (e) {
-        bookName = 'Sổ không tồn tại';
+        bookName = l10n.bookNotExists;
       }
     }
 
@@ -554,10 +558,10 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                               ),
                               child: Text(
                                 isOverdue
-                                    ? 'Quá hạn'
+                                    ? l10n.overdue
                                     : invoice.isPaid
-                                        ? 'Đã thanh toán'
-                                        : 'Chờ thanh toán',
+                                        ? l10n.paid
+                                        : l10n.pendingPayment,
                                 style: TextStyle(
                                   fontSize: 13.sp,
                                   fontWeight: FontWeight.bold,
@@ -606,7 +610,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Sổ chi tiêu',
+                            l10n.expenseBook,
                             style: TextStyle(
                               fontSize: 12.sp,
                               color: Colors.grey.shade600,
@@ -615,7 +619,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           ),
                           SizedBox(height: 2.h),
                           Text(
-                            bookName ?? 'Không có tên sách',
+                            bookName ?? l10n.noBook,
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
@@ -625,7 +629,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 16.h, width: 16.w),
+                    SizedBox(width: 16.w),
                     // Amount section
                     Icon(
                       Icons.attach_money,
@@ -638,7 +642,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Số tiền',
+                            l10n.amount,
                             style: TextStyle(
                               fontSize: 12.sp,
                               color: Colors.grey.shade600,
@@ -674,7 +678,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Tần suất',
+                              l10n.frequency,
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 color: Colors.grey.shade600,
@@ -704,7 +708,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Danh mục',
+                              l10n.category,
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 color: Colors.grey.shade600,
@@ -761,7 +765,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Đã thanh toán',
+                              l10n.paid,
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 color: Colors.green.shade700,
@@ -798,14 +802,13 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text('Xác nhận xóa'),
-                                content: const Text(
-                                    'Bạn có chắc chắn muốn xóa hóa đơn này?'),
+                                title: Text(l10n.confirmDelete),
+                                content: Text(l10n.confirmDeleteInvoice),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.of(context).pop(),
-                                    child: const Text('Hủy'),
+                                    child: Text(l10n.cancel),
                                   ),
                                   TextButton(
                                     onPressed: () {
@@ -815,8 +818,8 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                           .removePeriodicInvoice(invoice.id);
                                       Navigator.of(context).pop();
                                     },
-                                    child: const Text(
-                                      'Xóa',
+                                    child: Text(
+                                      l10n.delete,
                                       style: TextStyle(
                                           color: Color.fromARGB(
                                               255, 255, 255, 255)),
@@ -837,7 +840,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           elevation: 0,
                         ),
                         child: Text(
-                          'Xóa',
+                          l10n.delete,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -865,7 +868,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
 
                             await transactionNotifier.createTransaction(
                               amount: invoice.amount,
-                              note: 'Thanh toán ${invoice.name}',
+                              note: l10n.paidSuccessfullyWith(invoice.name),
                               type: 'expense',
                               categoryId: categoryData['id'],
                               bookId: bookId,
@@ -878,7 +881,8 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
 
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Đã thanh toán ${invoice.name}'),
+                                content: Text(
+                                    l10n.paidSuccessfullyWith(invoice.name)),
                                 backgroundColor: Colors.green,
                                 duration: const Duration(seconds: 2),
                               ),
@@ -887,7 +891,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content:
-                                    Text('Lỗi khi thanh toán: ${e.toString()}'),
+                                    Text(l10n.paymentErrorWith(e.toString())),
                                 backgroundColor: Colors.red,
                               ),
                             );
@@ -903,7 +907,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                           elevation: 0,
                         ),
                         child: Text(
-                          isOverdue ? 'Thanh toán ngay' : 'Thanh toán',
+                          isOverdue ? l10n.payNow : l10n.pay,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 15.sp,
@@ -943,6 +947,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     String? selectedCategory;
     Map<String, dynamic>? selectedBookForInvoice = selectedBook;
     final currencyType = ref.watch(currencyProvider);
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -982,7 +987,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             child: Column(
                               children: [
                                 Text(
-                                  'Tạo hóa đơn định kỳ',
+                                  l10n.createPeriodicInvoice,
                                   style: TextStyle(
                                     fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
@@ -996,7 +1001,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                       child: TextFormField(
                                         controller: nameController,
                                         decoration: InputDecoration(
-                                          labelText: 'Tên hóa đơn',
+                                          labelText: l10n.invoiceName,
                                           labelStyle: TextStyle(
                                             color: Colors.black,
                                             fontSize: 14.sp,
@@ -1022,7 +1027,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                         validator: (value) {
                                           if (value == null ||
                                               value.trim().isEmpty) {
-                                            return 'Vui lòng nhập tên hóa đơn';
+                                            return l10n.pleaseEnterInvoiceName;
                                           }
                                           return null;
                                         },
@@ -1035,7 +1040,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                       child: DropdownButtonFormField<int>(
                                         value: selectedBookForInvoice?['id'],
                                         decoration: InputDecoration(
-                                          labelText: 'Sổ chi tiêu',
+                                          labelText: l10n.expenseBook,
                                           labelStyle: TextStyle(
                                             color: Colors.black,
                                             fontSize: 14.sp,
@@ -1083,7 +1088,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                 TextFormField(
                                   controller: amountController,
                                   decoration: InputDecoration(
-                                    labelText: 'Số tiền thanh toán',
+                                    labelText: l10n.paymentAmount,
                                     labelStyle: TextStyle(
                                       color: Colors.black,
                                       fontSize: 14.sp,
@@ -1110,12 +1115,12 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                   ],
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Nhập số tiền';
+                                      return l10n.enterAmount;
                                     }
                                     final amount =
                                         getNumericValueFromFormattedText(value);
                                     if (amount <= 0) {
-                                      return 'Số tiền phải lớn hơn 0';
+                                      return l10n.amountMustBeGreaterThanZero;
                                     }
                                     return null;
                                   },
@@ -1127,7 +1132,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                       child: DropdownButtonFormField<String>(
                                         value: selectedFrequency,
                                         decoration: InputDecoration(
-                                          labelText: 'Tần suất',
+                                          labelText: l10n.frequency,
                                           labelStyle: TextStyle(
                                             color: themeColor,
                                             fontSize: 14.sp,
@@ -1150,29 +1155,29 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                           prefixIcon: Icon(Icons.schedule,
                                               color: themeColor),
                                         ),
-                                        items: const [
+                                        items: [
                                           DropdownMenuItem(
                                               value: 'daily',
                                               child: Text(
-                                                'Hàng ngày',
+                                                l10n.daily,
                                                 style: TextStyle(fontSize: 13),
                                               )),
                                           DropdownMenuItem(
                                               value: 'weekly',
                                               child: Text(
-                                                'Hàng tuần',
+                                                l10n.weekly,
                                                 style: TextStyle(fontSize: 13),
                                               )),
                                           DropdownMenuItem(
                                               value: 'monthly',
                                               child: Text(
-                                                'Hàng tháng',
+                                                l10n.monthly,
                                                 style: TextStyle(fontSize: 13),
                                               )),
                                           DropdownMenuItem(
                                               value: 'yearly',
                                               child: Text(
-                                                'Hàng năm',
+                                                l10n.yearly,
                                                 style: TextStyle(fontSize: 13),
                                               )),
                                         ],
@@ -1190,7 +1195,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                       child: DropdownButtonFormField<String>(
                                         value: selectedCategory,
                                         decoration: InputDecoration(
-                                          labelText: 'Danh mục',
+                                          labelText: l10n.category,
                                           labelStyle: TextStyle(
                                             color: themeColor,
                                             fontSize: 14.sp,
@@ -1251,7 +1256,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                 TextFormField(
                                   controller: descriptionController,
                                   decoration: InputDecoration(
-                                    labelText: 'Chi tiết',
+                                    labelText: l10n.details,
                                     labelStyle: TextStyle(
                                       color: Colors.black,
                                       fontSize: 14.sp,
@@ -1310,8 +1315,10 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             SnackBar(
-                                              content: Text(
-                                                  'Đã thêm hóa đơn định kỳ thành công vào sổ ${selectedBookForInvoice!['name']}'),
+                                              content: Text(l10n
+                                                  .invoiceAddedSuccessfullyWith(
+                                                      selectedBookForInvoice![
+                                                          'name'])),
                                               backgroundColor: Colors.green,
                                             ),
                                           );
@@ -1320,7 +1327,8 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                               .showSnackBar(
                                             SnackBar(
                                               content: Text(
-                                                  'Lỗi khi tạo hóa đơn: \\${e.toString()}'),
+                                                  l10n.errorCreatingInvoiceWith(
+                                                      e.toString())),
                                               backgroundColor: Colors.red,
                                             ),
                                           );
@@ -1338,7 +1346,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                       elevation: 0,
                                     ),
                                     child: Text(
-                                      'Tạo hóa đơn',
+                                      l10n.createInvoice,
                                       style: TextStyle(
                                         fontSize: 18.sp,
                                         fontWeight: FontWeight.bold,
