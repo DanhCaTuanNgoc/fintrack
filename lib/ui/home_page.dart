@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'books.dart';
-import 'wallet.dart';
 import 'charts.dart';
 import 'more.dart';
 import 'extra_features_screen.dart';
@@ -28,7 +27,6 @@ class _MyHomePageState extends ConsumerState<HomePage> {
   final List<Widget> _screens = [
     const Books(),
     const Charts(),
-    // const Wallet(),
     const ExtraFeaturesScreen(),
     const More(),
   ];
