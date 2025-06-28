@@ -76,6 +76,8 @@ class AppLocalizations {
   String get targetDate => _getString('targetDate');
   String get chooseDateOptional => _getString('chooseDateOptional');
   String get pleaseSelectStartDate => _getString('pleaseSelectStartDate');
+  String get targetAmountCannotBeLessThanSaved =>
+      _getString('targetAmountCannotBeLessThanSaved');
 
   // New additions
   String get noBook => _getString('noBook');
@@ -1077,6 +1079,22 @@ class AppLocalizations {
 
   String errorOccurredWith(String error) =>
       _getString('errorOccurred').replaceFirst('{error}', error);
+
+  String get targetAmountLabel => _getString('targetAmountLabel');
+  String get startDateLabel => _getString('startDateLabel');
+  String get chooseDateLabel => _getString('chooseDateLabel');
+  String get deleteSavingsBook => _getString('deleteSavingsBook');
+  String get update => _getString('update');
+  String get foodAndDrinks => _getString('foodAndDrinks');
+  String get transportation => _getString('transportation');
+  String get shopping => _getString('shopping');
+  String get entertainment => _getString('entertainment');
+  String get education => _getString('education');
+  String get beauty => _getString('beauty');
+  String get household => _getString('household');
+  String get salary => _getString('salary');
+  String get bonus => _getString('bonus');
+  String get investment => _getString('investment');
 }
 
 /// Delegate cho AppLocalizations

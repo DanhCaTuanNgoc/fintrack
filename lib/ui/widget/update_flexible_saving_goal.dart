@@ -129,7 +129,7 @@ class _UpdateFlexibleSavingGoalDialogState
                     TextFormField(
                       controller: _targetAmountController,
                       decoration: InputDecoration(
-                        labelText: 'Số tiền mục tiêu',
+                        labelText: l10n.targetAmountLabel,
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 14.sp,
@@ -152,10 +152,11 @@ class _UpdateFlexibleSavingGoalDialogState
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
                       validator: (value) {
                         if (value == null || value.isEmpty)
-                          return 'Nhập số tiền';
+                          return l10n.enterAmount;
 
                         final amount = getNumericValueFromFormattedText(value);
-                        if (amount <= 0) return 'Số tiền phải lớn hơn 0';
+                        if (amount <= 0)
+                          return l10n.amountMustBeGreaterThanZero;
 
                         // Lấy goal hiện tại từ provider để có dữ liệu mới nhất
                         final currentGoal = savingsGoalAsync.when(
@@ -169,7 +170,11 @@ class _UpdateFlexibleSavingGoalDialogState
 
                         // Kiểm tra số tiền mục tiêu mới không được nhỏ hơn số tiền hiện tại
                         if (amount < currentGoal.currentAmount) {
-                          return 'Số tiền mục tiêu không được nhỏ hơn số tiền đã tiết kiệm (${formatCurrency(currentGoal.currentAmount, currencyType)})';
+                          return l10n.targetAmountCannotBeLessThanSaved
+                              .replaceFirst(
+                                  '{savedAmount}',
+                                  formatCurrency(
+                                      currentGoal.currentAmount, currencyType));
                         }
 
                         return null;
@@ -194,7 +199,7 @@ class _UpdateFlexibleSavingGoalDialogState
                             },
                             child: InputDecorator(
                               decoration: InputDecoration(
-                                labelText: 'Ngày bắt đầu',
+                                labelText: l10n.startDateLabel,
                                 labelStyle: TextStyle(
                                     color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
@@ -215,7 +220,7 @@ class _UpdateFlexibleSavingGoalDialogState
                                     vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _startedDate == null
-                                      ? 'Chọn ngày'
+                                      ? l10n.chooseDateLabel
                                       : '${_startedDate!.day}/${_startedDate!.month}/${_startedDate!.year}',
                                   style: TextStyle(
                                     color: _startedDate == null
@@ -245,7 +250,7 @@ class _UpdateFlexibleSavingGoalDialogState
                             },
                             child: InputDecorator(
                               decoration: InputDecoration(
-                                labelText: 'Ngày mục tiêu',
+                                labelText: l10n.targetDate,
                                 labelStyle: TextStyle(
                                     color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
@@ -266,7 +271,7 @@ class _UpdateFlexibleSavingGoalDialogState
                                     vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _targetDate == null
-                                      ? 'Chọn ngày (tùy chọn)'
+                                      ? l10n.chooseDateOptional
                                       : '${_targetDate!.day}/${_targetDate!.month}/${_targetDate!.year}',
                                   style: TextStyle(
                                     color: _targetDate == null
@@ -302,7 +307,7 @@ class _UpdateFlexibleSavingGoalDialogState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Thông tin hiện tại:',
+                                l10n.currentInformation,
                                 style: TextStyle(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w600,
@@ -315,7 +320,7 @@ class _UpdateFlexibleSavingGoalDialogState
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Đã tiết kiệm:',
+                                    l10n.savedAmount,
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       color: Colors.grey[600],
@@ -338,7 +343,7 @@ class _UpdateFlexibleSavingGoalDialogState
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Tiến độ:',
+                                    l10n.progressLabel,
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       color: Colors.grey[600],
@@ -375,7 +380,7 @@ class _UpdateFlexibleSavingGoalDialogState
                           border: Border.all(color: Colors.red.shade200),
                         ),
                         child: Text(
-                          'Lỗi tải dữ liệu',
+                          l10n.dataLoadError,
                           style: TextStyle(color: Colors.red, fontSize: 14.sp),
                         ),
                       ),
@@ -419,7 +424,7 @@ class _UpdateFlexibleSavingGoalDialogState
                       onPressed: () {
                         _showDeleteConfirmation(context);
                       },
-                      child: Text('Xóa sổ tiết kiệm',
+                      child: Text(l10n.deleteSavingsBook,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16.sp)),
                     ),
@@ -445,8 +450,8 @@ class _UpdateFlexibleSavingGoalDialogState
 
                           if (startedDate == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Vui lòng chọn ngày bắt đầu')),
+                              SnackBar(
+                                  content: Text(l10n.pleaseSelectStartDate)),
                             );
                             return;
                           }
@@ -466,9 +471,9 @@ class _UpdateFlexibleSavingGoalDialogState
 
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text(
-                                  'Cập nhật thành công!',
+                                  l10n.updateSuccess,
                                   style: TextStyle(fontSize: 14),
                                 ),
                                 backgroundColor: Colors.green,
@@ -478,7 +483,7 @@ class _UpdateFlexibleSavingGoalDialogState
                           }
                         }
                       },
-                      child: Text('Cập nhật',
+                      child: Text(l10n.update,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16.sp)),
                     ),
@@ -496,20 +501,21 @@ class _UpdateFlexibleSavingGoalDialogState
   }
 
   void _showDeleteConfirmation(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Xác nhận xóa', style: TextStyle(fontSize: 18.sp)),
+          title: Text(l10n.confirmDelete, style: TextStyle(fontSize: 18.sp)),
           content: Text(
-            'Bạn có chắc chắn muốn xóa sổ tiết kiệm "${widget.goal.name}"?\n\n'
-            'Hành động này không thể hoàn tác và sẽ xóa tất cả lịch sử giao dịch liên quan.',
+            l10n.confirmDeleteMessage
+                .replaceFirst('{goalName}', widget.goal.name),
             style: TextStyle(fontSize: 14.sp),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Hủy', style: TextStyle(fontSize: 14.sp)),
+              child: Text(l10n.cancel, style: TextStyle(fontSize: 14.sp)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -525,7 +531,7 @@ class _UpdateFlexibleSavingGoalDialogState
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Đã xóa sổ tiết kiệm!',
+                      content: Text(l10n.deleteSuccess,
                           style: TextStyle(fontSize: 14.sp)),
                       backgroundColor: Colors.red,
                     ),
@@ -533,7 +539,7 @@ class _UpdateFlexibleSavingGoalDialogState
                   Navigator.pop(context); // Đóng modal cập nhật
                 }
               },
-              child: Text('Xóa', style: TextStyle(fontSize: 14.sp)),
+              child: Text(l10n.delete, style: TextStyle(fontSize: 14.sp)),
             ),
           ],
         );

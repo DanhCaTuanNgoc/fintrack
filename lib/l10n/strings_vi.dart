@@ -217,6 +217,21 @@ class VietnameseStrings {
   static const String savedAmount = 'Đã tiết kiệm:';
   static const String progressLabel = 'Tiến độ:';
   static const String dataLoadError = 'Lỗi tải dữ liệu';
+  static const String targetAmountLabel = 'Số tiền mục tiêu';
+  static const String startDateLabel = 'Ngày bắt đầu';
+  static const String chooseDateLabel = 'Chọn ngày';
+  static const String deleteSavingsBook = 'Xóa sổ tiết kiệm';
+  static const String update = 'Cập nhật';
+  static const String foodAndDrinks = 'Ăn uống';
+  static const String transportation = 'Di chuyển';
+  static const String shopping = 'Mua sắm';
+  static const String entertainment = 'Giải trí';
+  static const String education = 'Học tập';
+  static const String beauty = 'Làm đẹp';
+  static const String household = 'Sinh hoạt';
+  static const String salary = 'Lương';
+  static const String bonus = 'Thưởng';
+  static const String investment = 'Đầu tư';
 
   // // Welcome Screen
   // static const String welcome = 'Chào mừng';

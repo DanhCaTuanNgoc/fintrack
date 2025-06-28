@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/languages.dart';
+import '../../data/database/database_helper.dart';
+import '../../utils/localization.dart';
 
 /// Provider quản lý ngôn ngữ hiện tại
 class LocaleNotifier extends StateNotifier<AppLanguage> {
@@ -26,6 +28,16 @@ class LocaleNotifier extends StateNotifier<AppLanguage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('language_code', language.languageCode);
     state = language;
+
+    // Cập nhật categories khi ngôn ngữ thay đổi
+    try {
+      final dbHelper = DatabaseHelper.instance;
+      final l10n = AppLocalizations(language.locale);
+      await dbHelper.updateCategoriesOnLanguageChange(l10n);
+    } catch (e) {
+      // Log error nhưng không làm crash app
+      print('Error updating categories on language change: $e');
+    }
   }
 
   /// Lấy ngôn ngữ hiện tại

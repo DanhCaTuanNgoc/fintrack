@@ -2,6 +2,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:logging/logging.dart';
+import '../../utils/category_helper.dart';
+import '../../utils/localization.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -167,18 +169,7 @@ class DatabaseHelper {
   }
 
   Future<void> _insertDefaultCategories(Database db) async {
-    final defaultCategories = [
-      {'name': 'Ăn uống', 'type': 'expense', 'icon': '🍔'},
-      {'name': 'Di chuyển', 'type': 'expense', 'icon': '🚗'},
-      {'name': 'Mua sắm', 'type': 'expense', 'icon': '🛍'},
-      {'name': 'Giải trí', 'type': 'expense', 'icon': '🎮'},
-      {'name': 'Học tập', 'type': 'expense', 'icon': '📚'},
-      {'name': 'Làm đẹp', 'type': 'expense', 'icon': '💅'},
-      {'name': 'Sinh hoạt', 'type': 'expense', 'icon': '🏠'},
-      {'name': 'Lương', 'type': 'income', 'icon': '💰'},
-      {'name': 'Thưởng', 'type': 'income', 'icon': '🎁'},
-      {'name': 'Đầu tư', 'type': 'income', 'icon': '📈'},
-    ];
+    final defaultCategories = CategoryHelper.getDefaultCategoriesForDatabase();
 
     for (var category in defaultCategories) {
       await db.insert('categories', category);
@@ -340,5 +331,20 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  /// Cập nhật tên categories khi ngôn ngữ thay đổi
+  Future<void> updateCategoriesOnLanguageChange(AppLocalizations l10n) async {
+    final db = await database;
+    final defaultCategories = CategoryHelper.getDefaultCategories(l10n);
+
+    for (var category in defaultCategories) {
+      await db.update(
+        'categories',
+        {'name': category['name']},
+        where: 'icon = ? AND type = ?',
+        whereArgs: [category['icon'], category['type']],
+      );
+    }
   }
 }

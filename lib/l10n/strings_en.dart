@@ -220,6 +220,21 @@ class EnglishStrings {
   static const String savedAmount = 'Saved Amount:';
   static const String progressLabel = 'Progress:';
   static const String dataLoadError = 'Data loading error';
+  static const String targetAmountLabel = 'Target Amount';
+  static const String startDateLabel = 'Start Date';
+  static const String chooseDateLabel = 'Choose date';
+  static const String deleteSavingsBook = 'Delete Savings Book';
+  static const String update = 'Update';
+  static const String foodAndDrinks = 'Food & Drinks';
+  static const String transportation = 'Transportation';
+  static const String shopping = 'Shopping';
+  static const String entertainment = 'Entertainment';
+  static const String education = 'Education';
+  static const String beauty = 'Beauty';
+  static const String household = 'Household';
+  static const String salary = 'Salary';
+  static const String bonus = 'Bonus';
+  static const String investment = 'Investment';
 
   // // Welcome Screen
   // static const String welcome = 'Welcome';
