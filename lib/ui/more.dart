@@ -407,7 +407,7 @@ class _MoreState extends ConsumerState<More> {
           mainAxisSize: MainAxisSize.min,
           children: List.generate(primaryVariants.length, (index) {
             return _buildDialogOption(
-              title: _getThemeColorName(l10n),
+              title: _getColorNameByIndex(index, l10n),
               isSelected: _currentColorIndex == index,
               color: primaryVariants[index],
               onTap: () {
@@ -425,7 +425,7 @@ class _MoreState extends ConsumerState<More> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      l10n.themeColorChanged(_getThemeColorName(l10n)),
+                      l10n.themeColorChanged(_getColorNameByIndex(index, l10n)),
                       style: TextStyle(fontSize: 16.sp),
                     ),
                     backgroundColor: const Color(0xFF4CAF50),
@@ -438,6 +438,23 @@ class _MoreState extends ConsumerState<More> {
         ),
       ),
     );
+  }
+
+  String _getColorNameByIndex(int index, AppLocalizations l10n) {
+    final colorNames = [
+      l10n.purple,
+      l10n.blue,
+      l10n.green,
+      l10n.orange,
+      l10n.pink,
+      l10n.darkPurple,
+      l10n.indigo,
+      l10n.cyan,
+      l10n.brightOrange,
+      l10n.brown,
+      l10n.blueGrey,
+    ];
+    return colorNames[index];
   }
 
   void _updateCurrency(CurrencyType newCurrency) async {

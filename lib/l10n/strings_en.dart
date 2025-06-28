@@ -323,4 +323,14 @@ class EnglishStrings {
   // Add Amount Dialog
   static const String enterAmountToDeposit = 'Enter amount to deposit';
   static const String amountHint = 'Amount';
+
+  // Notification Screen
+  static const String noNotifications = 'No notifications!';
+  static const String refresh = 'Refresh';
+  static const String markAllAsRead = 'Mark all as read';
+  static const String deleteAllRead = 'Delete all read';
+  static const String justNow = 'Just now';
+  static const String daysAgo = '{days} days ago';
+  static const String hoursAgo = '{hours} hours ago';
+  static const String minutesAgo = '{minutes} minutes ago';
 }

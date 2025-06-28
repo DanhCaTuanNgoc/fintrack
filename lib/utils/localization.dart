@@ -227,6 +227,19 @@ class AppLocalizations {
   String get enterAmountToDeposit => _getString('enterAmountToDeposit');
   String get amountHint => _getString('amountHint');
 
+  // Notification Screen
+  String get noNotifications => _getString('noNotifications');
+  String get refresh => _getString('refresh');
+  String get markAllAsRead => _getString('markAllAsRead');
+  String get deleteAllRead => _getString('deleteAllRead');
+  String get justNow => _getString('justNow');
+  String daysAgoWith(int days) =>
+      _getString('daysAgo').replaceFirst('{days}', days.toString());
+  String hoursAgoWith(int hours) =>
+      _getString('hoursAgo').replaceFirst('{hours}', hours.toString());
+  String minutesAgoWith(int minutes) =>
+      _getString('minutesAgo').replaceFirst('{minutes}', minutes.toString());
+
   // Helper functions for dynamic strings
   String depositSuccessWith(String amount) =>
       _getString('depositSuccess').replaceFirst('{amount}', amount);
@@ -592,6 +605,22 @@ class AppLocalizations {
         return VietnameseStrings.amountHint;
       case 'depositSuccess':
         return VietnameseStrings.depositSuccess;
+      case 'noNotifications':
+        return VietnameseStrings.noNotifications;
+      case 'refresh':
+        return VietnameseStrings.refresh;
+      case 'markAllAsRead':
+        return VietnameseStrings.markAllAsRead;
+      case 'deleteAllRead':
+        return VietnameseStrings.deleteAllRead;
+      case 'justNow':
+        return VietnameseStrings.justNow;
+      case 'daysAgo':
+        return VietnameseStrings.daysAgo;
+      case 'hoursAgo':
+        return VietnameseStrings.hoursAgo;
+      case 'minutesAgo':
+        return VietnameseStrings.minutesAgo;
       default:
         return key;
     }
@@ -946,6 +975,22 @@ class AppLocalizations {
         return EnglishStrings.amountHint;
       case 'depositSuccess':
         return EnglishStrings.depositSuccess;
+      case 'noNotifications':
+        return EnglishStrings.noNotifications;
+      case 'refresh':
+        return EnglishStrings.refresh;
+      case 'markAllAsRead':
+        return EnglishStrings.markAllAsRead;
+      case 'deleteAllRead':
+        return EnglishStrings.deleteAllRead;
+      case 'justNow':
+        return EnglishStrings.justNow;
+      case 'daysAgo':
+        return EnglishStrings.daysAgo;
+      case 'hoursAgo':
+        return EnglishStrings.hoursAgo;
+      case 'minutesAgo':
+        return EnglishStrings.minutesAgo;
       default:
         return key;
     }

@@ -324,6 +324,16 @@ class VietnameseStrings {
   static const String periodicSavingsDescription = 'Gửi tiền theo định kỳ';
 
   // Add Amount Dialog
-  static const String enterAmountToDeposit = 'Nhập số tiền muốn nộp';
+  static const String enterAmountToDeposit = 'Nhập số tiền để gửi';
   static const String amountHint = 'Số tiền';
+
+  // Notification Screen
+  static const String noNotifications = 'Không có thông báo nào!';
+  static const String refresh = 'Làm mới';
+  static const String markAllAsRead = 'Đánh dấu tất cả đã đọc';
+  static const String deleteAllRead = 'Xóa tất cả đã đọc';
+  static const String justNow = 'Vừa xong';
+  static const String daysAgo = '{days} ngày trước';
+  static const String hoursAgo = '{hours} giờ trước';
+  static const String minutesAgo = '{minutes} phút trước';
 }
