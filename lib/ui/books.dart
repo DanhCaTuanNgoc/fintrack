@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../data/database/database_helper.dart';
 import '../providers/providers_barrel.dart';
+import '../utils/localization.dart';
 import './widget/widget_barrel.dart';
 import '../data/models/models_barrel.dart';
 
@@ -98,13 +99,14 @@ class _BooksState extends ConsumerState<Books>
     final currentBook = ref.watch(currentBookProvider);
     final transactions = ref.watch(transactionsProvider);
     final currencySymbol = ref.watch(currencyProvider);
+    final l10n = AppLocalizations.of(context);
 
     // Lấy màu nền hiện tại
     final themeColor = ref.watch(themeColorProvider);
     return books.when(
       loading: () => const SkeletonLoading(),
       error: (error, stack) =>
-          Scaffold(body: Center(child: Text('Có lỗi xảy ra: $error'))),
+          Scaffold(body: Center(child: Text('${l10n.error}: $error'))),
       data: (books) {
         if (books.isEmpty) {
           return Scaffold(
@@ -114,7 +116,7 @@ class _BooksState extends ConsumerState<Books>
               elevation: 0,
               toolbarHeight: 60.h,
               title: Text(
-                'Sổ chi tiêu',
+                l10n.books,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24.sp,
@@ -185,7 +187,7 @@ class _BooksState extends ConsumerState<Books>
                                 ),
                               ),
                               child: Text(
-                                'Tạo sổ chi tiêu',
+                                l10n.createBook,
                                 style: TextStyle(
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
@@ -397,20 +399,20 @@ class _BooksState extends ConsumerState<Books>
                                             final defaultEnd = now;
                                             final picked =
                                                 await showDateRangePicker(
-                                                  context: context,
-                                                  firstDate: DateTime(2020),
-                                                  lastDate: DateTime(2030),
-                                                  initialDateRange:
-                                                      (_startDate != null &&
-                                                              _endDate != null)
-                                                          ? DateTimeRange(
-                                                              start: _startDate!,
-                                                              end: _endDate!)
-                                                          : DateTimeRange(
-                                                              start: defaultStart,
-                                                              end: defaultEnd,
-                                                            ),
-                                                );
+                                              context: context,
+                                              firstDate: DateTime(2020),
+                                              lastDate: DateTime(2030),
+                                              initialDateRange:
+                                                  (_startDate != null &&
+                                                          _endDate != null)
+                                                      ? DateTimeRange(
+                                                          start: _startDate!,
+                                                          end: _endDate!)
+                                                      : DateTimeRange(
+                                                          start: defaultStart,
+                                                          end: defaultEnd,
+                                                        ),
+                                            );
 
                                             if (picked != null) {
                                               setState(() {

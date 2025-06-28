@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../data/database/database_helper.dart';
 import '../ui/more.dart';
 import '../providers/providers_barrel.dart';
+import '../utils/localization.dart';
 import './widget/widget_barrel.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -74,7 +75,9 @@ class _ChartsState extends ConsumerState<Charts>
     final transactions = ref.watch(transactionsProvider);
     final currencyType = ref.watch(currencyProvider);
     final currentBook = ref.watch(currentBookProvider);
-// Lấy màu nền hiện tại
+    final l10n = AppLocalizations.of(context);
+
+    // Lấy màu nền hiện tại
     final themeColor = ref.watch(themeColorProvider);
     return Scaffold(
       backgroundColor: Colors.white,
@@ -86,7 +89,7 @@ class _ChartsState extends ConsumerState<Charts>
       ),
       body: currentBook.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, stack) => Center(child: Text('${l10n.error}: $error')),
         data: (book) {
           if (book == null) {
             return Center(
@@ -133,7 +136,7 @@ class _ChartsState extends ConsumerState<Charts>
                             ),
                           ),
                           child: Text(
-                            'Tạo sổ chi tiêu',
+                            l10n.createBook,
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,

@@ -7,11 +7,14 @@ import '../providers/currency_provider.dart';
 import '../providers/more/transaction_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/more/notifications_provider.dart';
+import '../providers/more/locale_provider.dart';
 import 'more/notification.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../utils/localization.dart';
+import '../utils/languages.dart';
 
 // 🔀 Danh sách các màu chủ đạo có thể chọn
-final List<Color> primaryVariants = [
+final List<Color> primaryVariants = const [
   Color(0xFF6C63FF), // Tím
   Color(0xFF2196F3), // Xanh dương
   Color(0xFF4CAF50), // Xanh lá
@@ -25,25 +28,11 @@ final List<Color> primaryVariants = [
   Color(0xFF607D8B), // Xám xanh
 ];
 
-final List<String> _themeColorNames = [
-  'Tím',
-  'Xanh dương',
-  'Lá',
-  'Cam',
-  'Hồng',
-  'Tím đậm',
-  'Indigo',
-  'Cyan',
-  'Cam sáng',
-  'Nâu',
-  'Xám xanh',
-];
-
 class More extends ConsumerStatefulWidget {
   const More({super.key});
 
   @override
-  _MoreState createState() => _MoreState();
+  ConsumerState<More> createState() => _MoreState();
 }
 
 class _MoreState extends ConsumerState<More> {
@@ -75,8 +64,11 @@ class _MoreState extends ConsumerState<More> {
     // Lấy đơn vị tiền tệ hiện tại từ provider
     final currentCurrency = ref.watch(currencyProvider);
 
-    // Lấy màu nền hiện tại
-    final themeColor = ref.watch(themeColorProvider);
+    // Lấy ngôn ngữ hiện tại
+    final currentLanguage = ref.watch(localeProvider);
+
+    // Lấy AppLocalizations
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: Colors.white, // Áp dụng màu nền
@@ -86,7 +78,7 @@ class _MoreState extends ConsumerState<More> {
         title: Padding(
           padding: EdgeInsets.only(left: 14.w),
           child: Text(
-            'Cài đặt',
+            l10n.settings,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 22.sp,
@@ -106,19 +98,22 @@ class _MoreState extends ConsumerState<More> {
       ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
-        child: Column(children: [_buildSettingsCard(currentCurrency)]),
+        child: Column(children: [
+          _buildSettingsCard(currentCurrency, currentLanguage, l10n)
+        ]),
       ),
     );
   }
 
-  Widget _buildSettingsCard(CurrencyType currentCurrency) {
+  Widget _buildSettingsCard(CurrencyType currentCurrency,
+      AppLanguage currentLanguage, AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
+            color: Colors.grey.withValues(alpha: 0.15),
             spreadRadius: 2.r,
             blurRadius: 16.r,
             offset: Offset(0, 4.h),
@@ -129,15 +124,16 @@ class _MoreState extends ConsumerState<More> {
         children: [
           _buildSettingItem(
             icon: Icons.language,
-            title: 'Ngôn ngữ',
+            title: l10n.language,
+            subtitle: currentLanguage.displayName,
             onTap: () {
-              _showLanguageDialog();
+              _showLanguageDialog(l10n);
             },
           ),
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.currency_exchange,
-            title: 'Tiền tệ',
+            title: l10n.currency,
             subtitle: currentCurrency.displayName,
             onTap: () {
               _showCurrencyDialog(currentCurrency);
@@ -146,10 +142,10 @@ class _MoreState extends ConsumerState<More> {
           _buildDivider(),
           _buildSettingItem(
             icon: Icons.color_lens,
-            title: 'Màu chủ đạo',
-            subtitle: _themeColorNames[_currentColorIndex ?? 0],
+            title: l10n.themeColor,
+            subtitle: _getThemeColorName(l10n),
             onTap: () {
-              _showBackgroundColorDialog();
+              _showBackgroundColorDialog(l10n);
             },
           ),
           _buildDivider(),
@@ -160,7 +156,7 @@ class _MoreState extends ConsumerState<More> {
 
               return _buildSettingItem(
                 icon: Icons.notifications,
-                title: 'Thông báo',
+                title: l10n.notifications,
                 badge: unreadCount > 0 ? unreadCount.toString() : null,
                 onTap: () {
                   _showNotificationDialog();
@@ -171,6 +167,23 @@ class _MoreState extends ConsumerState<More> {
         ],
       ),
     );
+  }
+
+  String _getThemeColorName(AppLocalizations l10n) {
+    final colorNames = [
+      l10n.purple,
+      l10n.blue,
+      l10n.green,
+      l10n.orange,
+      l10n.pink,
+      l10n.darkPurple,
+      l10n.indigo,
+      l10n.cyan,
+      l10n.brightOrange,
+      l10n.brown,
+      l10n.blueGrey,
+    ];
+    return colorNames[_currentColorIndex ?? 0];
   }
 
   Widget _buildDivider() {
@@ -268,7 +281,10 @@ class _MoreState extends ConsumerState<More> {
     );
   }
 
-  void _showLanguageDialog() {
+  void _showLanguageDialog(AppLocalizations l10n) {
+    final currentLanguage = ref.read(localeProvider);
+    final supportedLanguages = ref.read(supportedLanguagesProvider);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -276,7 +292,7 @@ class _MoreState extends ConsumerState<More> {
           borderRadius: BorderRadius.circular(16.r),
         ),
         title: Text(
-          'Chọn ngôn ngữ',
+          l10n.chooseLanguage,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: const Color(0xFF2D3142),
@@ -285,26 +301,43 @@ class _MoreState extends ConsumerState<More> {
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildDialogOption(
-              title: 'Tiếng Việt',
-              isSelected: true,
+          children: supportedLanguages.map((language) {
+            return _buildDialogOption(
+              title: language.displayName,
+              isSelected: currentLanguage == language,
               onTap: () {
+                ref.read(localeProvider.notifier).setLanguage(language);
                 Navigator.pop(context);
+
+                // Thông báo cho người dùng
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      _getLanguageChangeMessage(language, l10n),
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                    backgroundColor: const Color(0xFF4CAF50),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
               },
-            ),
-            _buildDialogOption(
-              title: 'English',
-              isSelected: false,
-              onTap: () {
-                Navigator.pop(context);
-                // Áp dụng ngôn ngữ tại đây
-              },
-            ),
-          ],
+            );
+          }).toList(),
         ),
       ),
     );
+  }
+
+  String _getLanguageChangeMessage(
+      AppLanguage language, AppLocalizations l10n) {
+    switch (language) {
+      case AppLanguage.vietnamese:
+        return l10n.switchedToVietnamese;
+      case AppLanguage.english:
+        return l10n.switchedToEnglish;
+      default:
+        return 'Switched to ${language.displayName}';
+    }
   }
 
   void _showCurrencyDialog(CurrencyType currentCurrency) {
@@ -355,7 +388,7 @@ class _MoreState extends ConsumerState<More> {
     );
   }
 
-  void _showBackgroundColorDialog() async {
+  void _showBackgroundColorDialog(AppLocalizations l10n) async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -363,7 +396,7 @@ class _MoreState extends ConsumerState<More> {
           borderRadius: BorderRadius.circular(16.r),
         ),
         title: Text(
-          'Chọn màu chủ đạo',
+          l10n.chooseThemeColor,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: const Color(0xFF2D3142),
@@ -374,7 +407,7 @@ class _MoreState extends ConsumerState<More> {
           mainAxisSize: MainAxisSize.min,
           children: List.generate(primaryVariants.length, (index) {
             return _buildDialogOption(
-              title: _themeColorNames[index],
+              title: _getThemeColorName(l10n),
               isSelected: _currentColorIndex == index,
               color: primaryVariants[index],
               onTap: () {
@@ -392,7 +425,7 @@ class _MoreState extends ConsumerState<More> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Đã đổi màu nền thành ${_themeColorNames[index]}',
+                      l10n.themeColorChanged(_getThemeColorName(l10n)),
                       style: TextStyle(fontSize: 16.sp),
                     ),
                     backgroundColor: const Color(0xFF4CAF50),
@@ -409,6 +442,7 @@ class _MoreState extends ConsumerState<More> {
 
   void _updateCurrency(CurrencyType newCurrency) async {
     final oldCurrency = ref.read(currencyProvider);
+    final l10n = AppLocalizations.of(context);
 
     if (oldCurrency != newCurrency) {
       // Lấy danh sách giao dịch hiện tại
@@ -422,15 +456,17 @@ class _MoreState extends ConsumerState<More> {
       ref.read(currencyProvider.notifier).setCurrency(newCurrency);
 
       // Hiển thị thông báo cho người dùng
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Đã chuyển sang ${newCurrency.displayName} và cập nhật tất cả giao dịch',
-            style: TextStyle(fontSize: 16.sp),
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n.currencyChanged(newCurrency.displayName),
+              style: TextStyle(fontSize: 16.sp),
+            ),
+            backgroundColor: const Color(0xFF4CAF50),
           ),
-          backgroundColor: const Color(0xFF4CAF50),
-        ),
-      );
+        );
+      }
     }
   }
 

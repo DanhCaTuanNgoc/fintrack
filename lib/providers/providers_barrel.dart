@@ -4,6 +4,7 @@ export './currency_provider.dart';
 export './recurring_bill_provider.dart';
 export './savings_goal_provider.dart';
 export './theme_provider.dart';
+export 'more/locale_provider.dart';
 export 'more/transaction_provider.dart';
 export './wallet_provider.dart';
 export 'more/notifications_provider.dart';
