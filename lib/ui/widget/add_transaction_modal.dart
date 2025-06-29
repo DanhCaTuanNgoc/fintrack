@@ -119,7 +119,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                   TextField(
                     decoration: InputDecoration(
                       labelText: l10n.note,
-                      labelStyle: const TextStyle(color: Colors.black),
+                      labelStyle: TextStyle(color: widget.themeColor),
                       prefixIcon: Icon(
                         Icons.note,
                         color: widget.themeColor,

@@ -16,6 +16,7 @@ import 'widget/custom_snackbar.dart';
 
 // 🔀 Danh sách các màu chủ đạo có thể chọn
 final List<Color> primaryVariants = const [
+  Color(0xFF2D3142), // Đen có độ bóng
   Color(0xFF6C63FF), // Tím
   Color(0xFF2196F3), // Xanh dương
   Color(0xFF4CAF50), // Xanh lá
@@ -172,6 +173,7 @@ class _MoreState extends ConsumerState<More> {
 
   String _getThemeColorName(AppLocalizations l10n) {
     final colorNames = [
+      l10n.black,
       l10n.purple,
       l10n.blue,
       l10n.green,
@@ -289,6 +291,7 @@ class _MoreState extends ConsumerState<More> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
         ),
@@ -341,6 +344,7 @@ class _MoreState extends ConsumerState<More> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
         ),
@@ -400,33 +404,142 @@ class _MoreState extends ConsumerState<More> {
             fontSize: 18.sp,
           ),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(primaryVariants.length, (index) {
-            return _buildDialogOption(
-              title: _getColorNameByIndex(index, l10n),
-              isSelected: _currentColorIndex == index,
-              color: primaryVariants[index],
-              onTap: () {
-                setState(() {
-                  _currentColorIndex = index;
-                });
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 330.h, // Cố định chiều cao để có thể scroll
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Grid layout cho màu sắc
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 12.w,
+                    mainAxisSpacing: 12.h,
+                    childAspectRatio: 1.2,
+                  ),
+                  itemCount: primaryVariants.length,
+                  itemBuilder: (context, index) {
+                    return _buildColorGridItem(
+                      color: primaryVariants[index],
+                      isSelected: _currentColorIndex == index,
+                      title: _getColorNameByIndex(index, l10n),
+                      onTap: () {
+                        setState(() {
+                          _currentColorIndex = index;
+                        });
 
-                // Lưu màu mới
-                ref.read(themeColorProvider.notifier).setThemeColor(index);
+                        // Lưu màu mới
+                        ref
+                            .read(themeColorProvider.notifier)
+                            .setThemeColor(index);
 
-                // Đóng dialog
-                Navigator.pop(context);
+                        // Đóng dialog
+                        Navigator.pop(context);
 
-                // Thông báo cho người dùng
-                CustomSnackBar.showSuccess(
-                  context,
-                  message:
-                      l10n.themeColorChanged(_getColorNameByIndex(index, l10n)),
-                );
-              },
-            );
-          }),
+                        // Thông báo cho người dùng
+                        CustomSnackBar.showSuccess(
+                          context,
+                          message: l10n.themeColorChanged(
+                              _getColorNameByIndex(index, l10n)),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColorGridItem({
+    required Color color,
+    required bool isSelected,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12.r),
+          border: isSelected
+              ? Border.all(color: const Color(0xFF4CAF50), width: 3.w)
+              : Border.all(color: Colors.grey.shade300, width: 1.w),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 4.r,
+              offset: Offset(0, 2.h),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Gradient overlay để text dễ đọc hơn
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.r),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.3),
+                  ],
+                ),
+              ),
+            ),
+            // Check icon nếu được chọn
+            if (isSelected)
+              Positioned(
+                top: 8.h,
+                right: 8.w,
+                child: Container(
+                  padding: EdgeInsets.all(4.w),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4CAF50),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 12.w,
+                  ),
+                ),
+              ),
+            // Tên màu ở dưới
+            Positioned(
+              bottom: 8.h,
+              left: 8.w,
+              right: 8.w,
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      offset: Offset(0, 1.h),
+                      blurRadius: 2.r,
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -434,6 +547,7 @@ class _MoreState extends ConsumerState<More> {
 
   String _getColorNameByIndex(int index, AppLocalizations l10n) {
     final colorNames = [
+      l10n.black,
       l10n.purple,
       l10n.blue,
       l10n.green,
@@ -482,19 +596,34 @@ class _MoreState extends ConsumerState<More> {
   }) {
     return InkWell(
       onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+        margin: EdgeInsets.symmetric(vertical: 4.h),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFF0F8F0) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12.r),
+          border: isSelected
+              ? Border.all(color: const Color(0xFF4CAF50), width: 2.w)
+              : null,
+        ),
         child: Row(
           children: [
             if (color != null)
               Container(
-                width: 24.w,
-                height: 24.w,
-                margin: EdgeInsets.only(right: 12.w),
+                width: 32.w,
+                height: 32.w,
+                margin: EdgeInsets.only(right: 16.w),
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(4.r),
-                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(8.r),
+                  border: Border.all(color: Colors.grey.shade300, width: 1.w),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 4.r,
+                      offset: Offset(0, 2.h),
+                    ),
+                  ],
                 ),
               ),
             Expanded(
@@ -502,7 +631,7 @@ class _MoreState extends ConsumerState<More> {
                 title,
                 style: TextStyle(
                   fontSize: 16.sp,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   color: isSelected
                       ? const Color(0xFF4CAF50)
                       : const Color(0xFF2D3142),
@@ -510,10 +639,17 @@ class _MoreState extends ConsumerState<More> {
               ),
             ),
             if (isSelected)
-              Icon(
-                Icons.check_circle,
-                color: const Color(0xFF4CAF50),
-                size: 20.w,
+              Container(
+                padding: EdgeInsets.all(4.w),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4CAF50),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check,
+                  color: Colors.white,
+                  size: 16.w,
+                ),
               ),
           ],
         ),

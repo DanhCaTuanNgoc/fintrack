@@ -95,6 +95,7 @@ class AppLocalizations {
   String get currency => _getString('currency');
   String get themeColor => _getString('themeColor');
   String get notifications => _getString('notifications');
+  String get black => _getString('black');
   String get purple => _getString('purple');
   String get blue => _getString('blue');
   String get green => _getString('green');
@@ -396,6 +397,8 @@ class AppLocalizations {
         return VietnameseStrings.themeColor;
       case 'notifications':
         return VietnameseStrings.notifications;
+      case 'black':
+        return VietnameseStrings.black;
       case 'purple':
         return VietnameseStrings.purple;
       case 'blue':
@@ -802,6 +805,8 @@ class AppLocalizations {
         return EnglishStrings.themeColor;
       case 'notifications':
         return EnglishStrings.notifications;
+      case 'black':
+        return EnglishStrings.black;
       case 'purple':
         return EnglishStrings.purple;
       case 'blue':

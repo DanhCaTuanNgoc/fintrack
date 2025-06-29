@@ -141,6 +141,7 @@ class EnglishStrings {
   static const String ten = 'Ten';
 
   // Colors
+  static const String black = 'Black';
   static const String purple = 'Purple';
   static const String blue = 'Blue';
   static const String green = 'Green';

@@ -36,18 +36,19 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
   late String _amount;
   late String _note;
   String? _selectedCategory;
+  String? _noteError;
+  String? _amountError;
 
   @override
   void initState() {
     super.initState();
-    // Convert amount to integer string (remove decimal places)
     _amount = widget.transaction.amount.toInt().toString();
     _note = widget.transaction.note ?? '';
     _isExpense = widget.transaction.type == 'expense';
     _selectedCategory = widget.categories.firstWhere(
       (cat) => cat['id'] == widget.transaction.categoryId,
-      orElse: () => {'icon': null},
-    )['icon'];
+      orElse: () => {'name': null},
+    )['name'];
   }
 
   @override
@@ -137,13 +138,53 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                         borderSide:
                             BorderSide(color: widget.themeColor, width: 2),
                       ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                        ),
+                      ),
                       prefixIcon: Icon(
                         Icons.note,
                         color: widget.themeColor,
                       ),
                     ),
-                    onChanged: (value) => _note = value,
+                    onChanged: (value) {
+                      _note = value;
+                      // Clear error when user starts typing
+                      if (_noteError != null) {
+                        setState(() {
+                          _noteError = null;
+                        });
+                      }
+                    },
                   ),
+                  if (_noteError != null) ...[
+                    SizedBox(height: 8.h),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 8.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(
+                          color: Colors.red.shade200,
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        _noteError!,
+                        style: TextStyle(
+                          color: Colors.red.shade600,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ),
+                  ],
                   SizedBox(height: 16.h),
                   Container(
                     padding: EdgeInsets.only(top: 9.h),
@@ -169,6 +210,10 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                             if (mounted) {
                               setState(() {
                                 _amount += number;
+                                // Clear error when user starts typing
+                                if (_amountError != null) {
+                                  _amountError = null;
+                                }
                               });
                             }
                           },
@@ -179,6 +224,10 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                   _amount =
                                       _amount.substring(0, _amount.length - 1);
                                 }
+                                // Clear error when user starts typing
+                                if (_amountError != null) {
+                                  _amountError = null;
+                                }
                               });
                             }
                           },
@@ -186,6 +235,31 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                       ],
                     ),
                   ),
+                  if (_amountError != null) ...[
+                    SizedBox(height: 8.h),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 8.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(
+                          color: Colors.red.shade200,
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        _amountError!,
+                        style: TextStyle(
+                          color: Colors.red.shade600,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ),
+                  ],
                   SizedBox(height: 16.h),
                   GestureDetector(
                     onTap: () {
@@ -231,7 +305,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                         padding: EdgeInsets.all(8.w),
                                         decoration: BoxDecoration(
                                           color: _selectedCategory ==
-                                                  category['icon']
+                                                  category['name']
                                               ? widget.themeColor
                                                   .withOpacity(0.1)
                                               : Colors.grey[100],
@@ -243,7 +317,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                           style: TextStyle(
                                             fontSize: 20.sp,
                                             color: _selectedCategory ==
-                                                    category['icon']
+                                                    category['name']
                                                 ? widget.themeColor
                                                 : Colors.grey[600],
                                           ),
@@ -253,17 +327,17 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                         category['name'],
                                         style: TextStyle(
                                           fontWeight: _selectedCategory ==
-                                                  category['icon']
+                                                  category['name']
                                               ? FontWeight.bold
                                               : FontWeight.normal,
                                           color: _selectedCategory ==
-                                                  category['icon']
+                                                  category['name']
                                               ? widget.themeColor
                                               : const Color(0xFF2D3142),
                                         ),
                                       ),
                                       trailing:
-                                          _selectedCategory == category['icon']
+                                          _selectedCategory == category['name']
                                               ? Icon(
                                                   Icons.check_circle,
                                                   color: widget.themeColor,
@@ -271,7 +345,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                               : null,
                                       onTap: () {
                                         setState(() {
-                                          _selectedCategory = category['icon'];
+                                          _selectedCategory = category['name'];
                                         });
                                         Future.delayed(Duration.zero,
                                             () => {Navigator.pop(context)});
@@ -318,17 +392,13 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                         CategoryHelper.getLocalizedCategoryName(
                                             cat['icon'], l10n) ==
                                         _selectedCategory,
+                                    orElse: () => {'icon': '🏷️'},
                                   )['icon'],
                                   style: TextStyle(fontSize: 20.sp),
                                 ),
                                 SizedBox(width: 8.w),
                                 Text(
-                                  CategoryHelper.getLocalizedCategoryName(
-                                    categories.firstWhere(
-                                      (cat) => cat['icon'] == _selectedCategory,
-                                    )['icon'],
-                                    l10n,
-                                  ),
+                                  _selectedCategory!,
                                   style: TextStyle(
                                     fontSize: 16.sp,
                                     color: const Color(0xFF2D3142),
@@ -343,9 +413,27 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
+                        // Validate note field
+                        if (_note.trim().isEmpty) {
+                          setState(() {
+                            _noteError =
+                                'Vui lòng nhập chú thích cho giao dịch';
+                          });
+                          return;
+                        }
+
+                        // Validate amount
+                        if (_amount.isEmpty) {
+                          setState(() {
+                            _amountError = 'Vui lòng nhập số tiền';
+                          });
+                          return;
+                        }
+
                         if (_amount.isNotEmpty && _selectedCategory != null) {
                           final selectedCategoryData = categories.firstWhere(
-                            (cat) => cat['icon'] == _selectedCategory,
+                            (cat) => cat['name'] == _selectedCategory,
+                            orElse: () => {'id': null, 'icon': '🏷️'},
                           );
 
                           final updated = widget.transaction.copyWith(

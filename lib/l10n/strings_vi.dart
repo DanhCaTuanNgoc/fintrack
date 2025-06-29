@@ -142,6 +142,7 @@ class VietnameseStrings {
   static const String ten = 'Mười';
 
   // Colors
+  static const String black = 'Đen';
   static const String purple = 'Tím';
   static const String blue = 'Xanh dương';
   static const String green = 'Xanh lá';
