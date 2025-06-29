@@ -358,4 +358,9 @@ class EnglishStrings {
   static const String friday = 'Fri';
   static const String saturday = 'Sat';
   static const String sunday = 'Sun';
+
+  // Time ago with parameters
+  static const String daysAgoWith = '{days} days ago';
+  static const String hoursAgoWith = '{hours} hours ago';
+  static const String minutesAgoWith = '{minutes} minutes ago';
 }

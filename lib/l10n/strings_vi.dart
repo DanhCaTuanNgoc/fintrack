@@ -361,4 +361,9 @@ class VietnameseStrings {
   static const String friday = 'Th 6';
   static const String saturday = 'Th 7';
   static const String sunday = 'CN';
+
+  // Time ago with parameters
+  static const String daysAgoWith = '{days} ngày trước';
+  static const String hoursAgoWith = '{hours} giờ trước';
+  static const String minutesAgoWith = '{minutes} phút trước';
 }

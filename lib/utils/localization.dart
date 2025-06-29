@@ -244,11 +244,11 @@ class AppLocalizations {
   String get deleteAllRead => _getString('deleteAllRead');
   String get justNow => _getString('justNow');
   String daysAgoWith(int days) =>
-      _getString('daysAgo').replaceFirst('{days}', days.toString());
+      _getString('daysAgoWith').replaceFirst('{days}', days.toString());
   String hoursAgoWith(int hours) =>
-      _getString('hoursAgo').replaceFirst('{hours}', hours.toString());
-  String minutesAgoWith(int minutes) =>
-      _getString('minutesAgo').replaceFirst('{minutes}', minutes.toString());
+      _getString('hoursAgoWith').replaceFirst('{hours}', hours.toString());
+  String minutesAgoWith(int minutes) => _getString('minutesAgoWith')
+      .replaceFirst('{minutes}', minutes.toString());
 
   // Weekdays
   String get monday => _getString('monday');
@@ -636,6 +636,12 @@ class AppLocalizations {
         return VietnameseStrings.deleteAllRead;
       case 'justNow':
         return VietnameseStrings.justNow;
+      case 'daysAgoWith':
+        return VietnameseStrings.daysAgoWith;
+      case 'hoursAgoWith':
+        return VietnameseStrings.hoursAgoWith;
+      case 'minutesAgoWith':
+        return VietnameseStrings.minutesAgoWith;
       case 'daysAgo':
         return VietnameseStrings.daysAgo;
       case 'hoursAgo':
@@ -1022,6 +1028,12 @@ class AppLocalizations {
         return EnglishStrings.deleteAllRead;
       case 'justNow':
         return EnglishStrings.justNow;
+      case 'daysAgoWith':
+        return EnglishStrings.daysAgoWith;
+      case 'hoursAgoWith':
+        return EnglishStrings.hoursAgoWith;
+      case 'minutesAgoWith':
+        return EnglishStrings.minutesAgoWith;
       case 'daysAgo':
         return EnglishStrings.daysAgo;
       case 'hoursAgo':
