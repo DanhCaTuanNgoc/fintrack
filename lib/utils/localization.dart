@@ -662,6 +662,20 @@ class AppLocalizations {
         return VietnameseStrings.saturday;
       case 'sunday':
         return VietnameseStrings.sunday;
+      case 'deleteSavingsBook':
+        return VietnameseStrings.deleteSavingsBook;
+      case 'deleteExpenseBook':
+        return VietnameseStrings.deleteExpenseBook;
+      case 'confirmDeleteExpenseBook':
+        return VietnameseStrings.confirmDeleteExpenseBook;
+      case 'deleteExpenseBookSuccess':
+        return VietnameseStrings.deleteExpenseBookSuccess;
+      case 'deleteExpenseBookError':
+        return VietnameseStrings.deleteExpenseBookError;
+      case 'deletingExpenseBook':
+        return VietnameseStrings.deletingExpenseBook;
+      case 'update':
+        return VietnameseStrings.update;
       default:
         return key;
     }
@@ -1054,6 +1068,20 @@ class AppLocalizations {
         return EnglishStrings.saturday;
       case 'sunday':
         return EnglishStrings.sunday;
+      case 'deleteSavingsBook':
+        return EnglishStrings.deleteSavingsBook;
+      case 'deleteExpenseBook':
+        return EnglishStrings.deleteExpenseBook;
+      case 'confirmDeleteExpenseBook':
+        return EnglishStrings.confirmDeleteExpenseBook;
+      case 'deleteExpenseBookSuccess':
+        return EnglishStrings.deleteExpenseBookSuccess;
+      case 'deleteExpenseBookError':
+        return EnglishStrings.deleteExpenseBookError;
+      case 'deletingExpenseBook':
+        return EnglishStrings.deletingExpenseBook;
+      case 'update':
+        return EnglishStrings.update;
       default:
         return key;
     }
@@ -1096,7 +1124,10 @@ class AppLocalizations {
   String get startDateLabel => _getString('startDateLabel');
   String get chooseDateLabel => _getString('chooseDateLabel');
   String get deleteSavingsBook => _getString('deleteSavingsBook');
-  String get update => _getString('Update');
+  String get deleteExpenseBook => _getString('deleteExpenseBook');
+  String get deleteExpenseBookSuccess => _getString('deleteExpenseBookSuccess');
+  String get deletingExpenseBook => _getString('deletingExpenseBook');
+  String get update => _getString('update');
   String get foodAndDrinks => _getString('Foood');
   String get transportation => _getString('Transportation');
   String get shopping => _getString('Shopping');
@@ -1107,6 +1138,16 @@ class AppLocalizations {
   String get salary => _getString('Salary');
   String get bonus => _getString('Bonus');
   String get investment => _getString('Investment');
+
+  String confirmDeleteExpenseBook(String bookName) {
+    final template = _getString('confirmDeleteExpenseBook');
+    return template.replaceAll('{bookName}', bookName);
+  }
+
+  String deleteExpenseBookError(String error) {
+    final template = _getString('deleteExpenseBookError');
+    return template.replaceAll('{error}', error);
+  }
 }
 
 /// Delegate cho AppLocalizations

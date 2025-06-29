@@ -223,6 +223,14 @@ class EnglishStrings {
   static const String startDateLabel = 'Start Date';
   static const String chooseDateLabel = 'Choose date';
   static const String deleteSavingsBook = 'Delete Savings Book';
+  static const String deleteExpenseBook = 'Delete Expense Book';
+  static const String confirmDeleteExpenseBook =
+      'Are you sure you want to delete the expense book "{bookName}"?';
+  static const String deleteExpenseBookSuccess =
+      'Expense book deleted successfully';
+  static const String deleteExpenseBookError =
+      'An error occurred while deleting the expense book: {error}';
+  static const String deletingExpenseBook = 'Deleting expense book...';
   static const String update = 'Update';
   static const String foodAndDrinks = 'Food & Drinks';
   static const String transportation = 'Transportation';
