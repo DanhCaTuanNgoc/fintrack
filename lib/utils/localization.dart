@@ -1097,16 +1097,16 @@ class AppLocalizations {
   String get chooseDateLabel => _getString('chooseDateLabel');
   String get deleteSavingsBook => _getString('deleteSavingsBook');
   String get update => _getString('update');
-  String get foodAndDrinks => _getString('foodAndDrinks');
-  String get transportation => _getString('transportation');
-  String get shopping => _getString('shopping');
-  String get entertainment => _getString('entertainment');
-  String get education => _getString('education');
-  String get beauty => _getString('beauty');
-  String get household => _getString('household');
-  String get salary => _getString('salary');
-  String get bonus => _getString('bonus');
-  String get investment => _getString('investment');
+  String get foodAndDrinks => _getString('Foood');
+  String get transportation => _getString('Transportation');
+  String get shopping => _getString('Shopping');
+  String get entertainment => _getString('Entertainment');
+  String get education => _getString('Education');
+  String get beauty => _getString('Beauty');
+  String get household => _getString('Household');
+  String get salary => _getString('Salary');
+  String get bonus => _getString('Bonus');
+  String get investment => _getString('Investment');
 }
 
 /// Delegate cho AppLocalizations
