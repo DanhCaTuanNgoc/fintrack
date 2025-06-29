@@ -44,8 +44,8 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
     _isExpense = widget.transaction.type == 'expense';
     _selectedCategory = widget.categories.firstWhere(
       (cat) => cat['id'] == widget.transaction.categoryId,
-      orElse: () => {'name': null},
-    )['name'];
+      orElse: () => {'icon': null},
+    )['icon'];
   }
 
   @override
@@ -226,11 +226,11 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                       leading: Container(
                                         padding: EdgeInsets.all(8.w),
                                         decoration: BoxDecoration(
-                                          color:
-                                              _selectedCategory == localizedName
-                                                  ? widget.themeColor
-                                                      .withOpacity(0.1)
-                                                  : Colors.grey[100],
+                                          color: _selectedCategory ==
+                                                  category['icon']
+                                              ? widget.themeColor
+                                                  .withOpacity(0.1)
+                                              : Colors.grey[100],
                                           borderRadius:
                                               BorderRadius.circular(8.r),
                                         ),
@@ -239,7 +239,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                           style: TextStyle(
                                             fontSize: 20.sp,
                                             color: _selectedCategory ==
-                                                    localizedName
+                                                    category['icon']
                                                 ? widget.themeColor
                                                 : Colors.grey[600],
                                           ),
@@ -248,18 +248,18 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                       title: Text(
                                         localizedName,
                                         style: TextStyle(
-                                          fontWeight:
-                                              _selectedCategory == localizedName
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                          color:
-                                              _selectedCategory == localizedName
-                                                  ? widget.themeColor
-                                                  : const Color(0xFF2D3142),
+                                          fontWeight: _selectedCategory ==
+                                                  category['icon']
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                          color: _selectedCategory ==
+                                                  category['icon']
+                                              ? widget.themeColor
+                                              : const Color(0xFF2D3142),
                                         ),
                                       ),
                                       trailing:
-                                          _selectedCategory == localizedName
+                                          _selectedCategory == category['icon']
                                               ? Icon(
                                                   Icons.check_circle,
                                                   color: widget.themeColor,
@@ -267,7 +267,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                               : null,
                                       onTap: () {
                                         setState(() {
-                                          _selectedCategory = localizedName;
+                                          _selectedCategory = category['icon'];
                                         });
                                         Future.delayed(Duration.zero,
                                             () => {Navigator.pop(context)});
@@ -310,16 +310,18 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                               children: [
                                 Text(
                                   categories.firstWhere(
-                                    (cat) =>
-                                        CategoryHelper.getLocalizedCategoryName(
-                                            cat['icon'], l10n) ==
-                                        _selectedCategory,
+                                    (cat) => cat['icon'] == _selectedCategory,
                                   )['icon'],
                                   style: TextStyle(fontSize: 20.sp),
                                 ),
                                 SizedBox(width: 8.w),
                                 Text(
-                                  _selectedCategory!,
+                                  CategoryHelper.getLocalizedCategoryName(
+                                    categories.firstWhere(
+                                      (cat) => cat['icon'] == _selectedCategory,
+                                    )['icon'],
+                                    l10n,
+                                  ),
                                   style: TextStyle(
                                     fontSize: 16.sp,
                                     color: const Color(0xFF2D3142),
@@ -336,7 +338,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                       onPressed: () async {
                         if (_amount.isNotEmpty && _selectedCategory != null) {
                           final selectedCategoryData = categories.firstWhere(
-                            (cat) => cat['name'] == _selectedCategory,
+                            (cat) => cat['icon'] == _selectedCategory,
                           );
 
                           final updated = widget.transaction.copyWith(

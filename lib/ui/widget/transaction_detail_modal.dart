@@ -124,7 +124,7 @@ class TransactionDetailModal extends ConsumerWidget {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Ghi chú',
+                        l10n.note,
                         style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                       ),
                     ),

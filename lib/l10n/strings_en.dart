@@ -214,7 +214,7 @@ class EnglishStrings {
   static const String confirmDelete = 'Confirm Delete';
   static const String confirmDeleteMessage =
       'Are you sure you want to delete the savings goal "{goalName}"?\n\nThis action cannot be undone and will delete all related transaction history.';
-  static const String deleteSuccess = 'Savings goal deleted!';
+  static const String deleteSuccess = 'Deleted successfully';
   static const String updateSuccess = 'Updated successfully!';
   static const String currentInformation = 'Current Information:';
   static const String savedAmount = 'Saved Amount:';
@@ -224,6 +224,14 @@ class EnglishStrings {
   static const String startDateLabel = 'Start Date';
   static const String chooseDateLabel = 'Choose date';
   static const String deleteSavingsBook = 'Delete Savings Book';
+  static const String deleteExpenseBook = 'Delete Expense Book';
+  static const String confirmDeleteExpenseBook =
+      'Are you sure you want to delete the expense book "{bookName}"?';
+  static const String deleteExpenseBookSuccess =
+      'Expense book deleted successfully';
+  static const String deleteExpenseBookError =
+      'An error occurred while deleting the expense book: {error}';
+  static const String deletingExpenseBook = 'Deleting expense book...';
   static const String update = 'Update';
   static const String foodAndDrinks = 'Food & Drinks';
   static const String transportation = 'Transportation';

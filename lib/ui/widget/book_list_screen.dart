@@ -295,6 +295,7 @@ class BookListScreen extends ConsumerWidget {
   }
 
   void _showDeleteBookDialog(BuildContext context, Book book, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -340,7 +341,7 @@ class BookListScreen extends ConsumerWidget {
 
                 // Tiêu đề
                 Text(
-                  'Xóa sổ chi tiêu',
+                  l10n.deleteExpenseBook,
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
@@ -351,7 +352,7 @@ class BookListScreen extends ConsumerWidget {
 
                 // Nội dung
                 Text(
-                  'Bạn có chắc chắn muốn xóa sổ "${book.name}"?',
+                  l10n.confirmDeleteExpenseBook(book.name),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16.sp,
@@ -384,7 +385,7 @@ class BookListScreen extends ConsumerWidget {
                             ),
                           ),
                           child: Text(
-                            'Hủy',
+                            l10n.cancel,
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w600,
@@ -416,18 +417,80 @@ class BookListScreen extends ConsumerWidget {
                         child: ElevatedButton(
                           onPressed: () async {
                             Navigator.of(context).pop();
-                            await ref
-                                .read(booksProvider.notifier)
-                                .deleteBook(book);
+
+                            // Hiển thị loading
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(
-                                  'Xóa sổ thành công',
-                                  style: TextStyle(fontSize: 15.sp),
+                                content: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 16.w,
+                                      height: 16.w,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Text(
+                                      l10n.deletingExpenseBook,
+                                      style: TextStyle(fontSize: 15.sp),
+                                    ),
+                                  ],
                                 ),
-                                backgroundColor: const Color(0xFF4CAF50),
+                                backgroundColor: Colors.orange.shade600,
+                                duration: const Duration(seconds: 2),
                               ),
                             );
+
+                            try {
+                              // Kiểm tra xem có phải sổ hiện tại không
+                              final currentBookState =
+                                  ref.read(currentBookProvider);
+                              final isCurrentBook = currentBookState.when(
+                                data: (currentBook) =>
+                                    currentBook?.id == book.id,
+                                loading: () => false,
+                                error: (_, __) => false,
+                              );
+
+                              // Xóa sổ
+                              await ref
+                                  .read(booksProvider.notifier)
+                                  .deleteBook(book);
+
+                              // Nếu xóa sổ hiện tại, reset về null
+                              if (isCurrentBook) {
+                                ref
+                                    .read(currentBookProvider.notifier)
+                                    .setCurrentBook(null);
+                              }
+
+                              // Thông báo thành công
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    l10n.deleteExpenseBookSuccess,
+                                    style: TextStyle(fontSize: 15.sp),
+                                  ),
+                                  backgroundColor: const Color(0xFF4CAF50),
+                                ),
+                              );
+                            } catch (error) {
+                              // Thông báo lỗi
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    l10n.deleteExpenseBookError(
+                                        error.toString()),
+                                    style: TextStyle(fontSize: 15.sp),
+                                  ),
+                                  backgroundColor: Colors.red.shade600,
+                                ),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
@@ -446,7 +509,7 @@ class BookListScreen extends ConsumerWidget {
                               ),
                               SizedBox(width: 6.w),
                               Text(
-                                'Xóa',
+                                l10n.delete,
                                 style: TextStyle(
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,

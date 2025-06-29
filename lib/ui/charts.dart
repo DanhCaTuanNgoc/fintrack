@@ -403,11 +403,11 @@ class _ChartsState extends ConsumerState<Charts>
               transaction.date!.month == _selectedMonth.month) {
             final category = _categories.firstWhere(
               (cat) => cat['id'] == transaction.categoryId,
-              orElse: () => {'name': 'Khác'},
+              orElse: () => {'name': 'Khác', 'icon': '💸'},
             );
-            final categoryName = category['name'] as String;
-            _categoryExpenses[categoryName] =
-                (_categoryExpenses[categoryName] ?? 0) + transaction.amount;
+            final categoryIcon = category['icon'] as String? ?? '💸';
+            _categoryExpenses[categoryIcon] =
+                (_categoryExpenses[categoryIcon] ?? 0) + transaction.amount;
           }
         }
 
@@ -477,7 +477,7 @@ class _ChartsState extends ConsumerState<Charts>
                           Expanded(
                             child: Text(
                               CategoryHelper.getLocalizedCategoryName(
-                                  _getCategoryIconFromName(category.key), l10n),
+                                  category.key, l10n),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
@@ -521,11 +521,11 @@ class _ChartsState extends ConsumerState<Charts>
               transaction.date!.month == _selectedMonth.month) {
             final category = _categories.firstWhere(
               (cat) => cat['id'] == transaction.categoryId,
-              orElse: () => {'name': 'Khác'},
+              orElse: () => {'name': 'Khác', 'icon': '💸'},
             );
-            final categoryName = category['name'] as String;
-            _categoryIncomes[categoryName] =
-                (_categoryIncomes[categoryName] ?? 0) + transaction.amount;
+            final categoryIcon = category['icon'] as String? ?? '💸';
+            _categoryIncomes[categoryIcon] =
+                (_categoryIncomes[categoryIcon] ?? 0) + transaction.amount;
           }
         }
 
@@ -595,7 +595,7 @@ class _ChartsState extends ConsumerState<Charts>
                           Expanded(
                             child: Text(
                               CategoryHelper.getLocalizedCategoryName(
-                                  _getCategoryIconFromName(category.key), l10n),
+                                  category.key, l10n),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
@@ -620,33 +620,6 @@ class _ChartsState extends ConsumerState<Charts>
         );
       },
     );
-  }
-
-  String _getCategoryIconFromName(String categoryName) {
-    switch (categoryName) {
-      case 'Ăn uống':
-        return '🍔';
-      case 'Di chuyển':
-        return '🚗';
-      case 'Mua sắm':
-        return '🛍';
-      case 'Giải trí':
-        return '🎮';
-      case 'Học tập':
-        return '📚';
-      case 'Làm đẹp':
-        return '💅';
-      case 'Sinh hoạt':
-        return '🏠';
-      case 'Lương':
-        return '💰';
-      case 'Thưởng':
-        return '🎁';
-      case 'Đầu tư':
-        return '📈';
-      default:
-        return '💸';
-    }
   }
 }
 

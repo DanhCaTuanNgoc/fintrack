@@ -211,7 +211,7 @@ class VietnameseStrings {
   static const String confirmDelete = 'Xác nhận xóa';
   static const String confirmDeleteMessage =
       'Bạn có chắc chắn muốn xóa sổ tiết kiệm "{goalName}"?\n\nHành động này không thể hoàn tác và sẽ xóa tất cả lịch sử giao dịch liên quan.';
-  static const String deleteSuccess = 'Đã xóa sổ tiết kiệm!';
+  static const String deleteSuccess = 'Đã xóa thành công';
   static const String updateSuccess = 'Cập nhật thành công!';
   static const String currentInformation = 'Thông tin hiện tại:';
   static const String savedAmount = 'Đã tiết kiệm:';
@@ -221,6 +221,13 @@ class VietnameseStrings {
   static const String startDateLabel = 'Ngày bắt đầu';
   static const String chooseDateLabel = 'Chọn ngày';
   static const String deleteSavingsBook = 'Xóa sổ tiết kiệm';
+  static const String deleteExpenseBook = 'Xóa sổ chi tiêu';
+  static const String confirmDeleteExpenseBook =
+      'Bạn có chắc chắn muốn xóa sổ "{bookName}"?';
+  static const String deleteExpenseBookSuccess = 'Xóa sổ thành công';
+  static const String deleteExpenseBookError =
+      'Có lỗi xảy ra khi xóa sổ: {error}';
+  static const String deletingExpenseBook = 'Đang xóa sổ...';
   static const String update = 'Cập nhật';
   static const String foodAndDrinks = 'Ăn uống';
   static const String transportation = 'Di chuyển';
