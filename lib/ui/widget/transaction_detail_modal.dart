@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,14 +25,11 @@ class TransactionDetailModal extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
     final category = categories.firstWhere(
       (cat) => cat['id'] == transaction.categoryId,
-      orElse: () => {'name': '', 'icon': ''},
+      orElse: () => {'icon': '🏷️', 'name': 'Không xác định'},
     );
-    final categoryName =
-        CategoryHelper.getLocalizedCategoryName(category['icon'], l10n);
-
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.r)),
@@ -109,7 +108,7 @@ class TransactionDetailModal extends ConsumerWidget {
                       ),
                       SizedBox(width: 12.w),
                       Text(
-                        categoryName,
+                        category['name'],
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
@@ -124,7 +123,7 @@ class TransactionDetailModal extends ConsumerWidget {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Ghi chú',
+                        l10n.note,
                         style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                       ),
                     ),
@@ -178,7 +177,9 @@ class TransactionDetailModal extends ConsumerWidget {
                                 duration: const Duration(seconds: 2),
                               ),
                             );
-                            Navigator.pop(context);
+                            Future.delayed(Duration.zero, () {
+                              Navigator.pop(context);
+                            });
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,

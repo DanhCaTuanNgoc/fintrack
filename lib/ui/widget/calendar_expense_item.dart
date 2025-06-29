@@ -104,7 +104,7 @@ class CalendarExpenseItem extends ConsumerWidget {
                 ),
                 const Spacer(),
                 Text(
-                  'Tổng: ${isAmountVisible ? (dayExpense >= 0 ? '+' : '-') + formatCurrency(dayExpense.abs(), ref.watch(currencyProvider)) : '•••••'}',
+                  '${l10n.total} : ${isAmountVisible ? (dayExpense >= 0 ? '+' : '-') + formatCurrency(dayExpense.abs(), ref.watch(currencyProvider)) : '•••••'}',
                   style: TextStyle(color: Colors.grey[600], fontSize: 14.sp),
                 ),
               ],

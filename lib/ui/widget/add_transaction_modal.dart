@@ -136,7 +136,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                   ),
                   SizedBox(height: 16.h),
                   Container(
-                    padding: EdgeInsets.fromLTRB(0, 9.h, 0, 0),
+                    padding: EdgeInsets.only(top: 9.h),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(12.r),

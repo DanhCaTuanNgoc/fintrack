@@ -7,7 +7,6 @@ import '../../providers/currency_provider.dart';
 import '../../utils/localization.dart';
 import './number_pad.dart';
 import './type_button.dart';
-import '../../utils/category_helper.dart';
 
 class EditTransactionModal extends ConsumerStatefulWidget {
   final Transaction transaction;
@@ -31,16 +30,17 @@ class EditTransactionModal extends ConsumerStatefulWidget {
 }
 
 class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
+  late bool _isExpense;
   late String _amount;
   late String _note;
   String? _selectedCategory;
-  late bool _isExpense;
 
   @override
   void initState() {
     super.initState();
-    _amount = widget.transaction.amount.toString();
-    _note = widget.transaction.note;
+    // Convert amount to integer string (remove decimal places)
+    _amount = widget.transaction.amount.toInt().toString();
+    _note = widget.transaction.note ?? '';
     _isExpense = widget.transaction.type == 'expense';
     _selectedCategory = widget.categories.firstWhere(
       (cat) => cat['id'] == widget.transaction.categoryId,
@@ -122,7 +122,6 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                   ),
                   SizedBox(height: 18.h),
                   TextField(
-                    controller: TextEditingController(text: _note),
                     decoration: InputDecoration(
                       labelText: l10n.note,
                       labelStyle: TextStyle(color: widget.themeColor),
@@ -160,26 +159,30 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                             color: const Color(0xFF2D3142),
                           ),
                         ),
-                        SizedBox(height: 16.h),
+                        SizedBox(height: 10.h),
                         NumberPad(
                           onNumberTap: (number) {
-                            setState(() {
-                              _amount += number;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                _amount += number;
+                              });
+                            }
                           },
                           onBackspaceTap: () {
-                            setState(() {
-                              if (_amount.isNotEmpty) {
-                                _amount =
-                                    _amount.substring(0, _amount.length - 1);
-                              }
-                            });
+                            if (mounted) {
+                              setState(() {
+                                if (_amount.isNotEmpty) {
+                                  _amount =
+                                      _amount.substring(0, _amount.length - 1);
+                                }
+                              });
+                            }
                           },
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   GestureDetector(
                     onTap: () {
                       showModalBottomSheet(
@@ -219,18 +222,15 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                               SingleChildScrollView(
                                 child: Column(
                                   children: categories.map((category) {
-                                    final localizedName =
-                                        CategoryHelper.getLocalizedCategoryName(
-                                            category['icon'], l10n);
                                     return ListTile(
                                       leading: Container(
                                         padding: EdgeInsets.all(8.w),
                                         decoration: BoxDecoration(
-                                          color:
-                                              _selectedCategory == localizedName
-                                                  ? widget.themeColor
-                                                      .withOpacity(0.1)
-                                                  : Colors.grey[100],
+                                          color: _selectedCategory ==
+                                                  category['name']
+                                              ? widget.themeColor
+                                                  .withOpacity(0.1)
+                                              : Colors.grey[100],
                                           borderRadius:
                                               BorderRadius.circular(8.r),
                                         ),
@@ -239,27 +239,27 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                           style: TextStyle(
                                             fontSize: 20.sp,
                                             color: _selectedCategory ==
-                                                    localizedName
+                                                    category['name']
                                                 ? widget.themeColor
                                                 : Colors.grey[600],
                                           ),
                                         ),
                                       ),
                                       title: Text(
-                                        localizedName,
+                                        category['name'],
                                         style: TextStyle(
-                                          fontWeight:
-                                              _selectedCategory == localizedName
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                          color:
-                                              _selectedCategory == localizedName
-                                                  ? widget.themeColor
-                                                  : const Color(0xFF2D3142),
+                                          fontWeight: _selectedCategory ==
+                                                  category['name']
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                          color: _selectedCategory ==
+                                                  category['name']
+                                              ? widget.themeColor
+                                              : const Color(0xFF2D3142),
                                         ),
                                       ),
                                       trailing:
-                                          _selectedCategory == localizedName
+                                          _selectedCategory == category['name']
                                               ? Icon(
                                                   Icons.check_circle,
                                                   color: widget.themeColor,
@@ -267,7 +267,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                               : null,
                                       onTap: () {
                                         setState(() {
-                                          _selectedCategory = localizedName;
+                                          _selectedCategory = category['name'];
                                         });
                                         Future.delayed(Duration.zero,
                                             () => {Navigator.pop(context)});
@@ -310,10 +310,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                               children: [
                                 Text(
                                   categories.firstWhere(
-                                    (cat) =>
-                                        CategoryHelper.getLocalizedCategoryName(
-                                            cat['icon'], l10n) ==
-                                        _selectedCategory,
+                                    (cat) => cat['name'] == _selectedCategory,
                                   )['icon'],
                                   style: TextStyle(fontSize: 20.sp),
                                 ),
@@ -349,7 +346,21 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                           await ref
                               .read(transactionsProvider.notifier)
                               .updateTransaction(updated);
-                          if (mounted) Navigator.pop(context);
+                          if (mounted) {
+                            Navigator.pop(context);
+                            Future.delayed(const Duration(milliseconds: 300),
+                                () {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(l10n.updateSuccess),
+                                    backgroundColor: Colors.green,
+                                    duration: const Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            });
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(

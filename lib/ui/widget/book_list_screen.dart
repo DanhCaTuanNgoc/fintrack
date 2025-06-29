@@ -35,9 +35,9 @@ class BookListScreen extends ConsumerWidget {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () =>
+                Future.delayed(Duration.zero, () => {Navigator.pop(context)})),
       ),
       body: booksState.when(
         data: (books) {
@@ -198,7 +198,8 @@ class BookListScreen extends ConsumerWidget {
                           ref
                               .read(currentBookProvider.notifier)
                               .setCurrentBook(book);
-                          Navigator.pop(context);
+                          Future.delayed(
+                              Duration.zero, () => {Navigator.pop(context)});
                         },
                       ),
                     );
@@ -416,18 +417,20 @@ class BookListScreen extends ConsumerWidget {
                         child: ElevatedButton(
                           onPressed: () async {
                             Navigator.of(context).pop();
-                            await ref
-                                .read(booksProvider.notifier)
-                                .deleteBook(book);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Xóa sổ thành công',
-                                  style: TextStyle(fontSize: 15.sp),
+                            await Future.delayed(Duration.zero, () async {
+                              await ref
+                                  .read(booksProvider.notifier)
+                                  .deleteBook(book);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Xóa sổ thành công',
+                                    style: TextStyle(fontSize: 15.sp),
+                                  ),
+                                  backgroundColor: const Color(0xFF4CAF50),
                                 ),
-                                backgroundColor: const Color(0xFF4CAF50),
-                              ),
-                            );
+                              );
+                            });
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,

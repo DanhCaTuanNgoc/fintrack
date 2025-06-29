@@ -115,7 +115,7 @@ class AppLocalizations {
   String get books => _getString('books');
   String get createBook => _getString('createBook');
   String get editTransaction => _getString('editTransaction');
-  String get note => _getString('note');
+  String get note => _getString('Note');
   String get selectExpenseCategory => _getString('selectExpenseCategory');
   String get selectIncomeCategory => _getString('selectIncomeCategory');
   String get category => _getString('category');

@@ -97,15 +97,19 @@ class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
         Navigator.pop(context);
 
         // Hiển thị thông báo cho người dùng
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).updateBookNameSuccess,
-              style: TextStyle(fontSize: 15.sp),
-            ),
-            backgroundColor: const Color(0xFF4CAF50),
-          ),
-        );
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context).updateBookNameSuccess,
+                  style: TextStyle(fontSize: 15.sp),
+                ),
+                backgroundColor: const Color(0xFF4CAF50),
+              ),
+            );
+          }
+        });
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
