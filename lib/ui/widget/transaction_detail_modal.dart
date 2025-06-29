@@ -170,7 +170,7 @@ class TransactionDetailModal extends ConsumerWidget {
                             await notifier.deleteTransaction(transaction.id!);
                             CustomSnackBar.showSuccess(
                               context,
-                              message: l10n.deleteSuccess,
+                              message: l10n.success,
                             );
                             Future.delayed(Duration.zero, () {
                               Navigator.pop(context);

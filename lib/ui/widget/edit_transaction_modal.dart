@@ -123,7 +123,8 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                   ),
                   SizedBox(height: 18.h),
                   TextField(
-                    controller: TextEditingController(text: widget.transaction.note ?? ''),
+                    controller: TextEditingController(
+                        text: widget.transaction.note ?? ''),
                     decoration: InputDecoration(
                       labelText: l10n.note,
                       labelStyle: TextStyle(color: widget.themeColor),
@@ -348,18 +349,17 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                           await ref
                               .read(transactionsProvider.notifier)
                               .updateTransaction(updated);
-                          if (mounted) {
-                            Navigator.pop(context);
-                            Future.delayed(const Duration(milliseconds: 300),
-                                () {
-                              if (mounted) {
-                                CustomSnackBar.showSuccess(
-                                  context,
-                                  message: l10n.updateSuccess,
-                                );
-                              }
-                            });
-                          }
+                          if (!mounted) return;
+                          Navigator.pop(context);
+
+                          Future.delayed(Duration.zero, () {
+                            if (mounted) {
+                              CustomSnackBar.showSuccess(
+                                context,
+                                message: l10n.updateSuccess,
+                              );
+                            }
+                          });
                         }
                       },
                       style: ElevatedButton.styleFrom(

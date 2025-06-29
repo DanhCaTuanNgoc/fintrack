@@ -17,7 +17,7 @@ class AppLocalizations {
   String get cancel => _getString('cancel');
   String get confirm => _getString('confirm');
   String get save => _getString('save');
-  String get delete => _getString('Delete');
+  String get delete => _getString('delete');
   String get edit => _getString('edit');
   String get add => _getString('add');
   String get close => _getString('close');

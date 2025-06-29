@@ -9,6 +9,7 @@ import '../widget/widget_barrel.dart';
 import '../../utils/category_helper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../utils/localization.dart';
+import '../widget/custom_snackbar.dart';
 
 class ReceiptLong extends ConsumerStatefulWidget {
   const ReceiptLong({super.key});
@@ -622,7 +623,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                   Navigator.pop(context);
                                   CustomSnackBar.showSuccess(
                                     context,
-                                    message: l10n.deleteSuccess,
+                                    message: l10n.success,
                                   );
                                 });
                               },
@@ -1243,25 +1244,19 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                           Navigator.pop(context);
 
                                           // Thông báo thành công
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(l10n
-                                                  .invoiceAddedSuccessfullyWith(
-                                                      selectedBookForInvoice![
-                                                          'name'])),
-                                              backgroundColor: Colors.green,
-                                            ),
+                                          CustomSnackBar.showSuccess(
+                                            context,
+                                            message: l10n
+                                                .invoiceAddedSuccessfullyWith(
+                                                    selectedBookForInvoice![
+                                                        'name']),
                                           );
                                         } catch (e) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  l10n.errorCreatingInvoiceWith(
-                                                      e.toString())),
-                                              backgroundColor: Colors.red,
-                                            ),
+                                          CustomSnackBar.showError(
+                                            context,
+                                            message:
+                                                l10n.errorCreatingInvoiceWith(
+                                                    e.toString()),
                                           );
                                         }
                                       }

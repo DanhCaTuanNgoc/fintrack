@@ -60,7 +60,7 @@ class VietnameseStrings {
   static const String note = 'Ghi chú';
 
   // Books/Wallets
-  static const String books = 'Sổ sách';
+  static const String books = 'Sổ';
   static const String wallets = 'Ví';
   static const String createBook = 'Tạo sổ mới';
   static const String createWallet = 'Tạo ví mới';
@@ -210,7 +210,7 @@ class VietnameseStrings {
   static const String confirmDelete = 'Xác nhận xóa';
   static const String confirmDeleteMessage =
       'Bạn có chắc chắn muốn xóa sổ tiết kiệm "{goalName}"?.';
-  static const String deleteSuccess = 'Đã xóa sổ tiết kiệm!';
+  static const String deleteSuccess = 'Đã xóa thành công!';
   static const String updateSuccess = 'Cập nhật thành công!';
   static const String currentInformation = 'Thông tin hiện tại:';
   static const String savedAmount = 'Đã tiết kiệm:';

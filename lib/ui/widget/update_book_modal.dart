@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/book.dart';
 import '../../providers/book_provider.dart';
 import '../../utils/localization.dart';
+import './custom_snackbar.dart';
 
 class UpdateBookModal extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -99,27 +100,17 @@ class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
         // Hiển thị thông báo cho người dùng
         Future.delayed(const Duration(milliseconds: 100), () {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppLocalizations.of(context).updateBookNameSuccess,
-                  style: TextStyle(fontSize: 15.sp),
-                ),
-                backgroundColor: const Color(0xFF4CAF50),
-              ),
+            CustomSnackBar.showSuccess(
+              context,
+              message: AppLocalizations.of(context).updateSuccess,
             );
           }
         });
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).updateBookError,
-              style: TextStyle(fontSize: 15.sp),
-            ),
-            backgroundColor: Colors.red,
-          ),
+        CustomSnackBar.showError(
+          context,
+          message: AppLocalizations.of(context).updateBookError,
         );
       }
     }

@@ -212,8 +212,8 @@ class EnglishStrings {
   static const String deleteSavingsGoal = 'Delete Savings Goal';
   static const String confirmDelete = 'Confirm Delete';
   static const String confirmDeleteMessage =
-      'Are you sure you want to delete the savings goal "{goalName}"?.';
-  static const String deleteSuccess = 'Savings goal deleted!';
+      'Are you sure you want to delete "{goalName}"?.';
+  static const String deleteSuccess = 'Deleted successfully';
   static const String updateSuccess = 'Updated successfully!';
   static const String currentInformation = 'Current Information:';
   static const String savedAmount = 'Saved Amount:';

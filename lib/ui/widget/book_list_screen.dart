@@ -7,6 +7,8 @@ import '../../providers/book_provider.dart';
 import '../../utils/localization.dart';
 import './create_book_modal.dart';
 import '../../providers/providers_barrel.dart';
+import './delete_confirmation_dialog.dart';
+import './custom_snackbar.dart';
 
 class BookListScreen extends ConsumerWidget {
   final Color themeColor;
@@ -84,7 +86,6 @@ class BookListScreen extends ConsumerWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pop(context);
                           _showCreateBookModal(context, themeColor);
                         },
                         style: ElevatedButton.styleFrom(
@@ -223,7 +224,6 @@ class BookListScreen extends ConsumerWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
                       _showCreateBookModal(context, themeColor);
                     },
                     style: ElevatedButton.styleFrom(
@@ -296,178 +296,24 @@ class BookListScreen extends ConsumerWidget {
   }
 
   void _showDeleteBookDialog(BuildContext context, Book book, WidgetRef ref) {
-    showDialog(
+    final l10n = AppLocalizations.of(context);
+
+    DeleteConfirmationDialog.show(
       context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          child: Container(
-            padding: EdgeInsets.all(24.w),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20.r,
-                  offset: Offset(0, 10.h),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Icon cảnh báo
-                Container(
-                  width: 60.w,
-                  height: 60.w,
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(30.r),
-                    border: Border.all(
-                      color: Colors.red.shade200,
-                      width: 2,
-                    ),
-                  ),
-                  child: Icon(
-                    Icons.warning_rounded,
-                    color: Colors.red.shade600,
-                    size: 30.w,
-                  ),
-                ),
-                SizedBox(height: 20.h),
-
-                // Tiêu đề
-                Text(
-                  'Xóa sổ chi tiêu',
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-
-                // Nội dung
-                Text(
-                  'Bạn có chắc chắn muốn xóa sổ "${book.name}"?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: Colors.grey.shade600,
-                    height: 1.4,
-                  ),
-                ),
-
-                SizedBox(height: 24.h),
-
-                // Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 48.h,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(
-                            color: Colors.grey.shade300,
-                            width: 1,
-                          ),
-                        ),
-                        child: TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          style: TextButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                          ),
-                          child: Text(
-                            'Hủy',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: Container(
-                        height: 48.h,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.red.shade600, Colors.red.shade700],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.red.withOpacity(0.3),
-                              blurRadius: 8.r,
-                              offset: Offset(0, 4.h),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            Navigator.of(context).pop();
-                            await Future.delayed(Duration.zero, () async {
-                              await ref
-                                  .read(booksProvider.notifier)
-                                  .deleteBook(book);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Xóa sổ thành công',
-                                    style: TextStyle(fontSize: 15.sp),
-                                  ),
-                                  backgroundColor: const Color(0xFF4CAF50),
-                                ),
-                              );
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.delete_forever,
-                                color: Colors.white,
-                                size: 18.w,
-                              ),
-                              SizedBox(width: 6.w),
-                              Text(
-                                'Xóa',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
+      title: l10n.confirmDelete,
+      message: l10n.confirmDeleteMessage.replaceFirst('{goalName}', book.name),
+      onConfirm: () async {
+        await ref.read(booksProvider.notifier).deleteBook(book);
+        if (context.mounted) {
+          CustomSnackBar.showSuccess(
+            context,
+            message: l10n.success,
+          );
+        }
       },
+      icon: Icons.warning_rounded,
+      iconColor: Colors.red.shade600,
+      iconBackgroundColor: Colors.red.shade50,
     );
   }
 }

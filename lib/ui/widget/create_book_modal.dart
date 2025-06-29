@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/book.dart';
 import '../../providers/book_provider.dart';
 import '../../utils/localization.dart';
+import 'custom_snackbar.dart';
 
 class CreateBookModal extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -20,6 +21,7 @@ class CreateBookModal extends ConsumerStatefulWidget {
 class _CreateBookModalState extends ConsumerState<CreateBookModal> {
   final _formKey = GlobalKey<FormState>();
   final _bookNameController = TextEditingController();
+  String? _nameExistsError;
 
   @override
   void dispose() {
@@ -36,43 +38,17 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
             book.name.toLowerCase() == _bookNameController.text.toLowerCase());
 
         if (isNameExists) {
-          if (!mounted) return;
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              title: Text(
-                AppLocalizations.of(context).bookNameExists,
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: Text(
-                AppLocalizations.of(context).pleaseChooseDifferentName,
-                style: TextStyle(fontSize: 16.sp),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Future.delayed(Duration.zero, () {
-                    Navigator.pop(context);
-                  }),
-                  child: Text(
-                    AppLocalizations.of(context).close,
-                    style: TextStyle(
-                      color: widget.themeColor,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
+          setState(() {
+            _nameExistsError =
+                AppLocalizations.of(context).pleaseChooseDifferentName;
+          });
           return;
         }
+
+        // Clear error if name is valid
+        setState(() {
+          _nameExistsError = null;
+        });
 
         final book = Book(
           name: _bookNameController.text,
@@ -90,28 +66,18 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
           const Duration(milliseconds: 100),
           () {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    AppLocalizations.of(context).updateSuccess,
-                    style: TextStyle(fontSize: 15.sp),
-                  ),
-                  backgroundColor: const Color(0xFF4CAF50),
-                ),
+              CustomSnackBar.showSuccess(
+                context,
+                message: AppLocalizations.of(context).success,
               );
             }
           },
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).updateBookError,
-              style: TextStyle(fontSize: 15.sp),
-            ),
-            backgroundColor: Colors.red,
-          ),
+        CustomSnackBar.showError(
+          context,
+          message: AppLocalizations.of(context).updateBookError,
         );
       }
     }
@@ -174,6 +140,13 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                               width: 2,
                             ),
                           ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            borderSide: BorderSide(
+                              color: Colors.red,
+                              width: 2,
+                            ),
+                          ),
                           prefixIcon: Icon(
                             Icons.book,
                             size: 20.w,
@@ -192,12 +165,54 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                             return AppLocalizations.of(context)
                                 .pleaseEnterBookName;
                           }
-                          // if (value.trim().length < 3) {
-                          //   return 'Tên sổ phải có ít nhất 3 ký tự';
-                          // }
                           return null;
                         },
+                        onChanged: (value) {
+                          // Clear error when user starts typing
+                          if (_nameExistsError != null) {
+                            setState(() {
+                              _nameExistsError = null;
+                            });
+                          }
+                        },
                       ),
+                      if (_nameExistsError != null) ...[
+                        SizedBox(height: 8.h),
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.w,
+                            vertical: 8.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(8.r),
+                            border: Border.all(
+                              color: Colors.red.shade200,
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                color: Colors.red.shade600,
+                                size: 16.w,
+                              ),
+                              SizedBox(width: 8.w),
+                              Expanded(
+                                child: Text(
+                                  _nameExistsError!,
+                                  style: TextStyle(
+                                    color: Colors.red.shade600,
+                                    fontSize: 12.sp,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

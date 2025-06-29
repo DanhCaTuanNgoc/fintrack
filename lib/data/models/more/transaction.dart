@@ -4,7 +4,7 @@ class Transaction {
   final String note;
   final DateTime date;
   final String type;
-  final int categoryId;
+  final int? categoryId;
   final int bookId;
   final int userId;
 
