@@ -7,6 +7,7 @@ import '../../providers/currency_provider.dart';
 import '../../utils/localization.dart';
 import './number_pad.dart';
 import './type_button.dart';
+import '../../utils/category_helper.dart';
 
 class EditTransactionModal extends ConsumerStatefulWidget {
   final Transaction transaction;
@@ -218,15 +219,18 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                               SingleChildScrollView(
                                 child: Column(
                                   children: categories.map((category) {
+                                    final localizedName =
+                                        CategoryHelper.getLocalizedCategoryName(
+                                            category['icon'], l10n);
                                     return ListTile(
                                       leading: Container(
                                         padding: EdgeInsets.all(8.w),
                                         decoration: BoxDecoration(
-                                          color: _selectedCategory ==
-                                                  category['name']
-                                              ? widget.themeColor
-                                                  .withOpacity(0.1)
-                                              : Colors.grey[100],
+                                          color:
+                                              _selectedCategory == localizedName
+                                                  ? widget.themeColor
+                                                      .withOpacity(0.1)
+                                                  : Colors.grey[100],
                                           borderRadius:
                                               BorderRadius.circular(8.r),
                                         ),
@@ -235,27 +239,27 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                           style: TextStyle(
                                             fontSize: 20.sp,
                                             color: _selectedCategory ==
-                                                    category['name']
+                                                    localizedName
                                                 ? widget.themeColor
                                                 : Colors.grey[600],
                                           ),
                                         ),
                                       ),
                                       title: Text(
-                                        category['name'],
+                                        localizedName,
                                         style: TextStyle(
-                                          fontWeight: _selectedCategory ==
-                                                  category['name']
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                          color: _selectedCategory ==
-                                                  category['name']
-                                              ? widget.themeColor
-                                              : const Color(0xFF2D3142),
+                                          fontWeight:
+                                              _selectedCategory == localizedName
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
+                                          color:
+                                              _selectedCategory == localizedName
+                                                  ? widget.themeColor
+                                                  : const Color(0xFF2D3142),
                                         ),
                                       ),
                                       trailing:
-                                          _selectedCategory == category['name']
+                                          _selectedCategory == localizedName
                                               ? Icon(
                                                   Icons.check_circle,
                                                   color: widget.themeColor,
@@ -263,7 +267,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                                               : null,
                                       onTap: () {
                                         setState(() {
-                                          _selectedCategory = category['name'];
+                                          _selectedCategory = localizedName;
                                         });
                                         Future.delayed(Duration.zero,
                                             () => {Navigator.pop(context)});
@@ -306,7 +310,10 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                               children: [
                                 Text(
                                   categories.firstWhere(
-                                    (cat) => cat['name'] == _selectedCategory,
+                                    (cat) =>
+                                        CategoryHelper.getLocalizedCategoryName(
+                                            cat['icon'], l10n) ==
+                                        _selectedCategory,
                                   )['icon'],
                                   style: TextStyle(fontSize: 20.sp),
                                 ),

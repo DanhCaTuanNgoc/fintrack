@@ -24,6 +24,7 @@ class AppLocalizations {
   String get loading => _getString('loading');
   String get error => _getString('error');
   String get success => _getString('success');
+  String get total => _getString('total');
 
   // Books/Wallets
   String get editBookName => _getString('editBookName');
@@ -35,6 +36,18 @@ class AppLocalizations {
   String get updateBookError => _getString('updateBookError');
   String get pleaseEnterBookName => _getString('pleaseEnterBookName');
   String get saveChanges => _getString('saveChanges');
+
+  // Savings
+  String get savings => _getString('savings');
+  String get savingsGoals => _getString('savingsGoals');
+  String get createSavingsGoal => _getString('createSavingsGoal');
+  String get goalName => _getString('goalName');
+  String get targetAmount => _getString('targetAmount');
+  String get currentAmount => _getString('currentAmount');
+  String get progress => _getString('progress');
+  String get deadline => _getString('deadline');
+  String get savingsOverdue => _getString('savingsOverdue');
+  String get savingsClosed => _getString('savingsClosed');
 
   // Saving Goals
   String get editSavingsGoal => _getString('editSavingsGoal');
@@ -63,6 +76,8 @@ class AppLocalizations {
   String get targetDate => _getString('targetDate');
   String get chooseDateOptional => _getString('chooseDateOptional');
   String get pleaseSelectStartDate => _getString('pleaseSelectStartDate');
+  String get targetAmountCannotBeLessThanSaved =>
+      _getString('targetAmountCannotBeLessThanSaved');
 
   // New additions
   String get noBook => _getString('noBook');
@@ -94,13 +109,11 @@ class AppLocalizations {
   String get chooseLanguage => _getString('chooseLanguage');
   String get chooseThemeColor => _getString('chooseThemeColor');
   String get extraFeatures => _getString('extraFeatures');
-  String get savingsGoals => _getString('savingsGoals');
   String get setupAndTrack => _getString('setupAndTrack');
   String get periodicInvoices => _getString('periodicInvoices');
   String get managePeriodicBills => _getString('managePeriodicBills');
   String get books => _getString('books');
   String get createBook => _getString('createBook');
-  String get progress => _getString('progress');
   String get editTransaction => _getString('editTransaction');
   String get note => _getString('note');
   String get selectExpenseCategory => _getString('selectExpenseCategory');
@@ -112,7 +125,6 @@ class AppLocalizations {
       _getString('createFlexibleSavingsGoal');
   String get createPeriodicSavingsGoal =>
       _getString('createPeriodicSavingsGoal');
-  String get targetAmount => _getString('targetAmount');
   String get expenseBookList => _getString('expenseBookList');
   String get charts => _getString('charts');
   String get more => _getString('more');
@@ -209,8 +221,6 @@ class AppLocalizations {
   String get flexibleSavings => _getString('flexibleSavings');
   String get noFlexibleSavings => _getString('noFlexibleSavings');
   String get createNewSavings => _getString('createNewSavings');
-  String get savingsOverdue => _getString('savingsOverdue');
-  String get savingsClosed => _getString('savingsClosed');
 
   // Periodic Savings Screen
   String get periodicSavings => _getString('periodicSavings');
@@ -226,6 +236,28 @@ class AppLocalizations {
   // Add Amount Dialog
   String get enterAmountToDeposit => _getString('enterAmountToDeposit');
   String get amountHint => _getString('amountHint');
+
+  // Notification Screen
+  String get noNotifications => _getString('noNotifications');
+  String get refresh => _getString('refresh');
+  String get markAllAsRead => _getString('markAllAsRead');
+  String get deleteAllRead => _getString('deleteAllRead');
+  String get justNow => _getString('justNow');
+  String daysAgoWith(int days) =>
+      _getString('daysAgo').replaceFirst('{days}', days.toString());
+  String hoursAgoWith(int hours) =>
+      _getString('hoursAgo').replaceFirst('{hours}', hours.toString());
+  String minutesAgoWith(int minutes) =>
+      _getString('minutesAgo').replaceFirst('{minutes}', minutes.toString());
+
+  // Weekdays
+  String get monday => _getString('monday');
+  String get tuesday => _getString('tuesday');
+  String get wednesday => _getString('wednesday');
+  String get thursday => _getString('thursday');
+  String get friday => _getString('friday');
+  String get saturday => _getString('saturday');
+  String get sunday => _getString('sunday');
 
   // Helper functions for dynamic strings
   String depositSuccessWith(String amount) =>
@@ -266,6 +298,8 @@ class AppLocalizations {
         return VietnameseStrings.error;
       case 'success':
         return VietnameseStrings.success;
+      case 'total':
+        return VietnameseStrings.total;
       case 'editBookName':
         return VietnameseStrings.editBookName;
       case 'newBookName':
@@ -592,6 +626,36 @@ class AppLocalizations {
         return VietnameseStrings.amountHint;
       case 'depositSuccess':
         return VietnameseStrings.depositSuccess;
+      case 'noNotifications':
+        return VietnameseStrings.noNotifications;
+      case 'refresh':
+        return VietnameseStrings.refresh;
+      case 'markAllAsRead':
+        return VietnameseStrings.markAllAsRead;
+      case 'deleteAllRead':
+        return VietnameseStrings.deleteAllRead;
+      case 'justNow':
+        return VietnameseStrings.justNow;
+      case 'daysAgo':
+        return VietnameseStrings.daysAgo;
+      case 'hoursAgo':
+        return VietnameseStrings.hoursAgo;
+      case 'minutesAgo':
+        return VietnameseStrings.minutesAgo;
+      case 'monday':
+        return VietnameseStrings.monday;
+      case 'tuesday':
+        return VietnameseStrings.tuesday;
+      case 'wednesday':
+        return VietnameseStrings.wednesday;
+      case 'thursday':
+        return VietnameseStrings.thursday;
+      case 'friday':
+        return VietnameseStrings.friday;
+      case 'saturday':
+        return VietnameseStrings.saturday;
+      case 'sunday':
+        return VietnameseStrings.sunday;
       default:
         return key;
     }
@@ -620,6 +684,8 @@ class AppLocalizations {
         return EnglishStrings.error;
       case 'success':
         return EnglishStrings.success;
+      case 'total':
+        return EnglishStrings.total;
       case 'editBookName':
         return EnglishStrings.editBookName;
       case 'newBookName':
@@ -946,6 +1012,36 @@ class AppLocalizations {
         return EnglishStrings.amountHint;
       case 'depositSuccess':
         return EnglishStrings.depositSuccess;
+      case 'noNotifications':
+        return EnglishStrings.noNotifications;
+      case 'refresh':
+        return EnglishStrings.refresh;
+      case 'markAllAsRead':
+        return EnglishStrings.markAllAsRead;
+      case 'deleteAllRead':
+        return EnglishStrings.deleteAllRead;
+      case 'justNow':
+        return EnglishStrings.justNow;
+      case 'daysAgo':
+        return EnglishStrings.daysAgo;
+      case 'hoursAgo':
+        return EnglishStrings.hoursAgo;
+      case 'minutesAgo':
+        return EnglishStrings.minutesAgo;
+      case 'monday':
+        return EnglishStrings.monday;
+      case 'tuesday':
+        return EnglishStrings.tuesday;
+      case 'wednesday':
+        return EnglishStrings.wednesday;
+      case 'thursday':
+        return EnglishStrings.thursday;
+      case 'friday':
+        return EnglishStrings.friday;
+      case 'saturday':
+        return EnglishStrings.saturday;
+      case 'sunday':
+        return EnglishStrings.sunday;
       default:
         return key;
     }
@@ -983,6 +1079,22 @@ class AppLocalizations {
 
   String errorOccurredWith(String error) =>
       _getString('errorOccurred').replaceFirst('{error}', error);
+
+  String get targetAmountLabel => _getString('targetAmountLabel');
+  String get startDateLabel => _getString('startDateLabel');
+  String get chooseDateLabel => _getString('chooseDateLabel');
+  String get deleteSavingsBook => _getString('deleteSavingsBook');
+  String get update => _getString('update');
+  String get foodAndDrinks => _getString('Foood');
+  String get transportation => _getString('Transportation');
+  String get shopping => _getString('Shopping');
+  String get entertainment => _getString('Entertainment');
+  String get education => _getString('Education');
+  String get beauty => _getString('Beauty');
+  String get household => _getString('Household');
+  String get salary => _getString('Salary');
+  String get bonus => _getString('Bonus');
+  String get investment => _getString('Investment');
 }
 
 /// Delegate cho AppLocalizations

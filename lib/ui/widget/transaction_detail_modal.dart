@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/models_barrel.dart';
 import '../../providers/providers_barrel.dart';
+import '../../utils/category_helper.dart';
+import '../../utils/localization.dart';
 
 class TransactionDetailModal extends ConsumerWidget {
   final Transaction transaction;
@@ -21,10 +23,13 @@ class TransactionDetailModal extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final category = categories.firstWhere(
       (cat) => cat['id'] == transaction.categoryId,
-      orElse: () => {'icon': '🏷️', 'name': 'Không xác định'},
+      orElse: () => {'name': '', 'icon': ''},
     );
+    final categoryName =
+        CategoryHelper.getLocalizedCategoryName(category['icon'], l10n);
 
     return Dialog(
       backgroundColor: Colors.white,
@@ -63,8 +68,8 @@ class TransactionDetailModal extends ConsumerWidget {
                         ),
                         child: Text(
                           transaction.type == 'expense'
-                              ? 'Chi tiêu'
-                              : 'Thu nhập',
+                              ? l10n.expense
+                              : l10n.income,
                           style: TextStyle(
                             color: transaction.type == 'expense'
                                 ? Colors.red
@@ -104,7 +109,7 @@ class TransactionDetailModal extends ConsumerWidget {
                       ),
                       SizedBox(width: 12.w),
                       Text(
-                        category['name'],
+                        categoryName,
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
@@ -166,7 +171,7 @@ class TransactionDetailModal extends ConsumerWidget {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Xóa thành công',
+                                  l10n.deleteSuccess,
                                   style: TextStyle(fontSize: 15.sp),
                                 ),
                                 backgroundColor: const Color(0xFF4CAF50),
@@ -184,7 +189,7 @@ class TransactionDetailModal extends ConsumerWidget {
                             elevation: 0,
                           ),
                           child: Text(
-                            'Xóa',
+                            l10n.delete,
                             style: TextStyle(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.bold,
@@ -208,7 +213,7 @@ class TransactionDetailModal extends ConsumerWidget {
                             elevation: 0,
                           ),
                           child: Text(
-                            'Chỉnh sửa',
+                            l10n.edit,
                             style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.bold,

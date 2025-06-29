@@ -40,6 +40,7 @@ class VietnameseStrings {
   static const String success = 'Thành công';
   static const String warning = 'Cảnh báo';
   static const String info = 'Thông tin';
+  static const String total = 'Tổng';
 
   // Home
   static const String home = 'Trang chủ';
@@ -90,6 +91,8 @@ class VietnameseStrings {
   static const String currentAmount = 'Số tiền hiện tại';
   static const String progress = 'Tiến độ';
   static const String deadline = 'Hạn chót';
+  static const String savingsOverdue = 'Sổ tiết kiệm này đã quá hạn.';
+  static const String savingsClosed = 'Sổ tiết kiệm này đã được đóng.';
 
   // Charts
   static const String charts = 'Biểu đồ';
@@ -214,6 +217,21 @@ class VietnameseStrings {
   static const String savedAmount = 'Đã tiết kiệm:';
   static const String progressLabel = 'Tiến độ:';
   static const String dataLoadError = 'Lỗi tải dữ liệu';
+  static const String targetAmountLabel = 'Số tiền mục tiêu';
+  static const String startDateLabel = 'Ngày bắt đầu';
+  static const String chooseDateLabel = 'Chọn ngày';
+  static const String deleteSavingsBook = 'Xóa sổ tiết kiệm';
+  static const String update = 'Cập nhật';
+  static const String foodAndDrinks = 'Ăn uống';
+  static const String transportation = 'Di chuyển';
+  static const String shopping = 'Mua sắm';
+  static const String entertainment = 'Giải trí';
+  static const String education = 'Học tập';
+  static const String beauty = 'Làm đẹp';
+  static const String household = 'Sinh hoạt';
+  static const String salary = 'Lương';
+  static const String bonus = 'Thưởng';
+  static const String investment = 'Đầu tư';
 
   // // Welcome Screen
   // static const String welcome = 'Chào mừng';
@@ -310,8 +328,6 @@ class VietnameseStrings {
   static const String flexibleSavings = 'Tiết kiệm linh hoạt';
   static const String noFlexibleSavings = 'Không có sổ tiết kiệm linh hoạt nào';
   static const String createNewSavings = 'Tạo tiết kiệm mới';
-  static const String savingsOverdue = 'Sổ tiết kiệm này đã quá hạn.';
-  static const String savingsClosed = 'Sổ tiết kiệm này đã được đóng.';
 
   // Periodic Savings Screen
   static const String periodicSavings = 'Tiết kiệm định kỳ';
@@ -324,6 +340,25 @@ class VietnameseStrings {
   static const String periodicSavingsDescription = 'Gửi tiền theo định kỳ';
 
   // Add Amount Dialog
-  static const String enterAmountToDeposit = 'Nhập số tiền muốn nộp';
+  static const String enterAmountToDeposit = 'Nhập số tiền để gửi';
   static const String amountHint = 'Số tiền';
+
+  // Notification Screen
+  static const String noNotifications = 'Không có thông báo nào!';
+  static const String refresh = 'Làm mới';
+  static const String markAllAsRead = 'Đánh dấu tất cả đã đọc';
+  static const String deleteAllRead = 'Xóa tất cả đã đọc';
+  static const String justNow = 'Vừa xong';
+  static const String daysAgo = '{days} ngày trước';
+  static const String hoursAgo = '{hours} giờ trước';
+  static const String minutesAgo = '{minutes} phút trước';
+
+  // Weekdays
+  static const String monday = 'Th 2';
+  static const String tuesday = 'Th 3';
+  static const String wednesday = 'Th 4';
+  static const String thursday = 'Th 5';
+  static const String friday = 'Th 6';
+  static const String saturday = 'Th 7';
+  static const String sunday = 'CN';
 }

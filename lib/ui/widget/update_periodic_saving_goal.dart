@@ -125,8 +125,9 @@ class _UpdatePeriodicSavingGoalDialogState
                         prefixIcon: Icon(Icons.savings,
                             color: widget.themeColor, size: 24.sp),
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Nhập tên' : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? l10n.enterName
+                          : null,
                     ),
                     SizedBox(height: 16.h),
                     TextFormField(
@@ -154,9 +155,10 @@ class _UpdatePeriodicSavingGoalDialogState
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
                       validator: (value) {
                         if (value == null || value.isEmpty)
-                          return 'Nhập số tiền';
+                          return l10n.enterAmount;
                         final amount = getNumericValueFromFormattedText(value);
-                        if (amount <= 0) return 'Số tiền phải lớn hơn 0';
+                        if (amount <= 0)
+                          return l10n.amountMustBeGreaterThanZero;
                         final currentGoal = savingsGoalAsync.when(
                           data: (goals) => goals.firstWhere(
                             (g) => g.id == widget.goal.id,
@@ -166,7 +168,11 @@ class _UpdatePeriodicSavingGoalDialogState
                           error: (_, __) => widget.goal,
                         );
                         if (amount < currentGoal.currentAmount) {
-                          return 'Số tiền mục tiêu không được nhỏ hơn số tiền đã tiết kiệm (${formatCurrency(currentGoal.currentAmount, currencyType)})';
+                          return l10n.targetAmountCannotBeLessThanSaved
+                              .replaceFirst(
+                                  '{savedAmount}',
+                                  formatCurrency(
+                                      currentGoal.currentAmount, currencyType));
                         }
                         return null;
                       },
@@ -203,11 +209,11 @@ class _UpdatePeriodicSavingGoalDialogState
                             ],
                             validator: (value) {
                               if (value == null || value.isEmpty)
-                                return 'Nhập số tiền định kỳ';
+                                return l10n.enterPeriodicAmount;
                               final amount =
                                   getNumericValueFromFormattedText(value);
                               if (amount <= 0)
-                                return 'Số tiền định kỳ phải lớn hơn 0';
+                                return l10n.periodicAmountMustBeGreaterThanZero;
                               return null;
                             },
                           ),
@@ -242,7 +248,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                         ),
                                       ),
                                       Text(
-                                        'Chọn tần suất',
+                                        l10n.chooseFrequency,
                                         style: TextStyle(
                                           fontSize: 18.sp,
                                           fontWeight: FontWeight.bold,
@@ -253,9 +259,9 @@ class _UpdatePeriodicSavingGoalDialogState
                                       ...['daily', 'weekly', 'monthly']
                                           .map((frequency) {
                                         final labels = {
-                                          'daily': 'Hàng ngày',
-                                          'weekly': 'Hàng tuần',
-                                          'monthly': 'Hàng tháng',
+                                          'daily': l10n.frequencyDaily,
+                                          'weekly': l10n.frequencyWeekly,
+                                          'monthly': l10n.frequencyMonthly,
                                         };
                                         final icons = {
                                           'daily': Icons.today,
@@ -322,7 +328,7 @@ class _UpdatePeriodicSavingGoalDialogState
                             },
                             child: InputDecorator(
                               decoration: InputDecoration(
-                                labelText: 'Tần suất',
+                                labelText: l10n.frequency,
                                 labelStyle: TextStyle(
                                     color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
@@ -342,11 +348,11 @@ class _UpdatePeriodicSavingGoalDialogState
                               ),
                               child: Text(
                                 _periodicFrequency == null
-                                    ? 'Tần suất'
+                                    ? l10n.frequency
                                     : {
-                                        'daily': 'Hàng ngày',
-                                        'weekly': 'Hàng tuần',
-                                        'monthly': 'Hàng tháng',
+                                        'daily': l10n.frequencyDaily,
+                                        'weekly': l10n.frequencyWeekly,
+                                        'monthly': l10n.frequencyMonthly,
                                       }[_periodicFrequency]!,
                                 style: TextStyle(
                                   color: _periodicFrequency == null
@@ -379,7 +385,7 @@ class _UpdatePeriodicSavingGoalDialogState
                             },
                             child: InputDecorator(
                               decoration: InputDecoration(
-                                labelText: 'Ngày bắt đầu',
+                                labelText: l10n.startDateLabel,
                                 labelStyle: TextStyle(
                                     color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
@@ -400,7 +406,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                     vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _startedDate == null
-                                      ? 'Chọn ngày'
+                                      ? l10n.chooseDateLabel
                                       : '${_startedDate!.day}/${_startedDate!.month}/${_startedDate!.year}',
                                   style: TextStyle(
                                     color: _startedDate == null
@@ -430,7 +436,7 @@ class _UpdatePeriodicSavingGoalDialogState
                             },
                             child: InputDecorator(
                               decoration: InputDecoration(
-                                labelText: 'Ngày mục tiêu',
+                                labelText: l10n.targetDate,
                                 labelStyle: TextStyle(
                                     color: Colors.black, fontSize: 14.sp),
                                 border: OutlineInputBorder(
@@ -451,7 +457,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                     vertical: 0.h, horizontal: 0.w),
                                 child: Text(
                                   _targetDate == null
-                                      ? 'Chọn ngày (tùy chọn)'
+                                      ? l10n.chooseDateOptional
                                       : '${_targetDate!.day}/${_targetDate!.month}/${_targetDate!.year}',
                                   style: TextStyle(
                                     color: _targetDate == null
@@ -484,7 +490,7 @@ class _UpdatePeriodicSavingGoalDialogState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Thông tin hiện tại:',
+                                l10n.currentInformation,
                                 style: TextStyle(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w600,
@@ -497,7 +503,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Đã tiết kiệm:',
+                                    l10n.savedAmount,
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       color: Colors.grey[600],
@@ -520,7 +526,7 @@ class _UpdatePeriodicSavingGoalDialogState
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Tiến độ:',
+                                    l10n.progressLabel,
                                     style: TextStyle(
                                       fontSize: 14.sp,
                                       color: Colors.grey[600],
@@ -556,9 +562,9 @@ class _UpdatePeriodicSavingGoalDialogState
                           borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(color: Colors.red.shade200),
                         ),
-                        child: const Text(
-                          'Lỗi tải dữ liệu',
-                          style: TextStyle(color: Colors.red),
+                        child: Text(
+                          l10n.dataLoadError,
+                          style: TextStyle(color: Colors.red, fontSize: 14.sp),
                         ),
                       ),
                     ),
@@ -581,7 +587,7 @@ class _UpdatePeriodicSavingGoalDialogState
                       onPressed: () {
                         _showDeleteConfirmation(context);
                       },
-                      child: Text('Xóa sổ tiết kiệm',
+                      child: Text(l10n.deleteSavingsBook,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16.sp)),
                     ),
@@ -611,15 +617,15 @@ class _UpdatePeriodicSavingGoalDialogState
 
                           if (startedDate == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Vui lòng chọn ngày bắt đầu')),
+                              SnackBar(
+                                  content: Text(l10n.pleaseSelectStartDate)),
                             );
                             return;
                           }
                           if (periodicFrequency == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Vui lòng chọn tần suất')),
+                              SnackBar(
+                                  content: Text(l10n.pleaseSelectFrequency)),
                             );
                             return;
                           }
@@ -642,7 +648,7 @@ class _UpdatePeriodicSavingGoalDialogState
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Cập nhật thành công!',
+                                  l10n.updateSuccess,
                                   style: TextStyle(fontSize: 14.sp),
                                 ),
                                 backgroundColor: Colors.green,
@@ -654,7 +660,7 @@ class _UpdatePeriodicSavingGoalDialogState
                           }
                         }
                       },
-                      child: Text('Cập nhật',
+                      child: Text(l10n.update,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16.sp)),
                     ),
@@ -670,20 +676,21 @@ class _UpdatePeriodicSavingGoalDialogState
   }
 
   void _showDeleteConfirmation(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Xác nhận xóa', style: TextStyle(fontSize: 18.sp)),
+          title: Text(l10n.confirmDelete, style: TextStyle(fontSize: 18.sp)),
           content: Text(
-            'Bạn có chắc chắn muốn xóa sổ tiết kiệm "${widget.goal.name}"?\n\n'
-            'Hành động này không thể hoàn tác và sẽ xóa tất cả lịch sử giao dịch liên quan.',
+            l10n.confirmDeleteMessage
+                .replaceFirst('{goalName}', widget.goal.name),
             style: TextStyle(fontSize: 14.sp),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Hủy', style: TextStyle(fontSize: 14.sp)),
+              child: Text(l10n.cancel, style: TextStyle(fontSize: 14.sp)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -699,7 +706,7 @@ class _UpdatePeriodicSavingGoalDialogState
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Đã xóa sổ tiết kiệm!',
+                      content: Text(l10n.deleteSuccess,
                           style: TextStyle(fontSize: 14.sp)),
                       backgroundColor: Colors.red,
                     ),
@@ -709,7 +716,7 @@ class _UpdatePeriodicSavingGoalDialogState
                   });
                 }
               },
-              child: Text('Xóa', style: TextStyle(fontSize: 14.sp)),
+              child: Text(l10n.delete, style: TextStyle(fontSize: 14.sp)),
             ),
           ],
         );

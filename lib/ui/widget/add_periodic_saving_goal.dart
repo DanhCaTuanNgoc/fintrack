@@ -102,8 +102,9 @@ class _AddPeriodicSavingGoalDialogState
                         prefixIcon: Icon(Icons.book,
                             color: widget.themeColor, size: 24.sp),
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Nhập tên' : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? l10n.enterName
+                          : null,
                     ),
                     SizedBox(height: 16.h),
                     TextFormField(
@@ -131,9 +132,10 @@ class _AddPeriodicSavingGoalDialogState
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
                       validator: (value) {
                         if (value == null || value.isEmpty)
-                          return 'Nhập số tiền';
+                          return l10n.enterAmount;
                         final amount = getNumericValueFromFormattedText(value);
-                        if (amount <= 0) return 'Số tiền phải lớn hơn 0';
+                        if (amount <= 0)
+                          return l10n.amountMustBeGreaterThanZero;
                         return null;
                       },
                     ),
@@ -168,11 +170,11 @@ class _AddPeriodicSavingGoalDialogState
                             ],
                             validator: (value) {
                               if (value == null || value.isEmpty)
-                                return 'Nhập số tiền định kỳ';
+                                return l10n.enterPeriodicAmount;
                               final amount =
                                   getNumericValueFromFormattedText(value);
                               if (amount <= 0)
-                                return 'Số tiền định kỳ phải lớn hơn 0';
+                                return l10n.periodicAmountMustBeGreaterThanZero;
                               return null;
                             },
                           ),
@@ -206,7 +208,7 @@ class _AddPeriodicSavingGoalDialogState
                                         ),
                                       ),
                                       Text(
-                                        'Chọn tần suất',
+                                        l10n.chooseFrequency,
                                         style: TextStyle(
                                           fontSize: 18.sp,
                                           fontWeight: FontWeight.bold,
@@ -217,9 +219,9 @@ class _AddPeriodicSavingGoalDialogState
                                       ...['daily', 'weekly', 'monthly']
                                           .map((frequency) {
                                         final labels = {
-                                          'daily': 'Hàng ngày',
-                                          'weekly': 'Hàng tuần',
-                                          'monthly': 'Hàng tháng',
+                                          'daily': l10n.daily,
+                                          'weekly': l10n.weekly,
+                                          'monthly': l10n.monthly,
                                         };
                                         final icons = {
                                           'daily': Icons.today,
@@ -306,11 +308,11 @@ class _AddPeriodicSavingGoalDialogState
                               ),
                               child: Text(
                                 _periodicFrequency == null
-                                    ? 'Tần suất'
+                                    ? l10n.frequency
                                     : {
-                                        'daily': 'Hàng ngày',
-                                        'weekly': 'Hàng tuần',
-                                        'monthly': 'Hàng tháng',
+                                        'daily': l10n.daily,
+                                        'weekly': l10n.weekly,
+                                        'monthly': l10n.monthly,
                                       }[_periodicFrequency]!,
                                 style: TextStyle(
                                   color: _periodicFrequency == null

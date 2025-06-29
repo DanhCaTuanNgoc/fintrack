@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import '../../data/models/more/periodic_invoice.dart';
 import 'package:intl/intl.dart';
 import '../widget/widget_barrel.dart';
+import '../../utils/category_helper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../utils/localization.dart';
 
@@ -331,7 +332,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                             SizedBox(width: 8.w),
                                             Flexible(
                                               child: Text(
-                                                category['name'],
+                                                CategoryHelper
+                                                    .getLocalizedCategoryName(
+                                                        category['icon'], l10n),
                                                 style:
                                                     TextStyle(fontSize: 13.sp),
                                                 overflow: TextOverflow.ellipsis,
@@ -687,7 +690,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             ),
                             SizedBox(height: 4.h),
                             Text(
-                              _getFrequencyText(invoice.frequency),
+                              _getFrequencyText(invoice.frequency, context),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w700,
@@ -717,7 +720,9 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                             ),
                             SizedBox(height: 4.h),
                             Text(
-                              invoice.category,
+                              CategoryHelper.getLocalizedCategoryName(
+                                  _getCategoryIconFromName(invoice.category),
+                                  l10n),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w700,
@@ -856,8 +861,10 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                       child: ElevatedButton(
                         onPressed: () async {
                           try {
+                            final categoryIcon =
+                                _getCategoryIconFromName(invoice.category);
                             final categoryData = receipLong.firstWhere(
-                              (cat) => cat['name'] == invoice.category,
+                              (cat) => cat['icon'] == categoryIcon,
                             );
 
                             final bookId = invoice.bookId ?? 1;
@@ -924,18 +931,47 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     );
   }
 
-  String _getFrequencyText(String frequency) {
+  String _getFrequencyText(String frequency, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     switch (frequency) {
       case 'daily':
-        return 'Hàng ngày';
+        return l10n.daily;
       case 'weekly':
-        return 'Hàng tuần';
+        return l10n.weekly;
       case 'monthly':
-        return 'Hàng tháng';
+        return l10n.monthly;
       case 'yearly':
-        return 'Hàng năm';
+        return l10n.yearly;
       default:
         return frequency;
+    }
+  }
+
+  String _getCategoryIconFromName(String categoryName) {
+    // Map category names to their corresponding icons
+    switch (categoryName) {
+      case 'Ăn uống':
+        return '🍔';
+      case 'Di chuyển':
+        return '🚗';
+      case 'Mua sắm':
+        return '🛍';
+      case 'Giải trí':
+        return '🎮';
+      case 'Học tập':
+        return '📚';
+      case 'Làm đẹp':
+        return '💅';
+      case 'Sinh hoạt':
+        return '🏠';
+      case 'Lương':
+        return '💰';
+      case 'Thưởng':
+        return '🎁';
+      case 'Đầu tư':
+        return '📈';
+      default:
+        return '💸'; // Default icon for unknown categories
     }
   }
 
@@ -1231,7 +1267,11 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                                     SizedBox(width: 8.w),
                                                     Flexible(
                                                       child: Text(
-                                                        category['name'],
+                                                        CategoryHelper
+                                                            .getLocalizedCategoryName(
+                                                                category[
+                                                                    'icon'],
+                                                                l10n),
                                                         style: TextStyle(
                                                             fontSize: 13.sp),
                                                         overflow: TextOverflow
@@ -1287,6 +1327,12 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                       if (_addInvoiceFormKey.currentState!
                                           .validate()) {
                                         try {
+                                          final categoryIcon =
+                                              receipLong.firstWhere(
+                                            (cat) =>
+                                                cat['name'] == selectedCategory,
+                                          )['icon'];
+
                                           final newInvoice = PeriodicInvoice(
                                             id: DateTime.now()
                                                 .millisecondsSinceEpoch
@@ -1297,7 +1343,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                                     amountController.text),
                                             startDate: DateTime.now(),
                                             frequency: selectedFrequency,
-                                            category: selectedCategory!,
+                                            category: categoryIcon,
                                             description: descriptionController
                                                 .text
                                                 .trim(),

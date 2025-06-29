@@ -40,6 +40,7 @@ class EnglishStrings {
   static const String success = 'Success';
   static const String warning = 'Warning';
   static const String info = 'Information';
+  static const String total = 'Total';
 
   // Home
   static const String home = 'Home';
@@ -89,6 +90,8 @@ class EnglishStrings {
   static const String currentAmount = 'Current Amount';
   static const String progress = 'Progress';
   static const String deadline = 'Deadline';
+  static const String savingsOverdue = 'This savings book is overdue.';
+  static const String savingsClosed = 'This savings book is closed.';
 
   // Charts
   static const String charts = 'Charts';
@@ -217,6 +220,21 @@ class EnglishStrings {
   static const String savedAmount = 'Saved Amount:';
   static const String progressLabel = 'Progress:';
   static const String dataLoadError = 'Data loading error';
+  static const String targetAmountLabel = 'Target Amount';
+  static const String startDateLabel = 'Start Date';
+  static const String chooseDateLabel = 'Choose date';
+  static const String deleteSavingsBook = 'Delete Savings Book';
+  static const String update = 'Update';
+  static const String foodAndDrinks = 'Food & Drinks';
+  static const String transportation = 'Transportation';
+  static const String shopping = 'Shopping';
+  static const String entertainment = 'Entertainment';
+  static const String education = 'Education';
+  static const String beauty = 'Beauty';
+  static const String household = 'Household';
+  static const String salary = 'Salary';
+  static const String bonus = 'Bonus';
+  static const String investment = 'Investment';
 
   // // Welcome Screen
   // static const String welcome = 'Welcome';
@@ -307,8 +325,6 @@ class EnglishStrings {
   static const String flexibleSavings = 'Flexible Savings';
   static const String noFlexibleSavings = 'No flexible savings books yet';
   static const String createNewSavings = 'Create New Savings';
-  static const String savingsOverdue = 'This savings book is overdue.';
-  static const String savingsClosed = 'This savings book is closed.';
 
   // Periodic Savings Screen
   static const String periodicSavings = 'Periodic Savings';
@@ -323,4 +339,23 @@ class EnglishStrings {
   // Add Amount Dialog
   static const String enterAmountToDeposit = 'Enter amount to deposit';
   static const String amountHint = 'Amount';
+
+  // Notification Screen
+  static const String noNotifications = 'No notifications!';
+  static const String refresh = 'Refresh';
+  static const String markAllAsRead = 'Mark all as read';
+  static const String deleteAllRead = 'Delete all read';
+  static const String justNow = 'Just now';
+  static const String daysAgo = '{days} days ago';
+  static const String hoursAgo = '{hours} hours ago';
+  static const String minutesAgo = '{minutes} minutes ago';
+
+  // Weekdays
+  static const String monday = 'Mon';
+  static const String tuesday = 'Tue';
+  static const String wednesday = 'Wed';
+  static const String thursday = 'Thu';
+  static const String friday = 'Fri';
+  static const String saturday = 'Sat';
+  static const String sunday = 'Sun';
 }

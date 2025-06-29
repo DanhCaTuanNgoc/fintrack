@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/models_barrel.dart';
 import '../../providers/providers_barrel.dart';
+import '../../utils/category_helper.dart';
+import '../../utils/localization.dart';
 
 final Map<String, IconData> _iconMapping = {
   '🍔': Icons.restaurant,
@@ -47,14 +49,15 @@ class CalendarExpenseItem extends ConsumerWidget {
     final date = DateFormat('dd/MM/yy').parse(dateKey);
     final weekdayNumber = date.weekday;
 
-    const weekdayMap = {
-      1: 'Th 2',
-      2: 'Th 3',
-      3: 'Th 4',
-      4: 'Th 5',
-      5: 'Th 6',
-      6: 'Th 7',
-      7: 'CN',
+    final l10n = AppLocalizations.of(context);
+    final weekdayMap = {
+      1: l10n.monday,
+      2: l10n.tuesday,
+      3: l10n.wednesday,
+      4: l10n.thursday,
+      5: l10n.friday,
+      6: l10n.saturday,
+      7: l10n.sunday,
     };
 
     final formattedDate =
@@ -119,13 +122,16 @@ class CalendarExpenseItem extends ConsumerWidget {
 
                 final category = categories.firstWhere(
                   (cat) => cat['id'] == transaction.categoryId,
-                  orElse: () => {'icon': '🏷️'},
+                  orElse: () => {'name': '', 'icon': ''},
                 );
+                final categoryName = CategoryHelper.getLocalizedCategoryName(
+                    category['icon'], l10n);
 
                 final icon = _getIconFromEmoji(category['icon'] ?? '🏷️');
 
                 return Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                   child: InkWell(
                     onTap: () => onTapTransaction(transaction),
                     child: Row(

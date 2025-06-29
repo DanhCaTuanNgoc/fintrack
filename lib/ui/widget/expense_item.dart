@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../providers/providers_barrel.dart';
+import '../../utils/localization.dart';
+import '../../utils/category_helper.dart';
 
 class ExpenseItem extends StatefulWidget {
   final String dateKey;
@@ -53,14 +55,16 @@ class _ExpenseItemState extends State<ExpenseItem> {
     final numberFormat = NumberFormat('#,###');
     final date = DateFormat('dd/MM/yy').parse(widget.dateKey);
     final weekdayNumber = date.weekday;
-    const weekdayMap = {
-      1: 'Th 2',
-      2: 'Th 3',
-      3: 'Th 4',
-      4: 'Th 5',
-      5: 'Th 6',
-      6: 'Th 7',
-      7: 'CN',
+    final l10n = AppLocalizations.of(context);
+
+    final weekdayMap = {
+      1: l10n.monday,
+      2: l10n.tuesday,
+      3: l10n.wednesday,
+      4: l10n.thursday,
+      5: l10n.friday,
+      6: l10n.saturday,
+      7: l10n.sunday,
     };
 
     final formattedDate =
@@ -126,7 +130,7 @@ class _ExpenseItemState extends State<ExpenseItem> {
                   ),
                   const Spacer(),
                   Text(
-                    'Tổng: ${widget.isAmountVisible ? (widget.dayExpense > 0 ? '+' : '-') + formatCurrency(widget.dayExpense.abs(), widget.currencySymbol) : '•••••'}',
+                    '${l10n.total}: ${widget.isAmountVisible ? (widget.dayExpense > 0 ? '+' : '-') + formatCurrency(widget.dayExpense.abs(), widget.currencySymbol) : '•••••'}',
                     style: TextStyle(color: Colors.grey[600], fontSize: 14.sp),
                   ),
                 ],
@@ -139,8 +143,10 @@ class _ExpenseItemState extends State<ExpenseItem> {
               children: widget.transactions.map((transaction) {
                 final category = widget.categories.firstWhere(
                   (cat) => cat['id'] == transaction.categoryId,
-                  orElse: () => {'icon': '🏷️', 'color': '0xFF6C63FF'},
+                  orElse: () => {'name': '', 'icon': ''},
                 );
+                final categoryName = CategoryHelper.getLocalizedCategoryName(
+                    category['icon'], l10n);
 
                 final bgColor = widget.themeColor.withOpacity(0.1);
 
