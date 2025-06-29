@@ -136,8 +136,10 @@ class NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dismissible(
-      key: Key(notification.title + notification.time.toString()),
+      key: Key(
+          '${notification.type}_${notification.time.millisecondsSinceEpoch}'),
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
@@ -187,7 +189,7 @@ class NotificationTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        notification.title,
+                        notification.getTitle(l10n),
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: notification.isRead
@@ -198,7 +200,7 @@ class NotificationTile extends StatelessWidget {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        notification.message,
+                        notification.getMessage(l10n),
                         style: TextStyle(
                           fontSize: 14.sp,
                           color: const Color(0xFF9E9E9E),

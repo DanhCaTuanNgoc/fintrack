@@ -20,7 +20,8 @@ class DatabaseHelper {
   Future<Database> _initDB(String filePath) async {
     final appDocDir = await getApplicationDocumentsDirectory();
     final path = join(appDocDir.path, filePath);
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path,
+        version: 2, onCreate: _createDB, onUpgrade: _upgradeDB);
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -108,13 +109,15 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS notifications (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        message TEXT NOT NULL,
+        type TEXT NOT NULL,
         time TEXT NOT NULL,
         is_read INTEGER NOT NULL,
         invoice_id TEXT,
         invoice_due_date TEXT,
-        goal_id TEXT
+        goal_id TEXT,
+        item_name TEXT,
+        amount TEXT,
+        remaining_days INTEGER
       )
     ''');
 
@@ -166,6 +169,28 @@ class DatabaseHelper {
 
     // Thêm một số category mặc định
     await _insertDefaultCategories(db);
+  }
+
+  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Nâng cấp từ version 1 lên version 2
+      // Tạo bảng notifications mới với schema mới
+      await db.execute('DROP TABLE IF EXISTS notifications');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS notifications (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          type TEXT NOT NULL,
+          time TEXT NOT NULL,
+          is_read INTEGER NOT NULL,
+          invoice_id TEXT,
+          invoice_due_date TEXT,
+          goal_id TEXT,
+          item_name TEXT,
+          amount TEXT,
+          remaining_days INTEGER
+        )
+      ''');
+    }
   }
 
   Future<void> _insertDefaultCategories(Database db) async {

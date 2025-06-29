@@ -44,13 +44,12 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
       return; // Do not add duplicate notification
     }
     final notification = NotificationItem(
-      title: 'Hóa đơn đến hạn',
-      message:
-          'Hóa đơn "$invoiceName" với số tiền ${amount.toStringAsFixed(0)}đ đã đến hạn thanh toán',
+      type: NotificationType.periodicInvoice,
       time: DateTime.now(),
       isRead: false,
       invoiceId: invoiceId,
       invoiceDueDate: dueDate,
+      itemName: invoiceName,
     );
     await NotificationRepository(DatabaseHelper.instance)
         .addNotification(notification);

@@ -134,13 +134,12 @@ Future<bool> _checkPeriodicInvoices() async {
           // Lưu thông báo vào database
           await NotificationRepository(DatabaseHelper.instance)
               .addNotification(NotificationItem(
-            title: l10n.periodicInvoices,
-            message:
-                '${l10n.invoiceName} "${invoice.name}" ${l10n.overdue}: ${nextDue.day}/${nextDue.month}/${nextDue.year}',
+            type: NotificationType.periodicInvoice,
             time: DateTime.now(),
             isRead: false,
             invoiceId: invoice.id,
             invoiceDueDate: nextDue,
+            itemName: invoice.name,
           ));
         }
         // Đã quá hạn
@@ -161,12 +160,12 @@ Future<bool> _checkPeriodicInvoices() async {
           // Lưu thông báo vào database
           await NotificationRepository(DatabaseHelper.instance)
               .addNotification(NotificationItem(
-            title: l10n.periodicInvoices,
-            message: '${l10n.invoiceName} "${invoice.name}" ${l10n.overdue}',
+            type: NotificationType.periodicInvoice,
             time: DateTime.now(),
             isRead: false,
             invoiceId: invoice.id,
             invoiceDueDate: nextDue,
+            itemName: invoice.name,
           ));
 
           // Cập nhật trạng thái hóa đơn thành quá hạn
@@ -198,12 +197,12 @@ Future<bool> _checkPeriodicInvoices() async {
           // Lưu thông báo vào database
           await NotificationRepository(DatabaseHelper.instance)
               .addNotification(NotificationItem(
-            title: l10n.periodicInvoices,
-            message: '${l10n.invoiceName} "${invoice.name}" ${l10n.overdue}',
+            type: NotificationType.periodicInvoice,
             time: DateTime.now(),
             isRead: false,
             invoiceId: invoice.id,
             invoiceDueDate: nextDue,
+            itemName: invoice.name,
           ));
 
           // Cập nhật trạng thái hóa đơn thành chưa thanh toán khi đến hạn mới
@@ -328,11 +327,12 @@ Future<bool> _checkSavingsGoals() async {
         // Lưu thông báo vào database
         await NotificationRepository(DatabaseHelper.instance)
             .addNotification(NotificationItem(
-          title: title,
-          message: message,
+          type: NotificationType.savingsGoal,
           time: DateTime.now(),
           isRead: false,
           goalId: goal.id?.toString(),
+          itemName: goal.name,
+          amount: goal.periodicAmount,
         ));
 
         // Cập nhật ngày nhắc nhở tiếp theo
@@ -358,12 +358,12 @@ Future<bool> _checkSavingsGoals() async {
         // Lưu thông báo vào database
         await NotificationRepository(DatabaseHelper.instance)
             .addNotification(NotificationItem(
-          title: l10n.savingsGoals,
-          message:
-              '${l10n.savingsGoals}: "${goal.name}" - ${l10n.deadline}: $remainingDays ${l10n.daysAgoWith(remainingDays.abs())}',
+          type: NotificationType.savingsGoalDue,
           time: DateTime.now(),
           isRead: false,
           goalId: goal.id?.toString(),
+          itemName: goal.name,
+          remainingDays: remainingDays,
         ));
       }
 
@@ -382,11 +382,11 @@ Future<bool> _checkSavingsGoals() async {
         // Lưu thông báo vào database
         await NotificationRepository(DatabaseHelper.instance)
             .addNotification(NotificationItem(
-          title: l10n.savingsGoals,
-          message: '${l10n.completed}: "${goal.name}" 🎉',
+          type: NotificationType.savingsGoalCompleted,
           time: DateTime.now(),
           isRead: false,
           goalId: goal.id?.toString(),
+          itemName: goal.name,
         ));
       }
     }
