@@ -341,6 +341,8 @@ class _MoreState extends ConsumerState<More> {
   }
 
   void _showCurrencyDialog(CurrencyType currentCurrency) {
+    final l10n = AppLocalizations.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -348,7 +350,7 @@ class _MoreState extends ConsumerState<More> {
           borderRadius: BorderRadius.circular(16.r),
         ),
         title: Text(
-          'Chọn tiền tệ',
+          l10n.currency,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: const Color(0xFF2D3142),
