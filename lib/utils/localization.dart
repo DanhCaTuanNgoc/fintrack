@@ -17,7 +17,7 @@ class AppLocalizations {
   String get cancel => _getString('cancel');
   String get confirm => _getString('confirm');
   String get save => _getString('save');
-  String get delete => _getString('delete');
+  String get delete => _getString('Delete');
   String get edit => _getString('edit');
   String get add => _getString('add');
   String get close => _getString('close');
@@ -1084,7 +1084,7 @@ class AppLocalizations {
   String get startDateLabel => _getString('startDateLabel');
   String get chooseDateLabel => _getString('chooseDateLabel');
   String get deleteSavingsBook => _getString('deleteSavingsBook');
-  String get update => _getString('update');
+  String get update => _getString('Update');
   String get foodAndDrinks => _getString('Foood');
   String get transportation => _getString('Transportation');
   String get shopping => _getString('Shopping');

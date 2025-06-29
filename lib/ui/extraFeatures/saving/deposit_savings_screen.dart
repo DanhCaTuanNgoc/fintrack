@@ -767,6 +767,7 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                 decoration: InputDecoration(
                   labelText: l10n.noteOptional,
                   labelStyle: TextStyle(color: widget.themeColor),
+                  prefixIcon: Icon(Icons.note, color: widget.themeColor),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.r),
                   ),

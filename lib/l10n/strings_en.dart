@@ -19,8 +19,7 @@ class EnglishStrings {
   // Messages
   static const String switchedToVietnamese = 'Switched to Vietnamese';
   static const String switchedToEnglish = 'Switched to English';
-  static const String currencyChanged =
-      'Currency changed to {currency} and all transactions updated';
+  static const String currencyChanged = 'Currency changed to {currency}';
   static const String themeColorChanged = 'Theme color changed to {color}';
 
   // Common
@@ -213,7 +212,7 @@ class EnglishStrings {
   static const String deleteSavingsGoal = 'Delete Savings Goal';
   static const String confirmDelete = 'Confirm Delete';
   static const String confirmDeleteMessage =
-      'Are you sure you want to delete the savings goal "{goalName}"?\n\nThis action cannot be undone and will delete all related transaction history.';
+      'Are you sure you want to delete the savings goal "{goalName}"?.';
   static const String deleteSuccess = 'Savings goal deleted!';
   static const String updateSuccess = 'Updated successfully!';
   static const String currentInformation = 'Current Information:';
@@ -289,7 +288,7 @@ class EnglishStrings {
   static const String enterValidNumber = 'Enter valid number';
   static const String clearFilter = 'Clear Filter';
   static const String paid = 'Paid';
-  static const String pendingPayment = 'Pending Payment';
+  static const String pendingPayment = 'Pending';
   static const String createPeriodicInvoice = 'Create Periodic Invoice';
   static const String pleaseEnterInvoiceName = 'Please enter invoice name';
   static const String createInvoice = 'Create Invoice';
@@ -316,7 +315,7 @@ class EnglishStrings {
   static const String depositBeforeNextPeriod = 'Deposit before next period?';
   static const String youAreDepositingBeforeNextPeriod =
       'You are depositing before the next period:';
-  static const String continueDeposit = 'Continue';
+  static const String continueDeposit = 'Deposit';
   static const String frequencyDaily = 'daily';
   static const String frequencyWeekly = 'weekly';
   static const String frequencyMonthly = 'monthly';

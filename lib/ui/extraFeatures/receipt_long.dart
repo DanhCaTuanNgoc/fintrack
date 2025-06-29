@@ -324,13 +324,10 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                       (category) => DropdownMenuItem<String>(
                                         value: category['name'],
                                         child: Row(
-                                          mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Text(category['icon'],
-                                                style:
-                                                    TextStyle(fontSize: 16.sp)),
+                                            Text(category['icon']),
                                             SizedBox(width: 8.w),
-                                            Flexible(
+                                            Expanded(
                                               child: Text(
                                                 CategoryHelper
                                                     .getLocalizedCategoryName(
@@ -474,460 +471,348 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
       }
     }
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.r),
-          topRight: Radius.circular(60.r),
-          bottomLeft: Radius.circular(20.r),
-          bottomRight: Radius.circular(20.r),
-        ),
-        color: Colors.white,
-        border: Border.all(
-          color: Colors.grey.shade200,
-          width: 1.w,
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.r),
-          topRight: Radius.circular(60.r),
-          bottomLeft: Radius.circular(20.r),
-          bottomRight: Radius.circular(20.r),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(20.0.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header section
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 48.w,
-                    height: 48.w,
-                    decoration: BoxDecoration(
-                      color: themeColor,
-                      borderRadius: BorderRadius.circular(16.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: themeColor.withOpacity(0.3),
-                          blurRadius: 8.r,
-                          offset: Offset(0, 4.h),
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.receipt_long,
-                      color: Colors.white,
-                      size: 24.w,
-                    ),
-                  ),
-                  SizedBox(width: 16.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                ' ${invoice.name}',
-                                style: TextStyle(
-                                  fontSize: 19.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF1A1A1A),
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                              ),
-                            ),
-                            SizedBox(width: 8.w),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 8.w,
-                                vertical: 3.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isOverdue
-                                    ? Colors.red.withOpacity(0.1)
-                                    : invoice.isPaid
-                                        ? Colors.green.withOpacity(0.1)
-                                        : Colors.blue.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(6.r),
-                              ),
-                              child: Text(
-                                isOverdue
-                                    ? l10n.overdue
-                                    : invoice.isPaid
-                                        ? l10n.paid
-                                        : l10n.pendingPayment,
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: isOverdue
-                                      ? Colors.red
-                                      : invoice.isPaid
-                                          ? Colors.green
-                                          : Colors.blue,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10.w,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+    return InkWell(
+      borderRadius: BorderRadius.circular(16.r),
+      splashColor: const Color.fromARGB(0, 255, 255, 255),
+      highlightColor: const Color.fromARGB(0, 255, 255, 255),
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.sp),
               ),
-              SizedBox(height: 24.h),
-
-              // Amount section
-              Container(
-                padding: EdgeInsets.all(16.w),
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              child: Container(
+                padding: EdgeInsets.all(24.sp),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(16.r),
-                  border: Border.all(
-                    color: Colors.grey.shade200,
-                    width: 1.w,
-                  ),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20.sp),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
                 ),
-                child: Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Book name section
-                    Icon(
-                      Icons.book,
-                      size: 20.w,
-                      color: Colors.grey.shade600,
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.expenseBook,
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: Colors.grey.shade600,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            bookName ?? l10n.noBook,
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF1A1A1A),
-                            ),
-                          ),
-                        ],
+                    // Icon
+                    Container(
+                      padding: EdgeInsets.all(16.sp),
+                      decoration: BoxDecoration(
+                        color: themeColor.withOpacity(0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.receipt_long,
+                        size: 36.sp,
+                        color: themeColor,
                       ),
                     ),
-                    SizedBox(width: 16.w),
-                    // Amount section
-                    Icon(
-                      Icons.attach_money,
-                      size: 20.w,
-                      color: Colors.grey.shade600,
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.amount,
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: Colors.grey.shade600,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            formatCurrency(
-                                invoice.amount, ref.watch(currencyProvider)),
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF1A1A1A),
-                            ),
-                          ),
-                        ],
+                    SizedBox(height: 16.sp),
+                    // Title
+                    Text(
+                      invoice.name,
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.grey[800],
                       ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 8.sp),
+                    // Status chip
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                      decoration: BoxDecoration(
+                        color: isOverdue
+                            ? Colors.red.withOpacity(0.1)
+                            : invoice.isPaid
+                                ? Colors.green.withOpacity(0.1)
+                                : Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Text(
+                        isOverdue
+                            ? l10n.overdue
+                            : invoice.isPaid
+                                ? l10n.paid
+                                : l10n.pendingPayment,
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.bold,
+                          color: isOverdue
+                              ? Colors.red
+                              : invoice.isPaid
+                                  ? Colors.green
+                                  : Colors.blue,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 18.sp),
+                    // Amount
+                    Text(
+                      formatCurrency(
+                          invoice.amount, ref.watch(currencyProvider)),
+                      style: TextStyle(
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.bold,
+                        color: isOverdue
+                            ? Colors.red
+                            : invoice.isPaid
+                                ? Colors.green
+                                : themeColor,
+                      ),
+                    ),
+                    SizedBox(height: 18.sp),
+                    // Details
+                    _buildDetailRow(Icons.calendar_today, l10n.frequency,
+                        _getFrequencyText(invoice.frequency, context)),
+                    SizedBox(height: 10.h),
+                    _buildDetailRow(Icons.book, l10n.expenseBook, bookName),
+                    if (nextDueDate != null) ...[
+                      SizedBox(height: 10.h),
+                      _buildDetailRow(Icons.schedule, 'Next Due Date',
+                          DateFormat('dd/MM/yyyy').format(nextDueDate)),
+                    ],
+                    SizedBox(height: 24.sp),
+                    // Action Buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 48.sp,
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: Colors.grey[300]!),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.sp),
+                                ),
+                              ),
+                              child: Text(
+                                l10n.cancel,
+                                style: TextStyle(
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12.sp),
+                        Expanded(
+                          child: Container(
+                            height: 48.sp,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                ref
+                                    .read(periodicInvoicesProvider.notifier)
+                                    .removePeriodicInvoice(invoice.id);
+                                Future.delayed(Duration.zero, () {
+                                  Navigator.pop(context);
+                                  CustomSnackBar.showSuccess(
+                                    context,
+                                    message: l10n.deleteSuccess,
+                                  );
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red[500],
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.sp),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.delete_outline,
+                                      color: Colors.white, size: 20),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    l10n.delete,
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 20.h),
-
-              // Details section
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.frequency,
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              _getFrequencyText(invoice.frequency, context),
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w700,
-                                color: themeColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 1.w,
-                        height: 40.h,
-                        color: Colors.grey.shade300,
-                      ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.category,
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              CategoryHelper.getLocalizedCategoryName(
-                                  _getCategoryIconFromName(invoice.category),
-                                  l10n),
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.grey.shade700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-
-              // Payment status section
-              if (invoice.isPaid) ...[
-                SizedBox(height: 20.h),
-                Container(
-                  padding: EdgeInsets.all(12.w),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: Colors.green.shade200,
-                      width: 1.w,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade100,
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Icon(
-                          Icons.check_circle,
-                          size: 16.w,
-                          color: Colors.green.shade700,
-                        ),
-                      ),
-                      SizedBox(width: 12.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.paid,
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: Colors.green.shade700,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 2.h),
-                            Text(
-                              DateFormat('dd/MM/yyyy')
-                                  .format(invoice.lastPaidDate!),
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.green.shade800,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+            );
+          },
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.r),
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.grey.shade200,
+            width: 1.w,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 8.r,
+              offset: Offset(0, 2.h),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Row(
+            children: [
+              // Icon
+              Container(
+                width: 48.w,
+                height: 48.w,
+                decoration: BoxDecoration(
+                  color: themeColor,
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
-              ],
-
-              // Action buttons
-              SizedBox(height: 20.h),
-              Row(
-                children: [
-                  if (!invoice.isPaid)
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text(l10n.confirmDelete),
-                                content: Text(l10n.confirmDeleteInvoice),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                    child: Text(l10n.cancel),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      ref
-                                          .read(
-                                              periodicInvoicesProvider.notifier)
-                                          .removePeriodicInvoice(invoice.id);
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      l10n.delete,
-                                      style: TextStyle(
-                                          color: Color.fromARGB(
-                                              255, 255, 255, 255)),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.red,
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
+                child: Icon(
+                  Icons.receipt_long,
+                  color: Colors.white,
+                  size: 24.w,
+                ),
+              ),
+              SizedBox(width: 16.w),
+              // Content section
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Name and status row
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            invoice.name,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF1A1A1A),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
-                          elevation: 0,
                         ),
-                        child: Text(
-                          l10n.delete,
-                          style: TextStyle(
+                        SizedBox(width: 8.w),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 4.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isOverdue
+                                ? Colors.red.withOpacity(0.1)
+                                : invoice.isPaid
+                                    ? Colors.green.withOpacity(0.1)
+                                    : Colors.blue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(6.r),
+                          ),
+                          child: Text(
+                            isOverdue
+                                ? l10n.overdue
+                                : invoice.isPaid
+                                    ? l10n.paid
+                                    : l10n.pendingPayment,
+                            style: TextStyle(
+                              fontSize: 12.sp,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 15.sp),
-                        ),
-                      ),
-                    ),
-                  SizedBox(
-                    width: 10.w,
-                  ),
-                  if (!invoice.isPaid)
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          try {
-                            final categoryIcon =
-                                _getCategoryIconFromName(invoice.category);
-                            final categoryData = receipLong.firstWhere(
-                              (cat) => cat['icon'] == categoryIcon,
-                            );
-
-                            final bookId = invoice.bookId ?? 1;
-
-                            final transactionNotifier = ref.read(
-                              transactionsProvider.notifier,
-                            );
-
-                            await transactionNotifier.createTransaction(
-                              amount: invoice.amount,
-                              note: l10n.paidSuccessfullyWith(invoice.name),
-                              type: 'expense',
-                              categoryId: categoryData['id'],
-                              bookId: bookId,
-                              userId: 1,
-                            );
-
-                            await ref
-                                .read(periodicInvoicesProvider.notifier)
-                                .markPeriodicInvoiceAsPaid(invoice.id);
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    l10n.paidSuccessfullyWith(invoice.name)),
-                                backgroundColor: Colors.green,
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content:
-                                    Text(l10n.paymentErrorWith(e.toString())),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isOverdue ? Colors.red : themeColor,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
+                              color: isOverdue
+                                  ? Colors.red
+                                  : invoice.isPaid
+                                      ? Colors.green
+                                      : Colors.blue,
+                            ),
                           ),
-                          elevation: 0,
                         ),
-                        child: Text(
-                          isOverdue ? l10n.payNow : l10n.pay,
+                      ],
+                    ),
+                    SizedBox(height: 4.h),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            formatCurrency(
+                                invoice.amount, ref.watch(currencyProvider)),
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          _getFrequencyText(invoice.frequency, context),
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15.sp,
+                            fontSize: 13.sp,
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // Helper for detail row in dialog
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 24.w, color: Colors.grey.shade500),
+        SizedBox(width: 8.w),
+        Text(
+          '$label: ',
+          style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade700,
+              fontSize: 16.sp),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+                fontSize: 16.sp),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 
@@ -1166,6 +1051,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                   children: [
                                     Expanded(
                                       child: DropdownButtonFormField<String>(
+                                        isExpanded: true,
                                         value: selectedFrequency,
                                         decoration: InputDecoration(
                                           labelText: l10n.frequency,
@@ -1230,6 +1116,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                     Expanded(
                                       child: DropdownButtonFormField<String>(
                                         value: selectedCategory,
+                                        isExpanded: true,
                                         decoration: InputDecoration(
                                           labelText: l10n.category,
                                           labelStyle: TextStyle(
@@ -1260,12 +1147,10 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                                   DropdownMenuItem<String>(
                                                 value: category['name'],
                                                 child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
                                                   children: [
                                                     Text(category['icon']),
                                                     SizedBox(width: 8.w),
-                                                    Flexible(
+                                                    Expanded(
                                                       child: Text(
                                                         CategoryHelper
                                                             .getLocalizedCategoryName(

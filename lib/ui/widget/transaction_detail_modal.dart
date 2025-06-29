@@ -8,6 +8,7 @@ import '../../data/models/models_barrel.dart';
 import '../../providers/providers_barrel.dart';
 import '../../utils/category_helper.dart';
 import '../../utils/localization.dart';
+import './custom_snackbar.dart';
 
 class TransactionDetailModal extends ConsumerWidget {
   final Transaction transaction;
@@ -167,15 +168,9 @@ class TransactionDetailModal extends ConsumerWidget {
                             final notifier =
                                 ref.read(transactionsProvider.notifier);
                             await notifier.deleteTransaction(transaction.id!);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  l10n.deleteSuccess,
-                                  style: TextStyle(fontSize: 15.sp),
-                                ),
-                                backgroundColor: const Color(0xFF4CAF50),
-                                duration: const Duration(seconds: 2),
-                              ),
+                            CustomSnackBar.showSuccess(
+                              context,
+                              message: l10n.deleteSuccess,
                             );
                             Future.delayed(Duration.zero, () {
                               Navigator.pop(context);

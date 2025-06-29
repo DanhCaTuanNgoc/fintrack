@@ -7,6 +7,7 @@ import '../../providers/currency_provider.dart';
 import '../../utils/localization.dart';
 import './number_pad.dart';
 import './type_button.dart';
+import './custom_snackbar.dart';
 
 class EditTransactionModal extends ConsumerStatefulWidget {
   final Transaction transaction;
@@ -122,6 +123,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                   ),
                   SizedBox(height: 18.h),
                   TextField(
+                    controller: TextEditingController(text: widget.transaction.note ?? ''),
                     decoration: InputDecoration(
                       labelText: l10n.note,
                       labelStyle: TextStyle(color: widget.themeColor),
@@ -351,12 +353,9 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                             Future.delayed(const Duration(milliseconds: 300),
                                 () {
                               if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(l10n.updateSuccess),
-                                    backgroundColor: Colors.green,
-                                    duration: const Duration(seconds: 2),
-                                  ),
+                                CustomSnackBar.showSuccess(
+                                  context,
+                                  message: l10n.updateSuccess,
                                 );
                               }
                             });

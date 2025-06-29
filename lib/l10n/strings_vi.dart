@@ -19,8 +19,7 @@ class VietnameseStrings {
   // Messages
   static const String switchedToVietnamese = 'Đã chuyển sang Tiếng Việt';
   static const String switchedToEnglish = 'Đã chuyển sang English';
-  static const String currencyChanged =
-      'Đã chuyển sang {currency} và cập nhật tất cả giao dịch';
+  static const String currencyChanged = 'Đã chuyển sang {currency}';
   static const String themeColorChanged = 'Đã đổi màu nền thành {color}';
 
   // Common
@@ -210,7 +209,7 @@ class VietnameseStrings {
   static const String deleteSavingsGoal = 'Xóa sổ tiết kiệm';
   static const String confirmDelete = 'Xác nhận xóa';
   static const String confirmDeleteMessage =
-      'Bạn có chắc chắn muốn xóa sổ tiết kiệm "{goalName}"?\n\nHành động này không thể hoàn tác và sẽ xóa tất cả lịch sử giao dịch liên quan.';
+      'Bạn có chắc chắn muốn xóa sổ tiết kiệm "{goalName}"?.';
   static const String deleteSuccess = 'Đã xóa sổ tiết kiệm!';
   static const String updateSuccess = 'Cập nhật thành công!';
   static const String currentInformation = 'Thông tin hiện tại:';
@@ -319,7 +318,7 @@ class VietnameseStrings {
   static const String depositBeforeNextPeriod = 'Nạp trước kỳ tiếp theo?';
   static const String youAreDepositingBeforeNextPeriod =
       'Bạn đang nạp trước kỳ tiếp theo:';
-  static const String continueDeposit = 'Tiếp tục';
+  static const String continueDeposit = 'Bỏ tiết kiệm';
   static const String frequencyDaily = 'hàng ngày';
   static const String frequencyWeekly = 'hàng tuần';
   static const String frequencyMonthly = 'hàng tháng';

@@ -8,6 +8,8 @@ import '../../../data/models/savings_goal.dart';
 import '../../../providers/currency_provider.dart';
 import 'add_flexible_saving_goal.dart';
 import '../../../utils/localization.dart';
+import './custom_snackbar.dart';
+import './delete_confirmation_dialog.dart';
 
 class UpdatePeriodicSavingGoalDialog extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -587,7 +589,7 @@ class _UpdatePeriodicSavingGoalDialogState
                       onPressed: () {
                         _showDeleteConfirmation(context);
                       },
-                      child: Text(l10n.deleteSavingsBook,
+                      child: Text(l10n.delete,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16.sp)),
                     ),
@@ -616,16 +618,16 @@ class _UpdatePeriodicSavingGoalDialogState
                           final targetDate = _targetDate;
 
                           if (startedDate == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(l10n.pleaseSelectStartDate)),
+                            CustomSnackBar.showError(
+                              context,
+                              message: l10n.pleaseSelectStartDate,
                             );
                             return;
                           }
                           if (periodicFrequency == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(l10n.pleaseSelectFrequency)),
+                            CustomSnackBar.showError(
+                              context,
+                              message: l10n.pleaseSelectFrequency,
                             );
                             return;
                           }
@@ -645,14 +647,9 @@ class _UpdatePeriodicSavingGoalDialogState
                           await notifier.updateSavingsGoal(updatedGoal);
 
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  l10n.updateSuccess,
-                                  style: TextStyle(fontSize: 14.sp),
-                                ),
-                                backgroundColor: Colors.green,
-                              ),
+                            CustomSnackBar.showSuccess(
+                              context,
+                              message: l10n.updateSuccess,
                             );
                             Future.delayed(Duration.zero, () {
                               Navigator.pop(context);
@@ -676,50 +673,24 @@ class _UpdatePeriodicSavingGoalDialogState
   }
 
   void _showDeleteConfirmation(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    showDialog(
+    DeleteConfirmationDialog.showSavingsGoalDelete(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(l10n.confirmDelete, style: TextStyle(fontSize: 18.sp)),
-          content: Text(
-            l10n.confirmDeleteMessage
-                .replaceFirst('{goalName}', widget.goal.name),
-            style: TextStyle(fontSize: 14.sp),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(l10n.cancel, style: TextStyle(fontSize: 14.sp)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () async {
-                Navigator.of(context).pop();
+      goalName: widget.goal.name,
+      onConfirm: () async {
+        final notifier = ref.read(savingsGoalsProvider.notifier);
+        await notifier.deleteSavingsGoal(widget.goal);
 
-                final notifier = ref.read(savingsGoalsProvider.notifier);
-                await notifier.deleteSavingsGoal(widget.goal);
-
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.deleteSuccess,
-                          style: TextStyle(fontSize: 14.sp)),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                  Future.delayed(Duration.zero, () {
-                    Navigator.pop(context);
-                  });
-                }
-              },
-              child: Text(l10n.delete, style: TextStyle(fontSize: 14.sp)),
-            ),
-          ],
-        );
+        if (mounted) {
+          CustomSnackBar.showSuccess(
+            context,
+            message: AppLocalizations.of(context).deleteSuccess,
+          );
+          // Đóng modal cập nhật và màn hình flexible savings sau khi xóa thành công
+          Future.delayed(Duration.zero, () {
+            Navigator.pop(context); // Đóng modal cập nhật
+            Navigator.pop(context); // Đóng màn hình flexible savings
+          });
+        }
       },
     );
   }

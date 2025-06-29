@@ -12,6 +12,7 @@ import 'more/notification.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../utils/localization.dart';
 import '../utils/languages.dart';
+import 'widget/custom_snackbar.dart';
 
 // 🔀 Danh sách các màu chủ đạo có thể chọn
 final List<Color> primaryVariants = const [
@@ -310,15 +311,9 @@ class _MoreState extends ConsumerState<More> {
                 Navigator.pop(context);
 
                 // Thông báo cho người dùng
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      _getLanguageChangeMessage(language, l10n),
-                      style: TextStyle(fontSize: 16.sp),
-                    ),
-                    backgroundColor: const Color(0xFF4CAF50),
-                    duration: const Duration(seconds: 2),
-                  ),
+                CustomSnackBar.showSuccess(
+                  context,
+                  message: _getLanguageChangeMessage(language, l10n),
                 );
               },
             );
@@ -424,15 +419,10 @@ class _MoreState extends ConsumerState<More> {
                 Navigator.pop(context);
 
                 // Thông báo cho người dùng
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
+                CustomSnackBar.showSuccess(
+                  context,
+                  message:
                       l10n.themeColorChanged(_getColorNameByIndex(index, l10n)),
-                      style: TextStyle(fontSize: 16.sp),
-                    ),
-                    backgroundColor: const Color(0xFF4CAF50),
-                    duration: const Duration(seconds: 2),
-                  ),
                 );
               },
             );
@@ -476,14 +466,9 @@ class _MoreState extends ConsumerState<More> {
 
       // Hiển thị thông báo cho người dùng
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              l10n.currencyChanged(newCurrency.displayName),
-              style: TextStyle(fontSize: 16.sp),
-            ),
-            backgroundColor: const Color(0xFF4CAF50),
-          ),
+        CustomSnackBar.showSuccess(
+          context,
+          message: l10n.currencyChanged(newCurrency.displayName),
         );
       }
     }

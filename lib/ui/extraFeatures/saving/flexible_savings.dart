@@ -5,12 +5,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../widget/widget_barrel.dart';
 import 'deposit_savings_screen.dart';
 import '../../../utils/localization.dart';
+import '../../../data/models/savings_goal.dart';
 
-class FlexibleSavingsScreen extends ConsumerWidget {
+class FlexibleSavingsScreen extends ConsumerStatefulWidget {
   const FlexibleSavingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<FlexibleSavingsScreen> createState() =>
+      _FlexibleSavingsScreenState();
+}
+
+class _FlexibleSavingsScreenState extends ConsumerState<FlexibleSavingsScreen> {
+  @override
+  Widget build(BuildContext context) {
     final Color themeColor = ref.watch(themeColorProvider);
     final savingsGoal = ref.watch(savingsGoalsProvider);
     final currencyType = ref.watch(currencyProvider);
@@ -85,18 +92,21 @@ class FlexibleSavingsScreen extends ConsumerWidget {
                             bool isClosed = !goal.isActive;
 
                             if (isOverdue || isClosed) {
-                              String message = isOverdue
-                                  ? AppLocalizations.of(context).savingsOverdue
-                                  : AppLocalizations.of(context).savingsClosed;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    message,
-                                    style: TextStyle(fontSize: 14.sp),
-                                  ),
-                                  backgroundColor:
-                                      isOverdue ? Colors.red : Colors.grey,
-                                ),
+                              DeleteConfirmationDialog.showSavingsGoalDelete(
+                                context: context,
+                                goalName: goal.name,
+                                isOverdue: isOverdue,
+                                isClosed: isClosed,
+                                onConfirm: () {
+                                  ref
+                                      .read(savingsGoalsProvider.notifier)
+                                      .deleteSavingsGoal(goal);
+                                  CustomSnackBar.showSuccess(
+                                    context,
+                                    message: AppLocalizations.of(context)
+                                        .deleteSuccess,
+                                  );
+                                },
                               );
                             } else {
                               Navigator.push(
