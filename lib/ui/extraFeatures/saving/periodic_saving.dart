@@ -85,15 +85,21 @@ class PeriodicSavingScreen extends ConsumerWidget {
                           bool isClosed = !goal.isActive;
 
                           if (isOverdue || isClosed) {
-                            String message = isOverdue
-                                ? AppLocalizations.of(context).savingsOverdue
-                                : AppLocalizations.of(context).savingsClosed;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(message),
-                                backgroundColor:
-                                    isOverdue ? Colors.red : Colors.grey,
-                              ),
+                            DeleteConfirmationDialog.showSavingsGoalDelete(
+                              context: context,
+                              goalName: goal.name,
+                              isOverdue: isOverdue,
+                              isClosed: isClosed,
+                              onConfirm: () {
+                                ref
+                                    .read(savingsGoalsProvider.notifier)
+                                    .deleteSavingsGoal(goal);
+                                CustomSnackBar.showSuccess(
+                                  context,
+                                  message: AppLocalizations.of(context)
+                                      .deleteSuccess,
+                                );
+                              },
                             );
                           } else {
                             Navigator.push(

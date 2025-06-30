@@ -9,6 +9,7 @@ import './number_pad.dart';
 import './type_button.dart';
 import './custom_snackbar.dart';
 import '../../utils/category_helper.dart';
+import './category_selection_modal.dart';
 
 class EditTransactionModal extends ConsumerStatefulWidget {
   final Transaction transaction;
@@ -35,7 +36,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
   late bool _isExpense;
   late String _amount;
   late String _note;
-  String? _selectedCategory;
+  String? _selectedCategoryIcon;
   String? _noteError;
   String? _amountError;
 
@@ -45,10 +46,11 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
     _amount = widget.transaction.amount.toInt().toString();
     _note = widget.transaction.note ?? '';
     _isExpense = widget.transaction.type == 'expense';
-    _selectedCategory = widget.categories.firstWhere(
+    final initialCategory = widget.categories.firstWhere(
       (cat) => cat['id'] == widget.transaction.categoryId,
-      orElse: () => {'name': null},
-    )['name'];
+      orElse: () => {'icon': null},
+    );
+    _selectedCategoryIcon = initialCategory['icon'];
   }
 
   @override
@@ -103,7 +105,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                             onTap: () {
                               setState(() {
                                 _isExpense = true;
-                                _selectedCategory = null;
+                                _selectedCategoryIcon = null;
                               });
                             },
                           ),
@@ -115,7 +117,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                             onTap: () {
                               setState(() {
                                 _isExpense = false;
-                                _selectedCategory = null;
+                                _selectedCategoryIcon = null;
                               });
                             },
                           ),
@@ -266,97 +268,17 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                       showModalBottomSheet(
                         context: context,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20.r),
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 40.w,
-                                height: 4.h,
-                                margin:
-                                    EdgeInsets.only(top: 12.h, bottom: 20.h),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius: BorderRadius.circular(2.r),
-                                ),
-                              ),
-                              Text(
-                                _isExpense
-                                    ? l10n.selectExpenseCategory
-                                    : l10n.selectIncomeCategory,
-                                style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF2D3142),
-                                ),
-                              ),
-                              SizedBox(height: 10.h),
-                              SingleChildScrollView(
-                                child: Column(
-                                  children: categories.map((category) {
-                                    return ListTile(
-                                      leading: Container(
-                                        padding: EdgeInsets.all(8.w),
-                                        decoration: BoxDecoration(
-                                          color: _selectedCategory ==
-                                                  category['name']
-                                              ? widget.themeColor
-                                                  .withOpacity(0.1)
-                                              : Colors.grey[100],
-                                          borderRadius:
-                                              BorderRadius.circular(8.r),
-                                        ),
-                                        child: Text(
-                                          category['icon'],
-                                          style: TextStyle(
-                                            fontSize: 20.sp,
-                                            color: _selectedCategory ==
-                                                    category['name']
-                                                ? widget.themeColor
-                                                : Colors.grey[600],
-                                          ),
-                                        ),
-                                      ),
-                                      title: Text(
-                                        category['name'],
-                                        style: TextStyle(
-                                          fontWeight: _selectedCategory ==
-                                                  category['name']
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                          color: _selectedCategory ==
-                                                  category['name']
-                                              ? widget.themeColor
-                                              : const Color(0xFF2D3142),
-                                        ),
-                                      ),
-                                      trailing:
-                                          _selectedCategory == category['name']
-                                              ? Icon(
-                                                  Icons.check_circle,
-                                                  color: widget.themeColor,
-                                                )
-                                              : null,
-                                      onTap: () {
-                                        setState(() {
-                                          _selectedCategory = category['name'];
-                                        });
-                                        Future.delayed(Duration.zero,
-                                            () => {Navigator.pop(context)});
-                                      },
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                              SizedBox(height: 10.h)
-                            ],
-                          ),
+                        isScrollControlled: true,
+                        builder: (context) => CategorySelectionModal(
+                          categories: categories,
+                          selectedCategory: _selectedCategoryIcon,
+                          themeColor: widget.themeColor,
+                          isExpense: _isExpense,
+                          onCategoryTap: (icon) {
+                            setState(() {
+                              _selectedCategoryIcon = icon;
+                            });
+                          },
                         ),
                       );
                     },
@@ -376,7 +298,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                         ),
                         suffixIcon: const Icon(Icons.keyboard_arrow_down),
                       ),
-                      child: _selectedCategory == null
+                      child: _selectedCategoryIcon == null
                           ? Text(
                               l10n.chooseCategory,
                               style: TextStyle(
@@ -387,18 +309,13 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                           : Row(
                               children: [
                                 Text(
-                                  categories.firstWhere(
-                                    (cat) =>
-                                        CategoryHelper.getLocalizedCategoryName(
-                                            cat['icon'], l10n) ==
-                                        _selectedCategory,
-                                    orElse: () => {'icon': '🏷️'},
-                                  )['icon'],
+                                  _selectedCategoryIcon!,
                                   style: TextStyle(fontSize: 20.sp),
                                 ),
                                 SizedBox(width: 8.w),
                                 Text(
-                                  _selectedCategory!,
+                                  CategoryHelper.getLocalizedCategoryName(
+                                      _selectedCategoryIcon!, l10n),
                                   style: TextStyle(
                                     fontSize: 16.sp,
                                     color: const Color(0xFF2D3142),
@@ -430,10 +347,11 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                           return;
                         }
 
-                        if (_amount.isNotEmpty && _selectedCategory != null) {
+                        if (_amount.isNotEmpty &&
+                            _selectedCategoryIcon != null) {
                           final selectedCategoryData = categories.firstWhere(
-                            (cat) => cat['name'] == _selectedCategory,
-                            orElse: () => {'id': null, 'icon': '🏷️'},
+                            (cat) => cat['icon'] == _selectedCategoryIcon,
+                            orElse: () => {'id': null},
                           );
 
                           final updated = widget.transaction.copyWith(

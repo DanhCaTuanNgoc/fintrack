@@ -20,3 +20,5 @@ export './number_pad.dart';
 export './update_book_modal.dart';
 export './custom_snackbar.dart';
 export './delete_confirmation_dialog.dart';
+export './invoice_detail_modal.dart';
+export './frequency_selection_modal.dart';

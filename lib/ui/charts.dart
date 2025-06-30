@@ -137,7 +137,7 @@ class _ChartsState extends ConsumerState<Charts>
                             ),
                           ),
                           child: Text(
-                            l10n.createFirstBook,
+                            l10n.createBook,
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,

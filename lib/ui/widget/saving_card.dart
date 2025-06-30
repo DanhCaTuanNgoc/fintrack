@@ -159,50 +159,49 @@ class SavingCard extends StatelessWidget {
                 SizedBox(height: 10.h),
 
                 // Target amount
-                Container(
-                  padding: EdgeInsets.all(16.w),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: Colors.grey.shade200,
-                      width: 1.w,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.flag_outlined,
-                        size: 20.sp,
-                        color: Colors.grey.shade600,
-                      ),
-                      SizedBox(width: 12.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.target,
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: Colors.grey.shade600,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            formatCurrency(goal.targetAmount, currencyType),
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF1A1A1A),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20.h),
+                // Container(
+                //   padding: EdgeInsets.all(16.w),
+                //   decoration: BoxDecoration(
+                //     color: Colors.grey.shade50,
+                //     borderRadius: BorderRadius.circular(16.r),
+                //     border: Border.all(
+                //       color: Colors.grey.shade200,
+                //       width: 1.w,
+                //     ),
+                //   ),
+                //   child: Row(
+                //     children: [
+                //       Icon(
+                //         Icons.flag_outlined,
+                //         size: 20.sp,
+                //         color: Colors.grey.shade600,
+                //       ),
+                //       SizedBox(width: 12.w),
+                //       Column(
+                //         crossAxisAlignment: CrossAxisAlignment.start,
+                //         children: [
+                //           Text(
+                //             l10n.target,
+                //             style: TextStyle(
+                //               fontSize: 12.sp,
+                //               color: Colors.grey.shade600,
+                //               fontWeight: FontWeight.w500,
+                //             ),
+                //           ),
+                //           SizedBox(height: 2.h),
+                //           Text(
+                //             formatCurrency(goal.targetAmount, currencyType),
+                //             style: TextStyle(
+                //               fontSize: 16.sp,
+                //               fontWeight: FontWeight.w700,
+                //               color: const Color(0xFF1A1A1A),
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //     ],
+                //   ),
+                // ),
 
                 // Progress section
                 Column(

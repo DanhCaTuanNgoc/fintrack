@@ -18,7 +18,7 @@ class VietnameseStrings {
 
   // Messages
   static const String switchedToVietnamese = 'Đã chuyển sang Tiếng Việt';
-  static const String switchedToEnglish = 'Đã chuyển sang English';
+  static const String switchedToEnglish = 'Switched to English';
   static const String currencyChanged = 'Đã chuyển sang {currency}';
   static const String themeColorChanged = 'Đã đổi màu nền thành {color}';
 

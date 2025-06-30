@@ -116,7 +116,7 @@ class _BooksState extends ConsumerState<Books>
               elevation: 0,
               toolbarHeight: 60.h,
               title: Text(
-                l10n.books,
+                l10n.expenseBook,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24.sp,

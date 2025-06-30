@@ -17,7 +17,7 @@ class EnglishStrings {
   static const String chooseThemeColor = 'Choose Theme Color';
 
   // Messages
-  static const String switchedToVietnamese = 'Switched to Vietnamese';
+  static const String switchedToVietnamese = 'Đã chuyển sang Tiếng Việt';
   static const String switchedToEnglish = 'Switched to English';
   static const String currencyChanged = 'Currency changed to {currency}';
   static const String themeColorChanged = 'Theme color changed to {color}';

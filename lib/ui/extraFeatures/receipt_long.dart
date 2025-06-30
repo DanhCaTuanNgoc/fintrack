@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/database/database_helper.dart';
@@ -10,6 +12,9 @@ import '../../utils/category_helper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../utils/localization.dart';
 import '../widget/custom_snackbar.dart';
+import '../widget/frequency_selection_modal.dart';
+import '../widget/category_selection_modal.dart';
+import '../widget/invoice_detail_modal.dart';
 
 class ReceiptLong extends ConsumerStatefulWidget {
   const ReceiptLong({super.key});
@@ -455,6 +460,23 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     );
   }
 
+  final Map<String, IconData> _iconMapping = {
+    '🍔': Icons.restaurant,
+    '🚗': Icons.directions_car,
+    '🛍': Icons.shopping_bag,
+    '🎮': Icons.sports_esports,
+    '📚': Icons.book,
+    '💅': Icons.face,
+    '💰': Icons.attach_money,
+    '🎁': Icons.card_giftcard,
+    '📈': Icons.trending_up,
+    '🏠': Icons.home,
+  };
+
+  IconData _getIconFromEmoji(String emoji) {
+    return _iconMapping[emoji] ?? Icons.category;
+  }
+
   Widget _buildInvoiceCard(BuildContext context, PeriodicInvoice invoice) {
     final isOverdue = invoice.isOverdue();
     final nextDueDate = invoice.nextDueDate ?? invoice.calculateNextDueDate();
@@ -479,192 +501,55 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
       onTap: () {
         showDialog(
           context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.sp),
-              ),
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              child: Container(
-                padding: EdgeInsets.all(24.sp),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20.sp),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Icon
-                    Container(
-                      padding: EdgeInsets.all(16.sp),
-                      decoration: BoxDecoration(
-                        color: themeColor.withOpacity(0.12),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.receipt_long,
-                        size: 36.sp,
-                        color: themeColor,
-                      ),
-                    ),
-                    SizedBox(height: 16.sp),
-                    // Title
-                    Text(
-                      invoice.name,
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey[800],
-                      ),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 8.sp),
-                    // Status chip
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: isOverdue
-                            ? Colors.red.withOpacity(0.1)
-                            : invoice.isPaid
-                                ? Colors.green.withOpacity(0.1)
-                                : Colors.blue.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Text(
-                        isOverdue
-                            ? l10n.overdue
-                            : invoice.isPaid
-                                ? l10n.paid
-                                : l10n.pendingPayment,
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.bold,
-                          color: isOverdue
-                              ? Colors.red
-                              : invoice.isPaid
-                                  ? Colors.green
-                                  : Colors.blue,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 18.sp),
-                    // Amount
-                    Text(
-                      formatCurrency(
-                          invoice.amount, ref.watch(currencyProvider)),
-                      style: TextStyle(
-                        fontSize: 28.sp,
-                        fontWeight: FontWeight.bold,
-                        color: isOverdue
-                            ? Colors.red
-                            : invoice.isPaid
-                                ? Colors.green
-                                : themeColor,
-                      ),
-                    ),
-                    SizedBox(height: 18.sp),
-                    // Details
-                    _buildDetailRow(Icons.calendar_today, l10n.frequency,
-                        _getFrequencyText(invoice.frequency, context)),
-                    SizedBox(height: 10.h),
-                    _buildDetailRow(Icons.book, l10n.expenseBook, bookName),
-                    if (nextDueDate != null) ...[
-                      SizedBox(height: 10.h),
-                      _buildDetailRow(Icons.schedule, 'Next Due Date',
-                          DateFormat('dd/MM/yyyy').format(nextDueDate)),
-                    ],
-                    SizedBox(height: 24.sp),
-                    // Action Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 48.sp,
-                            child: OutlinedButton(
-                              onPressed: () => Navigator.pop(context),
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: Colors.grey[300]!),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.sp),
-                                ),
-                              ),
-                              child: Text(
-                                l10n.cancel,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 12.sp),
-                        Expanded(
-                          child: Container(
-                            height: 48.sp,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                ref
-                                    .read(periodicInvoicesProvider.notifier)
-                                    .removePeriodicInvoice(invoice.id);
-                                Future.delayed(Duration.zero, () {
-                                  Navigator.pop(context);
-                                  CustomSnackBar.showSuccess(
-                                    context,
-                                    message: l10n.success,
-                                  );
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red[500],
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.sp),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.delete_outline,
-                                      color: Colors.white, size: 20),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    l10n.delete,
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+          builder: (context) => InvoiceDetailModal(
+            invoice: invoice,
+            themeColor: themeColor,
+            bookName: bookName,
+            onPay: () async {
+              try {
+                final categoryData = receipLong.firstWhere(
+                  (cat) => cat['icon'] == invoice.category,
+                  orElse: () => throw Exception(
+                      'Category with icon ${invoice.category} not found'),
+                );
+
+                final bookId = invoice.bookId ?? 1;
+
+                final transactionNotifier = ref.read(
+                  transactionsProvider.notifier,
+                );
+
+                await transactionNotifier.createTransaction(
+                  amount: invoice.amount,
+                  note: l10n.paidSuccessfullyWith(invoice.name),
+                  type: 'expense',
+                  categoryId: categoryData['id'],
+                  bookId: bookId,
+                  userId: 1,
+                );
+
+                await ref
+                    .read(periodicInvoicesProvider.notifier)
+                    .markPeriodicInvoiceAsPaid(invoice.id);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.paymentErrorWith(e.toString())),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            onDelete: () {
+              ref
+                  .read(periodicInvoicesProvider.notifier)
+                  .removePeriodicInvoice(invoice.id);
+            },
+          ),
         );
       },
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.r),
           color: Colors.white,
@@ -693,7 +578,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Icon(
-                  Icons.receipt_long,
+                  _getIconFromEmoji(invoice.category),
                   color: Colors.white,
                   size: 24.w,
                 ),
@@ -788,35 +673,6 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     );
   }
 
-  // Helper for detail row in dialog
-  Widget _buildDetailRow(IconData icon, String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 24.w, color: Colors.grey.shade500),
-        SizedBox(width: 8.w),
-        Text(
-          '$label: ',
-          style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade700,
-              fontSize: 16.sp),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-                fontSize: 16.sp),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-
   String _getFrequencyText(String frequency, BuildContext context) {
     final l10n = AppLocalizations.of(context);
     switch (frequency) {
@@ -833,40 +689,12 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
     }
   }
 
-  String _getCategoryIconFromName(String categoryName) {
-    // Map category names to their corresponding icons
-    switch (categoryName) {
-      case 'Ăn uống':
-        return '🍔';
-      case 'Di chuyển':
-        return '🚗';
-      case 'Mua sắm':
-        return '🛍';
-      case 'Giải trí':
-        return '🎮';
-      case 'Học tập':
-        return '📚';
-      case 'Làm đẹp':
-        return '💅';
-      case 'Sinh hoạt':
-        return '🏠';
-      case 'Lương':
-        return '💰';
-      case 'Thưởng':
-        return '🎁';
-      case 'Đầu tư':
-        return '📈';
-      default:
-        return '💸'; // Default icon for unknown categories
-    }
-  }
-
   void _showAddInvoiceDialog(BuildContext context, Color themeColor) {
     final nameController = TextEditingController();
     final amountController = TextEditingController();
     final descriptionController = TextEditingController();
     String selectedFrequency = 'monthly';
-    String? selectedCategory;
+    String? selectedCategoryIcon;
     Map<String, dynamic>? selectedBookForInvoice = selectedBook;
     final currencyType = ref.watch(currencyProvider);
     final l10n = AppLocalizations.of(context);
@@ -960,6 +788,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                     ),
                                     Expanded(
                                       child: DropdownButtonFormField<int>(
+                                        isExpanded: true,
                                         value: selectedBookForInvoice?['id'],
                                         decoration: InputDecoration(
                                           labelText: l10n.expenseBook,
@@ -989,7 +818,11 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                             .map<DropdownMenuItem<int>>(
                                               (book) => DropdownMenuItem<int>(
                                                 value: book['id'],
-                                                child: Text(book['name']),
+                                                child: Text(
+                                                  book['name'],
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
                                               ),
                                             )
                                             .toList(),
@@ -1051,9 +884,11 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: DropdownButtonFormField<String>(
-                                        isExpanded: true,
-                                        value: selectedFrequency,
+                                      child: TextFormField(
+                                        readOnly: true,
+                                        controller: TextEditingController(
+                                            text: _getFrequencyText(
+                                                selectedFrequency, context)),
                                         decoration: InputDecoration(
                                           labelText: l10n.frequency,
                                           labelStyle: TextStyle(
@@ -1077,47 +912,37 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                           ),
                                           prefixIcon: Icon(Icons.schedule,
                                               color: themeColor),
+                                          suffixIcon:
+                                              const Icon(Icons.arrow_drop_down),
                                         ),
-                                        items: [
-                                          DropdownMenuItem(
-                                              value: 'daily',
-                                              child: Text(
-                                                l10n.daily,
-                                                style: TextStyle(fontSize: 13),
-                                              )),
-                                          DropdownMenuItem(
-                                              value: 'weekly',
-                                              child: Text(
-                                                l10n.weekly,
-                                                style: TextStyle(fontSize: 13),
-                                              )),
-                                          DropdownMenuItem(
-                                              value: 'monthly',
-                                              child: Text(
-                                                l10n.monthly,
-                                                style: TextStyle(fontSize: 13),
-                                              )),
-                                          DropdownMenuItem(
-                                              value: 'yearly',
-                                              child: Text(
-                                                l10n.yearly,
-                                                style: TextStyle(fontSize: 13),
-                                              )),
-                                        ],
-                                        onChanged: (value) {
-                                          if (value != null) {
-                                            setModalState(() {
-                                              selectedFrequency = value;
-                                            });
-                                          }
+                                        onTap: () {
+                                          showFrequencySelectionModal(
+                                              context: context,
+                                              currentFrequency:
+                                                  selectedFrequency,
+                                              onFrequencySelected: (value) {
+                                                if (value != null) {
+                                                  setModalState(() {
+                                                    selectedFrequency = value;
+                                                  });
+                                                }
+                                              },
+                                              themeColor: themeColor);
                                         },
                                       ),
                                     ),
                                     SizedBox(width: 8.w),
                                     Expanded(
-                                      child: DropdownButtonFormField<String>(
-                                        value: selectedCategory,
-                                        isExpanded: true,
+                                      child: TextFormField(
+                                        readOnly: true,
+                                        controller: TextEditingController(
+                                          text: selectedCategoryIcon == null
+                                              ? ''
+                                              : CategoryHelper
+                                                  .getLocalizedCategoryName(
+                                                      selectedCategoryIcon!,
+                                                      l10n),
+                                        ),
                                         decoration: InputDecoration(
                                           labelText: l10n.category,
                                           labelStyle: TextStyle(
@@ -1141,38 +966,33 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                           ),
                                           prefixIcon: Icon(Icons.category,
                                               color: themeColor),
+                                          suffixIcon:
+                                              const Icon(Icons.arrow_drop_down),
                                         ),
-                                        items: receipLong
-                                            .map<DropdownMenuItem<String>>(
-                                              (category) =>
-                                                  DropdownMenuItem<String>(
-                                                value: category['name'],
-                                                child: Row(
-                                                  children: [
-                                                    Text(category['icon']),
-                                                    SizedBox(width: 8.w),
-                                                    Expanded(
-                                                      child: Text(
-                                                        CategoryHelper
-                                                            .getLocalizedCategoryName(
-                                                                category[
-                                                                    'icon'],
-                                                                l10n),
-                                                        style: TextStyle(
-                                                            fontSize: 13.sp),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            )
-                                            .toList(),
-                                        onChanged: (value) {
-                                          setModalState(() {
-                                            selectedCategory = value;
-                                          });
+                                        validator: (value) {
+                                          if (selectedCategoryIcon == null) {
+                                            return l10n.chooseCategory;
+                                          }
+                                          return null;
+                                        },
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            builder: (context) =>
+                                                CategorySelectionModal(
+                                              categories: receipLong,
+                                              selectedCategory:
+                                                  selectedCategoryIcon,
+                                              themeColor: themeColor,
+                                              isExpense: true,
+                                              onCategoryTap: (value) {
+                                                setModalState(() {
+                                                  selectedCategoryIcon = value;
+                                                });
+                                              },
+                                            ),
+                                            backgroundColor: Colors.transparent,
+                                          );
                                         },
                                       ),
                                     ),
@@ -1212,13 +1032,15 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                     onPressed: () async {
                                       if (_addInvoiceFormKey.currentState!
                                           .validate()) {
-                                        try {
-                                          final categoryIcon =
-                                              receipLong.firstWhere(
-                                            (cat) =>
-                                                cat['name'] == selectedCategory,
-                                          )['icon'];
+                                        if (selectedCategoryIcon == null) {
+                                          CustomSnackBar.showError(
+                                            context,
+                                            message: l10n.chooseCategory,
+                                          );
+                                          return;
+                                        }
 
+                                        try {
                                           final newInvoice = PeriodicInvoice(
                                             id: DateTime.now()
                                                 .millisecondsSinceEpoch
@@ -1229,7 +1051,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                                     amountController.text),
                                             startDate: DateTime.now(),
                                             frequency: selectedFrequency,
-                                            category: categoryIcon,
+                                            category: selectedCategoryIcon!,
                                             description: descriptionController
                                                 .text
                                                 .trim(),
@@ -1246,10 +1068,7 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                           // Thông báo thành công
                                           CustomSnackBar.showSuccess(
                                             context,
-                                            message: l10n
-                                                .invoiceAddedSuccessfullyWith(
-                                                    selectedBookForInvoice![
-                                                        'name']),
+                                            message: l10n.success,
                                           );
                                         } catch (e) {
                                           CustomSnackBar.showError(

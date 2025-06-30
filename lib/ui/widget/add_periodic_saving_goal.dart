@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../data/models/savings_goal.dart';
 import '../../../utils/localization.dart';
 import './add_flexible_saving_goal.dart';
+import 'frequency_selection_modal.dart';
 
 class AddPeriodicSavingGoalDialog extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -22,9 +23,9 @@ class _AddPeriodicSavingGoalDialogState
   final _nameController = TextEditingController();
   final _targetAmountController = TextEditingController();
   final _periodicAmountController = TextEditingController();
-  String? _periodicFrequency; // daily, weekly, monthly
   DateTime? _targetDate;
   DateTime? _startedDate;
+  String _periodicFrequency = 'monthly';
 
   @override
   void dispose() {
@@ -183,107 +184,15 @@ class _AddPeriodicSavingGoalDialogState
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              showModalBottomSheet(
+                              showFrequencySelectionModal(
                                 context: context,
-                                backgroundColor: Colors.transparent,
-                                builder: (context) => Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20.r),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        width: 40.w,
-                                        height: 4.h,
-                                        margin: EdgeInsets.only(
-                                            top: 12.h, bottom: 20.h),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[300],
-                                          borderRadius:
-                                              BorderRadius.circular(2.r),
-                                        ),
-                                      ),
-                                      Text(
-                                        l10n.chooseFrequency,
-                                        style: TextStyle(
-                                          fontSize: 18.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: const Color(0xFF2D3142),
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      ...['daily', 'weekly', 'monthly']
-                                          .map((frequency) {
-                                        final labels = {
-                                          'daily': l10n.daily,
-                                          'weekly': l10n.weekly,
-                                          'monthly': l10n.monthly,
-                                        };
-                                        final icons = {
-                                          'daily': Icons.today,
-                                          'weekly': Icons.view_week,
-                                          'monthly': Icons.calendar_month,
-                                        };
-
-                                        return ListTile(
-                                          leading: Container(
-                                            padding: EdgeInsets.all(8.w),
-                                            decoration: BoxDecoration(
-                                              color: _periodicFrequency ==
-                                                      frequency
-                                                  ? widget.themeColor
-                                                      .withOpacity(0.1)
-                                                  : Colors.grey[100],
-                                              borderRadius:
-                                                  BorderRadius.circular(8.r),
-                                            ),
-                                            child: Icon(
-                                              icons[frequency],
-                                              color: _periodicFrequency ==
-                                                      frequency
-                                                  ? widget.themeColor
-                                                  : Colors.grey[600],
-                                              size: 20.sp,
-                                            ),
-                                          ),
-                                          title: Text(
-                                            labels[frequency]!,
-                                            style: TextStyle(
-                                              fontWeight: _periodicFrequency ==
-                                                      frequency
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                              color: _periodicFrequency ==
-                                                      frequency
-                                                  ? widget.themeColor
-                                                  : const Color(0xFF2D3142),
-                                              fontSize: 14.sp,
-                                            ),
-                                          ),
-                                          trailing:
-                                              _periodicFrequency == frequency
-                                                  ? Icon(
-                                                      Icons.check_circle,
-                                                      color: widget.themeColor,
-                                                      size: 20.sp,
-                                                    )
-                                                  : null,
-                                          onTap: () {
-                                            setState(() {
-                                              _periodicFrequency = frequency;
-                                            });
-                                            Navigator.pop(context);
-                                          },
-                                        );
-                                      }).toList(),
-                                      SizedBox(height: 20.h),
-                                    ],
-                                  ),
-                                ),
+                                currentFrequency: _periodicFrequency,
+                                onFrequencySelected: (frequency) {
+                                  setState(() {
+                                    _periodicFrequency = frequency;
+                                  });
+                                },
+                                themeColor: widget.themeColor,
                               );
                             },
                             child: InputDecorator(

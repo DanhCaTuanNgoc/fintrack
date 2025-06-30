@@ -8,6 +8,7 @@ import '../widget/number_pad.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../utils/category_helper.dart';
 import './custom_snackbar.dart';
+import './category_selection_modal.dart';
 
 class AddTransactionModal extends ConsumerStatefulWidget {
   final Book currentBook;
@@ -136,7 +137,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide(
+                        borderSide: const BorderSide(
                           color: Colors.red,
                           width: 1,
                         ),
@@ -254,102 +255,16 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                       showModalBottomSheet(
                         context: context,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20.r),
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 40.w,
-                                height: 4.h,
-                                margin:
-                                    EdgeInsets.only(top: 12.h, bottom: 20.h),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius: BorderRadius.circular(2.r),
-                                ),
-                              ),
-                              Text(
-                                _isExpense
-                                    ? l10n.selectExpenseCategory
-                                    : l10n.selectIncomeCategory,
-                                style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF2D3142),
-                                ),
-                              ),
-                              SizedBox(height: 10.h),
-                              SingleChildScrollView(
-                                child: Column(
-                                  children: categories.map((category) {
-                                    final localizedName =
-                                        CategoryHelper.getLocalizedCategoryName(
-                                            category['icon'], l10n);
-                                    return ListTile(
-                                      leading: Container(
-                                        padding: EdgeInsets.all(8.w),
-                                        decoration: BoxDecoration(
-                                          color: _selectedCategory ==
-                                                  category['icon']
-                                              ? widget.themeColor
-                                                  .withOpacity(0.1)
-                                              : Colors.grey[100],
-                                          borderRadius:
-                                              BorderRadius.circular(8.r),
-                                        ),
-                                        child: Text(
-                                          category['icon'],
-                                          style: TextStyle(
-                                            fontSize: 20.sp,
-                                            color: _selectedCategory ==
-                                                    category['icon']
-                                                ? widget.themeColor
-                                                : Colors.grey[600],
-                                          ),
-                                        ),
-                                      ),
-                                      title: Text(
-                                        localizedName,
-                                        style: TextStyle(
-                                          fontWeight: _selectedCategory ==
-                                                  category['icon']
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                          color: _selectedCategory ==
-                                                  category['icon']
-                                              ? widget.themeColor
-                                              : const Color(0xFF2D3142),
-                                        ),
-                                      ),
-                                      trailing:
-                                          _selectedCategory == category['icon']
-                                              ? Icon(
-                                                  Icons.check_circle,
-                                                  color: widget.themeColor,
-                                                )
-                                              : null,
-                                      onTap: () {
-                                        setState(() {
-                                          _selectedCategory = category['icon'];
-                                        });
-                                        Future.delayed(Duration.zero,
-                                            () => {Navigator.pop(context)});
-                                      },
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10.h,
-                              )
-                            ],
-                          ),
+                        builder: (context) => CategorySelectionModal(
+                          categories: categories,
+                          selectedCategory: _selectedCategory,
+                          themeColor: widget.themeColor,
+                          isExpense: _isExpense,
+                          onCategoryTap: (category) {
+                            setState(() {
+                              _selectedCategory = category;
+                            });
+                          },
                         ),
                       );
                     },

@@ -16,7 +16,6 @@ import 'widget/custom_snackbar.dart';
 
 // 🔀 Danh sách các màu chủ đạo có thể chọn
 final List<Color> primaryVariants = const [
-  Color(0xFF2D3142), // Đen có độ bóng
   Color(0xFF6C63FF), // Tím
   Color(0xFF2196F3), // Xanh dương
   Color(0xFF4CAF50), // Xanh lá
@@ -28,6 +27,7 @@ final List<Color> primaryVariants = const [
   Color(0xFFFF9800), // Cam sáng
   Color(0xFF795548), // Nâu
   Color(0xFF607D8B), // Xám xanh
+  Color(0xFF2D3142), // Đen có độ bóng
 ];
 
 class More extends ConsumerStatefulWidget {
@@ -88,15 +88,15 @@ class _MoreState extends ConsumerState<More> {
             ),
           ),
         ),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.delete_forever, color: Color(0xFF2D3142)),
-        //     onPressed: () async {
-        //       await removeData();
-        //       await ref.read(booksProvider.notifier).deleteAllBooks();
-        //     },
-        //   ),
-        // ],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_forever, color: Color(0xFF2D3142)),
+            onPressed: () async {
+              await removeData();
+              await ref.read(booksProvider.notifier).deleteAllBooks();
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
@@ -173,7 +173,6 @@ class _MoreState extends ConsumerState<More> {
 
   String _getThemeColorName(AppLocalizations l10n) {
     final colorNames = [
-      l10n.black,
       l10n.purple,
       l10n.blue,
       l10n.green,
@@ -185,6 +184,7 @@ class _MoreState extends ConsumerState<More> {
       l10n.brightOrange,
       l10n.brown,
       l10n.blueGrey,
+      l10n.black,
     ];
     return colorNames[_currentColorIndex ?? 0];
   }
@@ -309,15 +309,16 @@ class _MoreState extends ConsumerState<More> {
             return _buildDialogOption(
               title: language.displayName,
               isSelected: currentLanguage == language,
-              onTap: () {
-                ref.read(localeProvider.notifier).setLanguage(language);
+              onTap: () async {
+                await ref.read(localeProvider.notifier).setLanguage(language);
                 Navigator.pop(context);
-
-                // Thông báo cho người dùng
-                CustomSnackBar.showSuccess(
-                  context,
-                  message: _getLanguageChangeMessage(language, l10n),
-                );
+                Future.delayed(
+                    Duration.zero,
+                    () => // Thông báo cho người dùng
+                        CustomSnackBar.showSuccess(
+                          context,
+                          message: _getLanguageChangeMessage(language, l10n),
+                        ));
               },
             );
           }).toList(),
@@ -547,7 +548,6 @@ class _MoreState extends ConsumerState<More> {
 
   String _getColorNameByIndex(int index, AppLocalizations l10n) {
     final colorNames = [
-      l10n.black,
       l10n.purple,
       l10n.blue,
       l10n.green,
@@ -559,6 +559,7 @@ class _MoreState extends ConsumerState<More> {
       l10n.brightOrange,
       l10n.brown,
       l10n.blueGrey,
+      l10n.black,
     ];
     return colorNames[index];
   }

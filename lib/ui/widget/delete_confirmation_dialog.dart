@@ -108,7 +108,7 @@ class DeleteConfirmationDialog {
                     Expanded(
                       child: Container(
                         height: 48.sp,
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
                           onPressed: () {
                             Navigator.pop(context);
                             onConfirm();
@@ -120,7 +120,11 @@ class DeleteConfirmationDialog {
                               borderRadius: BorderRadius.circular(12.sp),
                             ),
                           ),
-                          child: Text(
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                          label: Text(
                             confirmText ?? l10n.delete,
                             style: TextStyle(
                               fontSize: 15.sp,
