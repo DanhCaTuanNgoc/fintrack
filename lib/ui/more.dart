@@ -88,15 +88,15 @@ class _MoreState extends ConsumerState<More> {
             ),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_forever, color: Color(0xFF2D3142)),
-            onPressed: () async {
-              await removeData();
-              await ref.read(booksProvider.notifier).deleteAllBooks();
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.delete_forever, color: Color(0xFF2D3142)),
+        //     onPressed: () async {
+        //       await removeData();
+        //       await ref.read(booksProvider.notifier).deleteAllBooks();
+        //     },
+        //   ),
+        // ],
       ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
