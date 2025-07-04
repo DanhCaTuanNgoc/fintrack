@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../utils/category_helper.dart';
-import '../../utils/localization.dart';
+import '../../../utils/category_helper.dart';
+import '../../../utils/localization.dart';
 
 class CategorySelectionModal extends StatelessWidget {
   final List<Map<String, dynamic>> categories;

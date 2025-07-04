@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../data/models/models_barrel.dart';
-import '../../providers/providers_barrel.dart';
-import '../../utils/category_helper.dart';
-import '../../utils/localization.dart';
+import '../../../data/models/models_barrel.dart';
+import '../../../providers/providers_barrel.dart';
+import '../../../utils/category_helper.dart';
+import '../../../utils/localization.dart';
 
 final Map<String, IconData> _iconMapping = {
   '🍔': Icons.restaurant,

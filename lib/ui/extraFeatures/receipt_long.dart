@@ -9,7 +9,7 @@ import '../widget/widget_barrel.dart';
 import '../../utils/category_helper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../utils/localization.dart';
-import '../widget/category_selection_modal.dart';
+import '../widget/components/category_selection_modal.dart';
 
 class ReceiptLong extends ConsumerStatefulWidget {
   const ReceiptLong({super.key});

@@ -11,7 +11,7 @@ import 'more/notification.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../utils/localization.dart';
 import '../utils/languages.dart';
-import 'widget/custom_snackbar.dart';
+import 'widget/components/custom_snackbar.dart';
 
 // 🔀 Danh sách các màu chủ đạo có thể chọn
 const List<Color> primaryVariants = [

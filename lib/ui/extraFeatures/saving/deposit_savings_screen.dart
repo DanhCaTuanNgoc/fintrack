@@ -9,6 +9,7 @@ import '../../../providers/savings_transaction_provider.dart';
 import '../../../providers/currency_provider.dart';
 import '../../../utils/localization.dart';
 import '../../widget/widget_barrel.dart';
+import '../../widget/components/custom_snackbar.dart';
 
 class DepositSavingsScreen extends ConsumerStatefulWidget {
   final SavingsGoal goal;
@@ -811,27 +812,17 @@ class _DepositModalState extends ConsumerState<_DepositModal> {
                                 widget.goal.id!, amount);
                             if (context.mounted) {
                               Navigator.pop(context);
-                              Future.delayed(const Duration(milliseconds: 100),
-                                  () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      l10n.depositSuccessWith(
-                                          formatCurrency(amount, currency)),
-                                      style: TextStyle(fontSize: 14.sp),
-                                    ),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              });
+                              CustomSnackBar.showSuccess(
+                                context,
+                                message: l10n.depositSuccessWith(
+                                    formatCurrency(amount, currency)),
+                              );
                             }
                           } catch (e) {
                             if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('${l10n.error}: $e'),
-                                  backgroundColor: Colors.red,
-                                ),
+                              CustomSnackBar.showError(
+                                context,
+                                message: '${l10n.error}: $e',
                               );
                             }
                           }

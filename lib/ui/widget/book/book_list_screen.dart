@@ -1,14 +1,14 @@
-import 'package:Fintrack/ui/widget/update_book_modal.dart';
+import 'package:Fintrack/ui/widget/book/update_book_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../data/models/models_barrel.dart';
-import '../../providers/book_provider.dart';
-import '../../utils/localization.dart';
-import './create_book_modal.dart';
-import '../../providers/providers_barrel.dart';
-import './delete_confirmation_dialog.dart';
-import './custom_snackbar.dart';
+import '../../../data/models/models_barrel.dart';
+import '../../../providers/book_provider.dart';
+import '../../../utils/localization.dart';
+import 'create_book_modal.dart';
+import '../../../providers/providers_barrel.dart';
+import '../components/delete_confirmation_dialog.dart';
+import '../components/custom_snackbar.dart';
 
 class BookListScreen extends ConsumerWidget {
   final Color themeColor;

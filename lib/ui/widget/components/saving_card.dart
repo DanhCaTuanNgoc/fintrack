@@ -1,8 +1,8 @@
 import 'package:Fintrack/providers/providers_barrel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../data/models/savings_goal.dart';
-import '../../../utils/localization.dart';
+import '../../../../data/models/savings_goal.dart';
+import '../../../../utils/localization.dart';
 
 class SavingCard extends StatelessWidget {
   final SavingsGoal goal;

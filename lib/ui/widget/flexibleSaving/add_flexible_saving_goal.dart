@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../data/models/savings_goal.dart';
-import '../../../utils/localization.dart';
+import '../../../../data/models/savings_goal.dart';
+import '../../../../utils/localization.dart';
 
 class AddFlexibleSavingGoalDialog extends ConsumerStatefulWidget {
   final Color themeColor;

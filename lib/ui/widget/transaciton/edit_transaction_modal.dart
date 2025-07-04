@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../data/models/more/transaction.dart';
-import '../../providers/more/transaction_provider.dart';
-import '../../providers/currency_provider.dart';
-import '../../utils/localization.dart';
-import './number_pad.dart';
-import './type_button.dart';
-import './custom_snackbar.dart';
-import '../../utils/category_helper.dart';
-import './category_selection_modal.dart';
+import '../../../data/models/more/transaction.dart';
+import '../../../providers/more/transaction_provider.dart';
+import '../../../providers/currency_provider.dart';
+import '../../../utils/localization.dart';
+import '../components/number_pad.dart';
+import '../components/type_button.dart';
+import '../components/custom_snackbar.dart';
+import '../../../utils/category_helper.dart';
+import '../components/category_selection_modal.dart';
 
 class EditTransactionModal extends ConsumerStatefulWidget {
   final Transaction transaction;

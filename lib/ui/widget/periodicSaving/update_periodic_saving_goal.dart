@@ -2,42 +2,46 @@ import 'package:Fintrack/providers/providers_barrel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../data/models/savings_goal.dart';
-import '../../../utils/localization.dart';
-import 'add_flexible_saving_goal.dart';
-import './custom_snackbar.dart';
-import './delete_confirmation_dialog.dart';
+import '../../../../data/models/savings_goal.dart';
+import '../flexibleSaving/add_flexible_saving_goal.dart';
+import '../../../../utils/localization.dart';
+import '../components/custom_snackbar.dart';
+import '../components/delete_confirmation_dialog.dart';
 
-class UpdateFlexibleSavingGoalDialog extends ConsumerStatefulWidget {
+class UpdatePeriodicSavingGoalDialog extends ConsumerStatefulWidget {
   final Color themeColor;
   final SavingsGoal goal;
 
-  const UpdateFlexibleSavingGoalDialog({
+  const UpdatePeriodicSavingGoalDialog({
     super.key,
     required this.themeColor,
     required this.goal,
   });
 
   @override
-  ConsumerState<UpdateFlexibleSavingGoalDialog> createState() =>
-      _UpdateFlexibleSavingGoalDialogState();
+  ConsumerState<UpdatePeriodicSavingGoalDialog> createState() =>
+      _UpdatePeriodicSavingGoalDialogState();
 }
 
-class _UpdateFlexibleSavingGoalDialogState
-    extends ConsumerState<UpdateFlexibleSavingGoalDialog> {
+class _UpdatePeriodicSavingGoalDialogState
+    extends ConsumerState<UpdatePeriodicSavingGoalDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _targetAmountController = TextEditingController();
+  final _periodicAmountController = TextEditingController();
+  String? _periodicFrequency;
   DateTime? _targetDate;
   DateTime? _startedDate;
 
   @override
   void initState() {
     super.initState();
-    // Khởi tạo giá trị từ goal hiện tại
     _nameController.text = widget.goal.name;
     _targetAmountController.text =
         formatCurrency(widget.goal.targetAmount, ref.read(currencyProvider));
+    _periodicAmountController.text = formatCurrency(
+        widget.goal.periodicAmount ?? 0, ref.read(currencyProvider));
+    _periodicFrequency = widget.goal.periodicFrequency;
     _targetDate = widget.goal.targetDate;
     _startedDate = widget.goal.startedDate;
   }
@@ -46,14 +50,15 @@ class _UpdateFlexibleSavingGoalDialogState
   void dispose() {
     _nameController.dispose();
     _targetAmountController.dispose();
+    _periodicAmountController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final currencyType = ref.watch(currencyProvider);
     final savingsGoalAsync = ref.watch(savingsGoalsProvider);
+    final l10n = AppLocalizations.of(context);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -86,7 +91,7 @@ class _UpdateFlexibleSavingGoalDialogState
               ),
               Center(
                 child: Text(
-                  l10n.editSavingsGoal,
+                  l10n.editPeriodicSavingsGoal,
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
@@ -103,7 +108,7 @@ class _UpdateFlexibleSavingGoalDialogState
                       decoration: InputDecoration(
                         labelText: l10n.savingsBookName,
                         labelStyle: TextStyle(
-                          color: Colors.black,
+                          color: const Color.fromARGB(255, 0, 0, 0),
                           fontSize: 14.sp,
                         ),
                         border: OutlineInputBorder(
@@ -119,7 +124,6 @@ class _UpdateFlexibleSavingGoalDialogState
                         prefixIcon: Icon(Icons.savings,
                             color: widget.themeColor, size: 24.sp),
                       ),
-                      style: TextStyle(fontSize: 16.sp),
                       validator: (value) => value == null || value.isEmpty
                           ? l10n.enterName
                           : null,
@@ -128,7 +132,7 @@ class _UpdateFlexibleSavingGoalDialogState
                     TextFormField(
                       controller: _targetAmountController,
                       decoration: InputDecoration(
-                        labelText: l10n.targetAmountLabel,
+                        labelText: l10n.targetAmount,
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 14.sp,
@@ -146,20 +150,16 @@ class _UpdateFlexibleSavingGoalDialogState
                         prefixIcon: Icon(Icons.attach_money,
                             color: widget.themeColor, size: 24.sp),
                       ),
-                      style: TextStyle(fontSize: 16.sp),
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return l10n.enterAmount;
                         }
-
                         final amount = getNumericValueFromFormattedText(value);
                         if (amount <= 0) {
                           return l10n.amountMustBeGreaterThanZero;
                         }
-
-                        // Lấy goal hiện tại từ provider để có dữ liệu mới nhất
                         final currentGoal = savingsGoalAsync.when(
                           data: (goals) => goals.firstWhere(
                             (g) => g.id == widget.goal.id,
@@ -168,8 +168,6 @@ class _UpdateFlexibleSavingGoalDialogState
                           loading: () => widget.goal,
                           error: (_, __) => widget.goal,
                         );
-
-                        // Kiểm tra số tiền mục tiêu mới không được nhỏ hơn số tiền hiện tại
                         if (amount < currentGoal.currentAmount) {
                           return l10n.targetAmountCannotBeLessThanSaved
                               .replaceFirst(
@@ -177,9 +175,199 @@ class _UpdateFlexibleSavingGoalDialogState
                                   formatCurrency(
                                       currentGoal.currentAmount, currencyType));
                         }
-
                         return null;
                       },
+                    ),
+                    SizedBox(height: 16.h),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: _periodicAmountController,
+                            decoration: InputDecoration(
+                              labelText: l10n.periodicAmount,
+                              labelStyle: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14.sp,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                                borderSide: BorderSide(
+                                  color: widget.themeColor,
+                                  width: 2.w,
+                                ),
+                              ),
+                              prefixIcon: Icon(Icons.repeat,
+                                  color: widget.themeColor, size: 24.sp),
+                            ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              CurrencyInputFormatter(currencyType)
+                            ],
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return l10n.enterPeriodicAmount;
+                              }
+                              final amount =
+                                  getNumericValueFromFormattedText(value);
+                              if (amount <= 0) {
+                                return l10n.periodicAmountMustBeGreaterThanZero;
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          flex: 2,
+                          child: GestureDetector(
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) => Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 40.w,
+                                        height: 4.h,
+                                        margin: EdgeInsets.only(
+                                            top: 12.h, bottom: 20.h),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[300],
+                                          borderRadius:
+                                              BorderRadius.circular(2.r),
+                                        ),
+                                      ),
+                                      Text(
+                                        l10n.chooseFrequency,
+                                        style: TextStyle(
+                                          fontSize: 18.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: const Color(0xFF2D3142),
+                                        ),
+                                      ),
+                                      SizedBox(height: 20.h),
+                                      ...['daily', 'weekly', 'monthly']
+                                          .map((frequency) {
+                                        final labels = {
+                                          'daily': l10n.frequencyDaily,
+                                          'weekly': l10n.frequencyWeekly,
+                                          'monthly': l10n.frequencyMonthly,
+                                        };
+                                        final icons = {
+                                          'daily': Icons.today,
+                                          'weekly': Icons.view_week,
+                                          'monthly': Icons.calendar_month,
+                                        };
+
+                                        return ListTile(
+                                          leading: Container(
+                                            padding: EdgeInsets.all(8.w),
+                                            decoration: BoxDecoration(
+                                              color: _periodicFrequency ==
+                                                      frequency
+                                                  ? widget.themeColor
+                                                      .withOpacity(0.1)
+                                                  : Colors.grey[100],
+                                              borderRadius:
+                                                  BorderRadius.circular(8.r),
+                                            ),
+                                            child: Icon(
+                                              icons[frequency],
+                                              color: _periodicFrequency ==
+                                                      frequency
+                                                  ? widget.themeColor
+                                                  : Colors.grey[600],
+                                              size: 20.sp,
+                                            ),
+                                          ),
+                                          title: Text(
+                                            labels[frequency]!,
+                                            style: TextStyle(
+                                              fontWeight: _periodicFrequency ==
+                                                      frequency
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
+                                              color: _periodicFrequency ==
+                                                      frequency
+                                                  ? widget.themeColor
+                                                  : const Color(0xFF2D3142),
+                                              fontSize: 14.sp,
+                                            ),
+                                          ),
+                                          trailing:
+                                              _periodicFrequency == frequency
+                                                  ? Icon(
+                                                      Icons.check_circle,
+                                                      color: widget.themeColor,
+                                                      size: 20.sp,
+                                                    )
+                                                  : null,
+                                          onTap: () {
+                                            setState(() {
+                                              _periodicFrequency = frequency;
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        );
+                                      }).toList(),
+                                      SizedBox(height: 20.h),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: l10n.frequency,
+                                labelStyle: TextStyle(
+                                    color: Colors.black, fontSize: 14.sp),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                    color: widget.themeColor,
+                                    width: 2.w,
+                                  ),
+                                ),
+                                prefixIcon: Icon(Icons.schedule,
+                                    color: widget.themeColor, size: 24.sp),
+                                suffixIcon: Icon(Icons.keyboard_arrow_down,
+                                    size: 20.sp),
+                              ),
+                              child: Text(
+                                _periodicFrequency == null
+                                    ? l10n.frequency
+                                    : {
+                                        'daily': l10n.frequencyDaily,
+                                        'weekly': l10n.frequencyWeekly,
+                                        'monthly': l10n.frequencyMonthly,
+                                      }[_periodicFrequency]!,
+                                style: TextStyle(
+                                  color: _periodicFrequency == null
+                                      ? Colors.grey
+                                      : Colors.black,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 20.h),
                     Row(
@@ -288,15 +476,12 @@ class _UpdateFlexibleSavingGoalDialogState
                       ],
                     ),
                     SizedBox(height: 20.h),
-
-                    // Hiển thị thông tin hiện tại với dữ liệu real-time
                     savingsGoalAsync.when(
                       data: (goals) {
                         final currentGoal = goals.firstWhere(
                           (g) => g.id == widget.goal.id,
                           orElse: () => widget.goal,
                         );
-
                         return Container(
                           padding: EdgeInsets.all(16.w),
                           decoration: BoxDecoration(
@@ -390,32 +575,12 @@ class _UpdateFlexibleSavingGoalDialogState
                 ),
               ),
               SizedBox(height: 20.h),
-
-              // Expanded(
-              //   child: ElevatedButton(
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: Colors.grey[300],
-              //       foregroundColor: Colors.black,
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(12),
-              //       ),
-              //       padding: const EdgeInsets.symmetric(vertical: 16),
-              //     ),
-              //     onPressed: () {
-              //       Navigator.pop(context);
-              //     },
-              //     child: const Text('Hủy',
-              //         style: TextStyle(
-              //             fontWeight: FontWeight.bold, fontSize: 18)),
-              //   ),
-              // ),
-              SizedBox(width: 12.w),
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red[400],
+                        backgroundColor: Colors.red[500],
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.r),
@@ -425,9 +590,18 @@ class _UpdateFlexibleSavingGoalDialogState
                       onPressed: () {
                         _showDeleteConfirmation(context);
                       },
-                      child: Text(l10n.delete,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16.sp)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.delete_outline,
+                              color: Colors.white, size: 20.w),
+                          SizedBox(width: 6.w),
+                          Text(l10n.delete,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16.sp)),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(width: 15.w),
@@ -446,6 +620,10 @@ class _UpdateFlexibleSavingGoalDialogState
                           final name = _nameController.text.trim();
                           final targetAmount = getNumericValueFromFormattedText(
                               _targetAmountController.text.trim());
+                          final periodicAmount =
+                              getNumericValueFromFormattedText(
+                                  _periodicAmountController.text.trim());
+                          final periodicFrequency = _periodicFrequency;
                           final startedDate = _startedDate;
                           final targetDate = _targetDate;
 
@@ -456,16 +634,24 @@ class _UpdateFlexibleSavingGoalDialogState
                             );
                             return;
                           }
+                          if (periodicFrequency == null) {
+                            CustomSnackBar.showError(
+                              context,
+                              message: l10n.pleaseSelectFrequency,
+                            );
+                            return;
+                          }
 
                           final notifier =
                               ref.read(savingsGoalsProvider.notifier);
 
-                          // Tạo goal mới với thông tin đã cập nhật
                           final updatedGoal = widget.goal.copyWith(
                             name: name,
                             targetAmount: targetAmount,
-                            targetDate: targetDate,
+                            periodicAmount: periodicAmount,
+                            periodicFrequency: periodicFrequency,
                             startedDate: startedDate,
+                            targetDate: targetDate,
                           );
 
                           await notifier.updateSavingsGoal(updatedGoal);
@@ -475,7 +661,9 @@ class _UpdateFlexibleSavingGoalDialogState
                               context,
                               message: l10n.updateSuccess,
                             );
-                            Navigator.pop(context);
+                            Future.delayed(Duration.zero, () {
+                              Navigator.pop(context);
+                            });
                           }
                         }
                       },
@@ -486,9 +674,7 @@ class _UpdateFlexibleSavingGoalDialogState
                   ),
                 ],
               ),
-              SizedBox(
-                height: 20.h,
-              )
+              SizedBox(height: 16.h),
             ],
           ),
         ),

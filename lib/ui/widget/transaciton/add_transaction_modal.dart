@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/models/models_barrel.dart';
-import '../../providers/providers_barrel.dart';
-import '../../utils/localization.dart';
-import '../widget/type_button.dart';
-import '../widget/number_pad.dart';
+import '../../../data/models/models_barrel.dart';
+import '../../../providers/providers_barrel.dart';
+import '../../../utils/localization.dart';
+import '../components/type_button.dart';
+import '../components/number_pad.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../utils/category_helper.dart';
-import './custom_snackbar.dart';
-import './category_selection_modal.dart';
+import '../../../utils/category_helper.dart';
+import '../components/custom_snackbar.dart';
+import '../components/category_selection_modal.dart';
 
 class AddTransactionModal extends ConsumerStatefulWidget {
   final Book currentBook;

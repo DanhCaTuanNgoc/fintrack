@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../data/models/models_barrel.dart';
-import '../../providers/providers_barrel.dart';
-import '../../utils/localization.dart';
-import './custom_snackbar.dart';
+import '../../../data/models/models_barrel.dart';
+import '../../../providers/providers_barrel.dart';
+import '../../../utils/localization.dart';
+import '../components/custom_snackbar.dart';
 
 class TransactionDetailModal extends ConsumerWidget {
   final Transaction transaction;
