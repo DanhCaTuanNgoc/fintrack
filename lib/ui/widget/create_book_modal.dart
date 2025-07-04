@@ -142,7 +142,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                           ),
                           errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.r),
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Colors.red,
                               width: 2,
                             ),

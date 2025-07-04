@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/models_barrel.dart';
 import '../../providers/providers_barrel.dart';
-import '../../utils/category_helper.dart';
 import '../../utils/localization.dart';
 import './custom_snackbar.dart';
 
@@ -36,7 +34,7 @@ class TransactionDetailModal extends ConsumerWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.r)),
       insetPadding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
       child: Padding(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -151,7 +149,7 @@ class TransactionDetailModal extends ConsumerWidget {
                           size: 20.w, color: Colors.grey[600]),
                       SizedBox(width: 8.w),
                       Text(
-                        DateFormat('dd/MM/yyyy').format(transaction.date!),
+                        DateFormat('dd/MM/yyyy').format(transaction.date),
                         style:
                             TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
                       ),

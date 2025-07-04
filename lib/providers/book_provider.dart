@@ -118,7 +118,7 @@ class CurrentBookNotifier extends StateNotifier<AsyncValue<Book?>> {
 
       final prefs = await SharedPreferences.getInstance();
       final int? savedBookId = prefs.getInt(_currentBookIdKey);
-      print("Saved Book : " + savedBookId.toString());
+      print("Saved Book : $savedBookId");
 
       Book? currentBook;
       if (savedBookId != null && books.isNotEmpty) {
@@ -133,7 +133,7 @@ class CurrentBookNotifier extends StateNotifier<AsyncValue<Book?>> {
       }
 
       state = AsyncValue.data(currentBook);
-      print("CurrentBook :" + currentBook.toString());
+      print("CurrentBook :$currentBook");
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

@@ -25,7 +25,7 @@ class SavingsGoal {
     this.periodicFrequency,
     this.nextReminderDate,
     this.isActive = true,
-  }) : this.createdAt = createdAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   SavingsGoal copyWith({
     int? id,

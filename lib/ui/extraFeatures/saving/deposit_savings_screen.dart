@@ -27,8 +27,8 @@ class DepositSavingsScreen extends ConsumerStatefulWidget {
 }
 
 class _DepositSavingsScreenState extends ConsumerState<DepositSavingsScreen> {
-  String _amount = '';
-  String _note = '';
+  final String _amount = '';
+  final String _note = '';
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 

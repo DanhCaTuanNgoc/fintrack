@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../widget/widget_barrel.dart';
 import 'deposit_savings_screen.dart';
 import '../../../utils/localization.dart';
-import '../../../data/models/savings_goal.dart';
 
 class FlexibleSavingsScreen extends ConsumerStatefulWidget {
   const FlexibleSavingsScreen({super.key});

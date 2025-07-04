@@ -1,6 +1,5 @@
 import 'package:Fintrack/providers/providers_barrel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../data/models/savings_goal.dart';
@@ -132,11 +131,13 @@ class _AddPeriodicSavingGoalDialogState
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
                       validator: (value) {
-                        if (value == null || value.isEmpty)
+                        if (value == null || value.isEmpty) {
                           return l10n.enterAmount;
+                        }
                         final amount = getNumericValueFromFormattedText(value);
-                        if (amount <= 0)
+                        if (amount <= 0) {
                           return l10n.amountMustBeGreaterThanZero;
+                        }
                         return null;
                       },
                     ),
@@ -170,12 +171,14 @@ class _AddPeriodicSavingGoalDialogState
                               CurrencyInputFormatter(currencyType)
                             ],
                             validator: (value) {
-                              if (value == null || value.isEmpty)
+                              if (value == null || value.isEmpty) {
                                 return l10n.enterPeriodicAmount;
+                              }
                               final amount =
                                   getNumericValueFromFormattedText(value);
-                              if (amount <= 0)
+                              if (amount <= 0) {
                                 return l10n.periodicAmountMustBeGreaterThanZero;
+                              }
                               return null;
                             },
                           ),
@@ -373,13 +376,6 @@ class _AddPeriodicSavingGoalDialogState
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                   content: Text(l10n.pleaseSelectStartDate)),
-                            );
-                            return;
-                          }
-                          if (periodicFrequency == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(l10n.pleaseSelectFrequency)),
                             );
                             return;
                           }

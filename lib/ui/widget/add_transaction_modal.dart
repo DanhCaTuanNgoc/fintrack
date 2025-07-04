@@ -190,7 +190,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                         Text(
                           _amount.isEmpty
                               ? '0 ${currency.symbol}'
-                              : '${formatCurrency(double.tryParse(_amount) ?? 0, currency)}',
+                              : formatCurrency(double.tryParse(_amount) ?? 0, currency),
                           style: TextStyle(
                             fontSize: 32.sp,
                             fontWeight: FontWeight.bold,

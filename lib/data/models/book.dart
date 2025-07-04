@@ -11,7 +11,7 @@ class Book {
     required this.balance,
     required this.userId,
     DateTime? createdAt,
-  }) : this.createdAt = createdAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   Book copyWith({
     int? id,

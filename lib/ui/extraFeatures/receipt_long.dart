@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,15 +5,11 @@ import '../../data/database/database_helper.dart';
 import '../../providers/providers_barrel.dart';
 import 'package:flutter/scheduler.dart';
 import '../../data/models/more/periodic_invoice.dart';
-import 'package:intl/intl.dart';
 import '../widget/widget_barrel.dart';
 import '../../utils/category_helper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../utils/localization.dart';
-import '../widget/custom_snackbar.dart';
-import '../widget/frequency_selection_modal.dart';
 import '../widget/category_selection_modal.dart';
-import '../widget/invoice_detail_modal.dart';
 
 class ReceiptLong extends ConsumerStatefulWidget {
   const ReceiptLong({super.key});
@@ -921,12 +916,10 @@ class _ReceiptLongState extends ConsumerState<ReceiptLong> {
                                               currentFrequency:
                                                   selectedFrequency,
                                               onFrequencySelected: (value) {
-                                                if (value != null) {
-                                                  setModalState(() {
-                                                    selectedFrequency = value;
-                                                  });
-                                                }
-                                              },
+                                                setModalState(() {
+                                                  selectedFrequency = value;
+                                                });
+                                                                                            },
                                               themeColor: themeColor);
                                         },
                                       ),

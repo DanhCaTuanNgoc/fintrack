@@ -21,8 +21,8 @@ class _ChartsState extends ConsumerState<Charts>
   late TabController _tabController;
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   List<Map<String, dynamic>> _categories = [];
-  Map<String, double> _categoryExpenses = {};
-  Map<String, double> _categoryIncomes = {};
+  final Map<String, double> _categoryExpenses = {};
+  final Map<String, double> _categoryIncomes = {};
   DateTime _selectedMonth = DateTime.now();
   int _selectedTab = 0;
 
@@ -113,7 +113,7 @@ class _ChartsState extends ConsumerState<Charts>
                           style: TextStyle(
                             fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF2D3142),
+                            color: const Color(0xFF2D3142),
                           ),
                         ),
                         SizedBox(height: 10.h),

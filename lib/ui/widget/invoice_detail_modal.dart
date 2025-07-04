@@ -137,11 +137,11 @@ class InvoiceDetailModal extends ConsumerWidget {
                 _getFrequencyText(invoice.frequency, context)),
             SizedBox(height: 10.h),
             _buildDetailRow(Icons.book, l10n.expenseBook, bookName),
-            if (nextDueDate != null) ...[
-              SizedBox(height: 10.h),
-              _buildDetailRow(Icons.schedule, l10n.nextDueDate,
-                  DateFormat('dd/MM/yyyy').format(nextDueDate)),
-            ],
+            ...[
+            SizedBox(height: 10.h),
+            _buildDetailRow(Icons.schedule, l10n.nextDueDate,
+                DateFormat('dd/MM/yyyy').format(nextDueDate)),
+          ],
             SizedBox(height: 24.h),
             Row(
               children: [

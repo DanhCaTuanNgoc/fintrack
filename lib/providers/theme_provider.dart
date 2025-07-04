@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final _defaultColor = Color(0xFF6C63FF); // Màu đen có độ bóng mặc định
+const _defaultColor = Color(0xFF6C63FF); // Màu đen có độ bóng mặc định
 // 🔀 Danh sách các màu chủ đạo có thể chọn
 final List<Color> _primaryVariants = [
-  Color(0xFF6C63FF), // Tím
-  Color(0xFF2196F3), // Xanh dương
-  Color(0xFF4CAF50), // Xanh lá
-  Color(0xFFFF5722), // Cam
-  Color(0xFFFF4081), // Hồng
-  Color(0xFF9C27B0), // Tím đậm
-  Color(0xFF3F51B5), // Indigo
-  Color(0xFF00BCD4), // Cyan
-  Color(0xFFFF9800), // Cam sáng
-  Color(0xFF795548), // Nâu
-  Color(0xFF607D8B), // Xám xanh
-  Color(0xFF2D3142), // Đen có độ bóng
+  const Color(0xFF6C63FF), // Tím
+  const Color(0xFF2196F3), // Xanh dương
+  const Color(0xFF4CAF50), // Xanh lá
+  const Color(0xFFFF5722), // Cam
+  const Color(0xFFFF4081), // Hồng
+  const Color(0xFF9C27B0), // Tím đậm
+  const Color(0xFF3F51B5), // Indigo
+  const Color(0xFF00BCD4), // Cyan
+  const Color(0xFFFF9800), // Cam sáng
+  const Color(0xFF795548), // Nâu
+  const Color(0xFF607D8B), // Xám xanh
+  const Color(0xFF2D3142), // Đen có độ bóng
 ];
 
 // Để sử dụng ngoài file khác

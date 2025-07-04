@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../utils/localization.dart';
-import './custom_snackbar.dart';
 
 class DeleteConfirmationDialog {
   static Future<void> show({
@@ -83,7 +81,7 @@ class DeleteConfirmationDialog {
                 Row(
                   children: [
                     Expanded(
-                      child: Container(
+                      child: SizedBox(
                         height: 48.sp,
                         child: OutlinedButton(
                           onPressed: () => Navigator.pop(context),
@@ -106,7 +104,7 @@ class DeleteConfirmationDialog {
                     ),
                     SizedBox(width: 12.sp),
                     Expanded(
-                      child: Container(
+                      child: SizedBox(
                         height: 48.sp,
                         child: ElevatedButton.icon(
                           onPressed: () {

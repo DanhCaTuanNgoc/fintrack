@@ -128,12 +128,14 @@ class _AddFlexibleSavingGoalDialogState
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
                       validator: (value) {
-                        if (value == null || value.isEmpty)
+                        if (value == null || value.isEmpty) {
                           return l10n.enterAmount;
+                        }
 
                         final amount = getNumericValueFromFormattedText(value);
-                        if (amount <= 0)
+                        if (amount <= 0) {
                           return l10n.amountMustBeGreaterThanZero;
+                        }
                         return null;
                       },
                     ),

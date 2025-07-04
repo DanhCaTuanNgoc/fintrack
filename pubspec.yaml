@@ -51,6 +51,7 @@ dependencies:
   flutter_native_splash: ^2.4.1
   flutter_screenutil: ^5.8.4
 
+  collection: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

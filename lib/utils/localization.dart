@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../l10n/strings_barrel.dart';
 import 'languages.dart';
 
 /// Class quản lý localization cho ứng dụng

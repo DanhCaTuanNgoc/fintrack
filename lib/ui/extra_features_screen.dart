@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/providers_barrel.dart';
 import '../utils/localization.dart';
-import './widget/widget_barrel.dart';
 import 'extraFeatures/saving/savings_goals_screen.dart';
 import 'extraFeatures/receipt_long.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,10 +21,6 @@ class _ExtraFeaturesScreenState extends ConsumerState<ExtraFeaturesScreen>
     super.initState();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

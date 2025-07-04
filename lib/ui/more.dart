@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../providers/book_provider.dart';
 import '../providers/currency_provider.dart';
 import '../providers/more/transaction_provider.dart';
 import '../providers/theme_provider.dart';
@@ -15,7 +14,7 @@ import '../utils/languages.dart';
 import 'widget/custom_snackbar.dart';
 
 // 🔀 Danh sách các màu chủ đạo có thể chọn
-final List<Color> primaryVariants = const [
+const List<Color> primaryVariants = [
   Color(0xFF6C63FF), // Tím
   Color(0xFF2196F3), // Xanh dương
   Color(0xFF4CAF50), // Xanh lá
@@ -311,14 +310,16 @@ class _MoreState extends ConsumerState<More> {
               isSelected: currentLanguage == language,
               onTap: () async {
                 await ref.read(localeProvider.notifier).setLanguage(language);
+                if (!mounted) return;
                 Navigator.pop(context);
-                Future.delayed(
-                    Duration.zero,
-                    () => // Thông báo cho người dùng
-                        CustomSnackBar.showSuccess(
-                          context,
-                          message: _getLanguageChangeMessage(language, l10n),
-                        ));
+                Future.delayed(Duration.zero, () {
+                  if (mounted) {
+                    CustomSnackBar.showSuccess(
+                      context,
+                      message: _getLanguageChangeMessage(language, l10n),
+                    );
+                  }
+                });
               },
             );
           }).toList(),
@@ -505,8 +506,8 @@ class _MoreState extends ConsumerState<More> {
                 right: 8.w,
                 child: Container(
                   padding: EdgeInsets.all(4.w),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF4CAF50),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF4CAF50),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -642,8 +643,8 @@ class _MoreState extends ConsumerState<More> {
             if (isSelected)
               Container(
                 padding: EdgeInsets.all(4.w),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF4CAF50),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF4CAF50),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

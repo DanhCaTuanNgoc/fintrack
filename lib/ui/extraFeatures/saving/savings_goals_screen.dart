@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../providers/providers_barrel.dart';
-import '../../../data/models/savings_goal.dart';
-import '../../widget/widget_barrel.dart';
 import './flexible_savings.dart';
 import './periodic_saving.dart';
 import '../../../utils/localization.dart';

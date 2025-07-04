@@ -1,4 +1,3 @@
-import '../l10n/strings_barrel.dart';
 import 'localization.dart';
 
 /// Helper class để chuyển đổi tên categories dựa trên icon

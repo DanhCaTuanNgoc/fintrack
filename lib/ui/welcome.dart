@@ -515,7 +515,7 @@ class TermsPage extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Container(
+                    child: SizedBox(
                       height: 44.h,
                       child: TextButton(
                         onPressed: onBack,

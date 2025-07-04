@@ -86,8 +86,7 @@ class MyApp extends ConsumerWidget {
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
-              textScaleFactor:
-                  1.0), // Font chữ của thiết bị không ảnh hưởng đến ứng dụng
+              textScaler: const TextScaler.linear(1.0)), // Font chữ của thiết bị không ảnh hưởng đến ứng dụng
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Fintrack',

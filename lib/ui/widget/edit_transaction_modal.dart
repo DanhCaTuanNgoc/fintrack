@@ -142,7 +142,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide(
+                        borderSide: const BorderSide(
                           color: Colors.red,
                           width: 1,
                         ),
@@ -199,7 +199,7 @@ class _EditTransactionModalState extends ConsumerState<EditTransactionModal> {
                         Text(
                           _amount.isEmpty
                               ? '0 ${currency.symbol}'
-                              : '${formatCurrency(double.tryParse(_amount) ?? 0, currency)}',
+                              : formatCurrency(double.tryParse(_amount) ?? 0, currency),
                           style: TextStyle(
                             fontSize: 32.sp,
                             fontWeight: FontWeight.bold,
