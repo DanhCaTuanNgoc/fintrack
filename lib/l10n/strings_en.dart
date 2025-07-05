@@ -198,6 +198,12 @@ class EnglishStrings {
   static const String chooseDate = 'Choose date';
   static const String targetDate = 'Target Date';
   static const String chooseDateOptional = 'Choose date (optional)';
+
+  // Daily Reminder
+  static const String dailyReminderTitle =
+      'Have you recorded your notes today? 📝';
+  static const String dailyReminderMessage =
+      'Please record your expenses and income for today!';
   static const String pleaseSelectStartDate = 'Please select start date';
   static const String targetAmountCannotBeLessThanSaved =
       'Target amount cannot be less than saved amount ({savedAmount})';

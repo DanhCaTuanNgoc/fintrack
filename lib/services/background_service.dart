@@ -25,6 +25,8 @@ void callbackDispatcher() {
         return await _checkPeriodicInvoices();
       case 'checkSavingsGoals':
         return await _checkSavingsGoals();
+      case 'dailyReminder':
+        return await _sendDailyReminder();
       default:
         return false; // Không xử lý task không xác định
     }
@@ -397,6 +399,100 @@ Future<bool> _checkSavingsGoals() async {
   }
 }
 
+// Hàm gửi thông báo nhắc nhở hàng ngày
+Future<bool> _sendDailyReminder() async {
+  try {
+    // Lấy ngôn ngữ hiện tại từ SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final languageCode = prefs.getString('language_code') ??
+        SupportedLanguages.defaultLanguage.languageCode;
+    final appLanguage = SupportedLanguages.fromLanguageCode(languageCode) ??
+        SupportedLanguages.defaultLanguage;
+    final l10n = AppLocalizations(appLanguage.locale);
+
+    // Khởi tạo thông báo với cấu hình đầy đủ
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    // Khởi tạo và kiểm tra
+    final initialized = await flutterLocalNotificationsPlugin
+        .initialize(initializationSettings);
+
+    if (initialized == null || !initialized) {
+      return false;
+    }
+
+    // Tạo notification channel cho daily reminder
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'daily_reminder',
+      'Nhắc nhở hàng ngày',
+      description: 'Thông báo nhắc nhở ghi chú hàng ngày',
+      importance: Importance.high,
+      playSound: true,
+      enableVibration: true,
+      enableLights: true,
+    );
+
+    // Tạo channel
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+
+    // Cấu hình notification details
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'daily_reminder',
+      'Nhắc nhở hàng ngày',
+      channelDescription: 'Nhắc nhở ghi chú hàng ngày',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: true,
+      enableVibration: true,
+      playSound: true,
+      enableLights: true,
+      icon: '@mipmap/ic_launcher',
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+      color: const Color(0xFF2196F3),
+      category: AndroidNotificationCategory.reminder,
+      visibility: NotificationVisibility.public,
+      autoCancel: true,
+      ongoing: false,
+      silent: false,
+      fullScreenIntent: false,
+      timeoutAfter: 30000,
+      showProgress: false,
+      indeterminate: false,
+      onlyAlertOnce: false,
+      vibrationPattern: Int64List.fromList([0, 300, 200, 300]),
+      ledColor: const Color(0xFF2196F3),
+      ledOnMs: 1000,
+      ledOffMs: 500,
+    );
+    final NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    // Tạo notification ID duy nhất cho ngày hôm nay
+    final today = DateTime.now();
+    final notificationId = today.year * 10000 + today.month * 100 + today.day;
+
+    // Gửi thông báo nhắc nhở
+    await flutterLocalNotificationsPlugin.show(
+      notificationId,
+      l10n.dailyReminderTitle,
+      l10n.dailyReminderMessage,
+      platformChannelSpecifics,
+    );
+
+    return true; // Task thực hiện thành công
+  } catch (e) {
+    return false;
+  }
+}
+
 // Lớp quản lý các tác vụ chạy ngầm
 class BackgroundService {
   // Khởi tạo Workmanager và đăng ký hàm callback
@@ -409,8 +505,8 @@ class BackgroundService {
     await Workmanager().registerPeriodicTask(
       'checkPeriodicInvoices', // Tên  task
       'checkPeriodicInvoices', // Tên task (phảigiống nhau)
-      frequency: const Duration(minutes: 15), // Tần suất chạy task
-      initialDelay: const Duration(seconds: 10),
+      frequency: const Duration(days: 1), // Tần suất chạy task
+      initialDelay: const Duration(hours: 1),
       constraints: Constraints(
         // Các điều kiện để chạy task
         networkType: NetworkType.not_required, // Không yêu cầu kết nối mạng
@@ -422,7 +518,19 @@ class BackgroundService {
       'checkSavingsGoals', // Tên task
       'checkSavingsGoals', // Tên task (phải giống nhau)
       frequency: const Duration(days: 1),
-      initialDelay: const Duration(minutes: 5),
+      initialDelay: const Duration(hours: 1),
+      constraints: Constraints(
+        // Các điều kiện để chạy task
+        networkType: NetworkType.not_required, // Không yêu cầu kết nối mạng
+      ),
+    );
+
+    // Đăng ký task nhắc nhở hàng ngày
+    await Workmanager().registerPeriodicTask(
+      'dailyReminder', // Tên task
+      'dailyReminder', // Tên task (phải giống nhau)
+      frequency: const Duration(days: 1),
+      initialDelay: const Duration(hours: 1), // Bắt đầu sau 1 giờ
       constraints: Constraints(
         // Các điều kiện để chạy task
         networkType: NetworkType.not_required, // Không yêu cầu kết nối mạng
