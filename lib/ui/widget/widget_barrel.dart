@@ -5,6 +5,7 @@ export './tab_button.dart';
 export './type_button.dart';
 export './book_list_screen.dart';
 export './loadingWidget/transaction_list_skeleton.dart';
+export './loadingWidget/notification_skeleton.dart';
 export './development_notice.dart';
 export './transaction_detail_modal.dart';
 export './add_transaction_modal.dart';

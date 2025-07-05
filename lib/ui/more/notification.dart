@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/more/notification_item.dart';
 import '../../providers/more/notifications_provider.dart';
 import '../../utils/localization.dart';
+import '../widget/loadingWidget/notification_skeleton.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -21,11 +22,11 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     super.initState();
     // Tự động refresh khi vào màn hình
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.invalidate(notificationsProvider);
+      ref.read(notificationsProvider.notifier).invalidate();
     });
     // Tự động refresh mỗi 30 giây
     _autoRefreshTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      ref.invalidate(notificationsProvider);
+      ref.read(notificationsProvider.notifier).invalidate();
     });
   }
 
@@ -38,6 +39,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     final notifications = ref.watch(notificationsProvider);
+    final isLoading = ref.watch(notificationsLoadingProvider);
     final notifier = ref.read(notificationsProvider.notifier);
     final l10n = AppLocalizations.of(context);
 
@@ -59,7 +61,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             icon: Icon(Icons.refresh,
                 color: const Color(0xFF2D3142), size: 24.sp),
             onPressed: () {
-              ref.invalidate(notificationsProvider);
+              notifier.invalidate();
             },
             tooltip: l10n.refresh,
           ),
@@ -79,30 +81,32 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(notificationsProvider);
+          notifier.invalidate();
         },
-        child: notifications.isEmpty
-            ? Center(
-                child: Text(
-                  l10n.noNotifications,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: const Color(0xFF2D3142),
+        child: isLoading
+            ? const NotificationSkeleton()
+            : notifications.isEmpty
+                ? Center(
+                    child: Text(
+                      l10n.noNotifications,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: const Color(0xFF2D3142),
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: EdgeInsets.all(16.w),
+                    itemCount: notifications.length,
+                    itemBuilder: (context, index) {
+                      final notification = notifications[index];
+                      return NotificationTile(
+                        notification: notification,
+                        onTap: () => notifier.markAsRead(index),
+                        onDelete: () => notifier.deleteNotification(index),
+                      );
+                    },
                   ),
-                ),
-              )
-            : ListView.builder(
-                padding: EdgeInsets.all(16.w),
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  final notification = notifications[index];
-                  return NotificationTile(
-                    notification: notification,
-                    onTap: () => notifier.markAsRead(index),
-                    onDelete: () => notifier.deleteNotification(index),
-                  );
-                },
-              ),
       ),
     );
   }
