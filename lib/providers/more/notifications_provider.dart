@@ -3,25 +3,40 @@ import '../../data/models/more/notification_item.dart';
 import '../../data/repositories/more/notification_repository.dart';
 import '../../data/database/database_helper.dart';
 
+// Provider để quản lý trạng thái loading
+final notificationsLoadingProvider = StateProvider<bool>((ref) => true);
+
 // Provider để quản lý trạng thái thông báo
 final notificationsProvider =
     StateNotifierProvider<NotificationsNotifier, List<NotificationItem>>((ref) {
-  return NotificationsNotifier();
+  return NotificationsNotifier(ref);
 });
 
 class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
-  NotificationsNotifier() : super([]) {
+  final Ref ref;
+
+  NotificationsNotifier(this.ref) : super([]) {
     _loadFromDb();
   }
 
   Future<void> _loadFromDb() async {
-    final data = await NotificationRepository(DatabaseHelper.instance)
-        .getAllNotifications();
-    state = data;
+    ref.read(notificationsLoadingProvider.notifier).state = true;
+    try {
+      final data = await NotificationRepository(DatabaseHelper.instance)
+          .getAllNotifications();
+      state = data;
+    } finally {
+      ref.read(notificationsLoadingProvider.notifier).state = false;
+    }
   }
 
   // Phương thức để làm mới dữ liệu
   Future<void> refresh() async {
+    await _loadFromDb();
+  }
+
+  // Phương thức để invalidate và reload
+  Future<void> invalidate() async {
     await _loadFromDb();
   }
 
