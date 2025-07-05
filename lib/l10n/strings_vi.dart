@@ -197,6 +197,11 @@ class VietnameseStrings {
   static const String chooseDate = 'Chọn ngày';
   static const String targetDate = 'Ngày mục tiêu';
   static const String chooseDateOptional = 'Chọn ngày (tùy chọn)';
+
+  // Daily Reminder
+  static const String dailyReminderTitle = 'Hôm nay bạn đã ghi chú chưa? 📝';
+  static const String dailyReminderMessage =
+      'Hãy ghi lại những khoản chi tiêu và thu nhập của bạn hôm nay!';
   static const String pleaseSelectStartDate = 'Vui lòng chọn ngày bắt đầu';
   static const String targetAmountCannotBeLessThanSaved =
       'Số tiền mục tiêu không được nhỏ hơn số tiền đã tiết kiệm ({savedAmount})';

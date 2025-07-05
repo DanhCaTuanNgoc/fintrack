@@ -203,6 +203,7 @@ class _MoreState extends ConsumerState<More> {
     String? subtitle,
     String? badge,
     required VoidCallback onTap,
+    Widget? trailing,
   }) {
     return InkWell(
       onTap: onTap,
@@ -273,11 +274,12 @@ class _MoreState extends ConsumerState<More> {
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16.w,
-              color: const Color(0xFF9E9E9E),
-            ),
+            trailing ??
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16.w,
+                  color: const Color(0xFF9E9E9E),
+                ),
           ],
         ),
       ),

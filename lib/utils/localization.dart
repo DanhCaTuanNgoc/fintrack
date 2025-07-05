@@ -198,6 +198,10 @@ class AppLocalizations {
   String errorCreatingInvoiceWith(String error) =>
       _getString('errorCreatingInvoice').replaceFirst('{error}', error);
 
+  // Daily Reminder
+  String get dailyReminderTitle => _getString('dailyReminderTitle');
+  String get dailyReminderMessage => _getString('dailyReminderMessage');
+
   // Deposit Savings Screen
   String get flexibleSavingsBook => _getString('flexibleSavingsBook');
   String get periodicSavingsBook => _getString('periodicSavingsBook');

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/more/notification_item.dart';
 import '../../data/repositories/more/notification_repository.dart';
 import '../../data/database/database_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Provider để quản lý trạng thái loading
 final notificationsLoadingProvider = StateProvider<bool>((ref) => true);
