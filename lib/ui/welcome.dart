@@ -186,14 +186,17 @@ class WelcomePage extends StatelessWidget {
                     height: 100.w,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.black, Colors.grey.shade800],
+                        colors: [
+                          const Color(0xFF6C63FF),
+                          const Color(0xFF6C63FF).withOpacity(0.8)
+                        ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(25.r),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: const Color(0xFF6C63FF).withOpacity(0.2),
                           blurRadius: 15.r,
                           offset: Offset(0, 8.h),
                         ),
@@ -213,7 +216,7 @@ class WelcomePage extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 32.sp,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: const Color(0xFF6C63FF),
                         ),
                       ),
                       SizedBox(height: 6.h),
@@ -274,14 +277,17 @@ class WelcomePage extends StatelessWidget {
                     height: 48.h,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.black, Colors.grey.shade800],
+                        colors: [
+                          const Color(0xFF6C63FF),
+                          const Color(0xFF6C63FF).withOpacity(0.8)
+                        ],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),
                       borderRadius: BorderRadius.circular(24.r),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: const Color(0xFF6C63FF).withOpacity(0.2),
                           blurRadius: 12.r,
                           offset: Offset(0, 6.h),
                         ),
@@ -333,13 +339,16 @@ class WelcomePage extends StatelessWidget {
           height: 40.w,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.grey.shade100, Colors.grey.shade200],
+              colors: [
+                const Color(0xFF6C63FF),
+                const Color(0xFF6C63FF).withOpacity(0.8)
+              ],
             ),
             borderRadius: BorderRadius.circular(12.r),
           ),
           child: Icon(
             icon,
-            color: Colors.black,
+            color: const Color.fromARGB(255, 255, 255, 255),
             size: 25.w,
           ),
         ),
@@ -395,14 +404,17 @@ class TermsPage extends StatelessWidget {
                 padding: EdgeInsets.all(16.w),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.black, Colors.grey.shade800],
+                    colors: [
+                      const Color(0xFF6C63FF),
+                      const Color(0xFF6C63FF).withOpacity(0.8)
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16.r),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: const Color(0xFF6C63FF).withOpacity(0.2),
                       blurRadius: 12.r,
                       offset: Offset(0, 6.h),
                     ),
@@ -503,7 +515,7 @@ class TermsPage extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Container(
+                    child: SizedBox(
                       height: 44.h,
                       child: TextButton(
                         onPressed: onBack,
@@ -541,14 +553,17 @@ class TermsPage extends StatelessWidget {
                       height: 44.h,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.black, Colors.grey.shade800],
+                          colors: [
+                            const Color(0xFF6C63FF),
+                            const Color(0xFF6C63FF).withOpacity(0.8)
+                          ],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
                         ),
                         borderRadius: BorderRadius.circular(22.r),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: const Color(0xFF6C63FF).withOpacity(0.2),
                             blurRadius: 8.r,
                             offset: Offset(0, 4.h),
                           ),
@@ -604,13 +619,16 @@ class TermsPage extends StatelessWidget {
           height: 32.w,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.grey.shade100, Colors.grey.shade200],
+              colors: [
+                const Color(0xFF6C63FF),
+                const Color(0xFF6C63FF).withOpacity(0.8)
+              ],
             ),
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: Icon(
             icon,
-            color: Colors.black,
+            color: const Color.fromARGB(255, 255, 255, 255),
             size: 16.w,
           ),
         ),
@@ -622,7 +640,7 @@ class TermsPage extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 14.sp,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey.shade800,
                 ),
@@ -631,7 +649,7 @@ class TermsPage extends StatelessWidget {
               Text(
                 description,
                 style: TextStyle(
-                  fontSize: 12.sp,
+                  fontSize: 14.sp,
                   color: Colors.grey.shade600,
                   height: 1.3,
                 ),
@@ -680,14 +698,17 @@ class GetStartedPage extends StatelessWidget {
                 height: 100.w,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.black, Colors.grey.shade800],
+                    colors: [
+                      const Color(0xFF6C63FF),
+                      const Color(0xFF6C63FF).withOpacity(0.8)
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(25.r),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: const Color(0xFF6C63FF).withOpacity(0.2),
                       blurRadius: 15.r,
                       offset: Offset(0, 8.h),
                     ),
@@ -707,7 +728,7 @@ class GetStartedPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 28.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: const Color(0xFF6C63FF),
                     ),
                   ),
                   SizedBox(height: 16.h),
@@ -726,68 +747,23 @@ class GetStartedPage extends StatelessWidget {
               // Buttons
               Row(
                 children: [
-                  // Expanded(
-                  //   child: Container(
-                  //     height: 44.h,
-                  //     decoration: BoxDecoration(
-                  //       color: Colors.white,
-                  //       borderRadius: BorderRadius.circular(22.r),
-                  //       border: Border.all(
-                  //         color: Colors.grey.shade300,
-                  //         width: 1,
-                  //       ),
-                  //       boxShadow: [
-                  //         BoxShadow(
-                  //           color: Colors.grey.withOpacity(0.1),
-                  //           blurRadius: 4.r,
-                  //           offset: Offset(0, 2.h),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     child: TextButton(
-                  //       onPressed: onBack,
-                  //       style: TextButton.styleFrom(
-                  //         shape: RoundedRectangleBorder(
-                  //           borderRadius: BorderRadius.circular(22.r),
-                  //         ),
-                  //       ),
-                  //       child: Row(
-                  //         mainAxisAlignment: MainAxisAlignment.center,
-                  //         children: [
-                  //           Icon(
-                  //             Icons.arrow_back_rounded,
-                  //             size: 16.w,
-                  //             color: Colors.grey.shade600,
-                  //           ),
-                  //           SizedBox(width: 6.w),
-                  //           Text(
-                  //             'Quay lại',
-                  //             style: TextStyle(
-                  //               fontSize: 14.sp,
-                  //               fontWeight: FontWeight.w600,
-                  //               color: Colors.grey.shade600,
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-
                   Expanded(
                     flex: 2,
                     child: Container(
                       height: 50.h,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.black, Colors.grey.shade800],
+                          colors: [
+                            const Color(0xFF6C63FF),
+                            const Color(0xFF6C63FF).withOpacity(0.8)
+                          ],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
                         ),
                         borderRadius: BorderRadius.circular(22.r),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: const Color(0xFF6C63FF).withOpacity(0.2),
                             blurRadius: 8.r,
                             offset: Offset(0, 4.h),
                           ),
@@ -896,14 +872,17 @@ class _CreateBookPageState extends State<CreateBookPage> {
                     padding: EdgeInsets.all(16.w),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.black, Colors.grey.shade800],
+                        colors: [
+                          const Color(0xFF6C63FF),
+                          const Color(0xFF6C63FF).withOpacity(0.8)
+                        ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(16.r),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: const Color(0xFF6C63FF).withOpacity(0.2),
                           blurRadius: 12.r,
                           offset: Offset(0, 6.h),
                         ),
@@ -920,7 +899,7 @@ class _CreateBookPageState extends State<CreateBookPage> {
                           ),
                           child: Icon(
                             Icons.book,
-                            color: Colors.white,
+                            color: const Color.fromARGB(255, 255, 255, 255),
                             size: 20.w,
                           ),
                         ),
@@ -1000,7 +979,7 @@ class _CreateBookPageState extends State<CreateBookPage> {
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.r),
                                 borderSide: const BorderSide(
-                                  color: Colors.black,
+                                  color: Color(0xFF6C63FF),
                                   width: 1,
                                 ),
                               ),
@@ -1010,15 +989,15 @@ class _CreateBookPageState extends State<CreateBookPage> {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      Colors.grey.shade100,
-                                      Colors.grey.shade200
+                                      const Color(0xFF6C63FF),
+                                      const Color(0xFF6C63FF).withOpacity(0.8)
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(8.r),
                                 ),
                                 child: Icon(
                                   Icons.edit_note,
-                                  color: Colors.black,
+                                  color: const Color.fromARGB(255, 255, 255, 255),
                                   size: 16.w,
                                 ),
                               ),
@@ -1046,7 +1025,7 @@ class _CreateBookPageState extends State<CreateBookPage> {
                               children: [
                                 Icon(
                                   Icons.lightbulb_outline,
-                                  color: Colors.black,
+                                  color: const Color(0xFF6C63FF),
                                   size: 16.w,
                                 ),
                                 SizedBox(width: 8.w),
@@ -1131,8 +1110,8 @@ class _CreateBookPageState extends State<CreateBookPage> {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      Colors.black,
-                                      Colors.grey.shade800
+                                      const Color(0xFF6C63FF),
+                                      const Color(0xFF6C63FF).withOpacity(0.8)
                                     ],
                                     begin: Alignment.centerLeft,
                                     end: Alignment.centerRight,
@@ -1140,7 +1119,8 @@ class _CreateBookPageState extends State<CreateBookPage> {
                                   borderRadius: BorderRadius.circular(22.r),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
+                                      color: const Color(0xFF6C63FF)
+                                          .withOpacity(0.2),
                                       blurRadius: 8.r,
                                       offset: Offset(0, 4.h),
                                     ),

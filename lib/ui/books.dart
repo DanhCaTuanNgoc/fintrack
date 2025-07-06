@@ -56,10 +56,6 @@ class _BooksState extends ConsumerState<Books>
   // Add this field to the class
   OverlayEntry? _overlayEntry;
 
-  IconData _getIconFromEmoji(String emoji) {
-    return _iconMapping[emoji] ?? Icons.category;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -86,11 +82,14 @@ class _BooksState extends ConsumerState<Books>
     final expenseCats = await _dbHelper.getCategoriesByType('expense');
     final incomeCats = await _dbHelper.getCategoriesByType('income');
     final categories = await _dbHelper.getCategories();
-    setState(() {
-      _expenseCategories = expenseCats;
-      _incomeCategories = incomeCats;
-      _categories = categories;
-    });
+    if (categories.isNotEmpty) {
+      setState(() {
+        _expenseCategories = expenseCats;
+        _incomeCategories = incomeCats;
+        _categories = categories;
+      });
+      print("da setstate");
+    }
   }
 
   @override
@@ -116,7 +115,7 @@ class _BooksState extends ConsumerState<Books>
               elevation: 0,
               toolbarHeight: 60.h,
               title: Text(
-                l10n.books,
+                l10n.expenseBook,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24.sp,
@@ -655,7 +654,7 @@ class _BooksState extends ConsumerState<Books>
 
                                     // Tính tổng theo ngày (thu - chi)
                                     final dayTotal = dayIncome - dayExpense;
-                                    print('dayTotal' + dayTotal.toString());
+
                                     return ExpenseItem(
                                       dateKey: dateKey,
                                       transactions: transactions,

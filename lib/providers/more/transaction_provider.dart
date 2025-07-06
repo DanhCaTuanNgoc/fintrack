@@ -38,7 +38,7 @@ class TransactionsNotifier
     required double amount,
     required String note,
     required String type,
-    required int categoryId,
+    int? categoryId, // Changed from required to optional
     required int bookId,
     required int userId,
   }) async {
@@ -48,7 +48,7 @@ class TransactionsNotifier
         amount: amount,
         note: note,
         type: type,
-        categoryId: categoryId,
+        categoryId: categoryId, // Can be null
         bookId: bookId,
         userId: userId,
         date: DateTime.now(),

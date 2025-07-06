@@ -7,6 +7,7 @@ import '../providers/providers_barrel.dart';
 import '../utils/localization.dart';
 import './widget/widget_barrel.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../utils/category_helper.dart';
 
 class Charts extends ConsumerStatefulWidget {
   const Charts({super.key});
@@ -20,8 +21,8 @@ class _ChartsState extends ConsumerState<Charts>
   late TabController _tabController;
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   List<Map<String, dynamic>> _categories = [];
-  Map<String, double> _categoryExpenses = {};
-  Map<String, double> _categoryIncomes = {};
+  final Map<String, double> _categoryExpenses = {};
+  final Map<String, double> _categoryIncomes = {};
   DateTime _selectedMonth = DateTime.now();
   int _selectedTab = 0;
 
@@ -112,7 +113,7 @@ class _ChartsState extends ConsumerState<Charts>
                           style: TextStyle(
                             fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF2D3142),
+                            color: const Color(0xFF2D3142),
                           ),
                         ),
                         SizedBox(height: 10.h),
@@ -136,7 +137,7 @@ class _ChartsState extends ConsumerState<Charts>
                             ),
                           ),
                           child: Text(
-                            l10n.createFirstBook,
+                            l10n.createBook,
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
@@ -402,11 +403,11 @@ class _ChartsState extends ConsumerState<Charts>
               transaction.date!.month == _selectedMonth.month) {
             final category = _categories.firstWhere(
               (cat) => cat['id'] == transaction.categoryId,
-              orElse: () => {'name': 'Khác'},
+              orElse: () => {'name': 'Khác', 'icon': '💸'},
             );
-            final categoryName = category['name'] as String;
-            _categoryExpenses[categoryName] =
-                (_categoryExpenses[categoryName] ?? 0) + transaction.amount;
+            final categoryIcon = category['icon'] as String? ?? '💸';
+            _categoryExpenses[categoryIcon] =
+                (_categoryExpenses[categoryIcon] ?? 0) + transaction.amount;
           }
         }
 
@@ -475,7 +476,8 @@ class _ChartsState extends ConsumerState<Charts>
                           SizedBox(width: 12.w),
                           Expanded(
                             child: Text(
-                              category.key,
+                              CategoryHelper.getLocalizedCategoryName(
+                                  category.key, l10n),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
@@ -519,11 +521,11 @@ class _ChartsState extends ConsumerState<Charts>
               transaction.date!.month == _selectedMonth.month) {
             final category = _categories.firstWhere(
               (cat) => cat['id'] == transaction.categoryId,
-              orElse: () => {'name': 'Khác'},
+              orElse: () => {'name': 'Khác', 'icon': '💸'},
             );
-            final categoryName = category['name'] as String;
-            _categoryIncomes[categoryName] =
-                (_categoryIncomes[categoryName] ?? 0) + transaction.amount;
+            final categoryIcon = category['icon'] as String? ?? '💸';
+            _categoryIncomes[categoryIcon] =
+                (_categoryIncomes[categoryIcon] ?? 0) + transaction.amount;
           }
         }
 
@@ -592,7 +594,8 @@ class _ChartsState extends ConsumerState<Charts>
                           SizedBox(width: 12.w),
                           Expanded(
                             child: Text(
-                              category.key,
+                              CategoryHelper.getLocalizedCategoryName(
+                                  category.key, l10n),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,

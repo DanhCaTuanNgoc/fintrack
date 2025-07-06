@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../data/models/savings_goal.dart';
-import '../../../utils/localization.dart';
+import '../../../../data/models/savings_goal.dart';
+import '../../../../utils/localization.dart';
 
 class AddFlexibleSavingGoalDialog extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -128,12 +128,14 @@ class _AddFlexibleSavingGoalDialogState
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
                       validator: (value) {
-                        if (value == null || value.isEmpty)
+                        if (value == null || value.isEmpty) {
                           return l10n.enterAmount;
+                        }
 
                         final amount = getNumericValueFromFormattedText(value);
-                        if (amount <= 0)
+                        if (amount <= 0) {
                           return l10n.amountMustBeGreaterThanZero;
+                        }
                         return null;
                       },
                     ),

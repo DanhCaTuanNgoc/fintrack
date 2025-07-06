@@ -17,10 +17,9 @@ class EnglishStrings {
   static const String chooseThemeColor = 'Choose Theme Color';
 
   // Messages
-  static const String switchedToVietnamese = 'Switched to Vietnamese';
+  static const String switchedToVietnamese = 'Đã chuyển sang Tiếng Việt';
   static const String switchedToEnglish = 'Switched to English';
-  static const String currencyChanged =
-      'Currency changed to {currency} and all transactions updated';
+  static const String currencyChanged = 'Currency changed to {currency}';
   static const String themeColorChanged = 'Theme color changed to {color}';
 
   // Common
@@ -40,6 +39,7 @@ class EnglishStrings {
   static const String success = 'Success';
   static const String warning = 'Warning';
   static const String info = 'Information';
+  static const String total = 'Total';
 
   // Home
   static const String home = 'Home';
@@ -89,6 +89,8 @@ class EnglishStrings {
   static const String currentAmount = 'Current Amount';
   static const String progress = 'Progress';
   static const String deadline = 'Deadline';
+  static const String savingsOverdue = 'This savings book is overdue.';
+  static const String savingsClosed = 'This savings book is closed.';
 
   // Charts
   static const String charts = 'Charts';
@@ -139,6 +141,7 @@ class EnglishStrings {
   static const String ten = 'Ten';
 
   // Colors
+  static const String black = 'Black';
   static const String purple = 'Purple';
   static const String blue = 'Blue';
   static const String green = 'Green';
@@ -195,6 +198,12 @@ class EnglishStrings {
   static const String chooseDate = 'Choose date';
   static const String targetDate = 'Target Date';
   static const String chooseDateOptional = 'Choose date (optional)';
+
+  // Daily Reminder
+  static const String dailyReminderTitle =
+      'Have you recorded your notes today? 📝';
+  static const String dailyReminderMessage =
+      'Please record your expenses and income for today!';
   static const String pleaseSelectStartDate = 'Please select start date';
   static const String targetAmountCannotBeLessThanSaved =
       'Target amount cannot be less than saved amount ({savedAmount})';
@@ -210,13 +219,36 @@ class EnglishStrings {
   static const String deleteSavingsGoal = 'Delete Savings Goal';
   static const String confirmDelete = 'Confirm Delete';
   static const String confirmDeleteMessage =
-      'Are you sure you want to delete the savings goal "{goalName}"?\n\nThis action cannot be undone and will delete all related transaction history.';
-  static const String deleteSuccess = 'Savings goal deleted!';
+      'Are you sure you want to delete "{goalName}"?.';
+  static const String deleteSuccess = 'Deleted successfully';
   static const String updateSuccess = 'Updated successfully!';
   static const String currentInformation = 'Current Information:';
   static const String savedAmount = 'Saved Amount:';
   static const String progressLabel = 'Progress:';
   static const String dataLoadError = 'Data loading error';
+  static const String targetAmountLabel = 'Target Amount';
+  static const String startDateLabel = 'Start Date';
+  static const String chooseDateLabel = 'Choose date';
+  static const String deleteSavingsBook = 'Delete Savings Book';
+  static const String deleteExpenseBook = 'Delete Expense Book';
+  static const String confirmDeleteExpenseBook =
+      'Are you sure you want to delete the expense book "{bookName}"?';
+  static const String deleteExpenseBookSuccess =
+      'Expense book deleted successfully';
+  static const String deleteExpenseBookError =
+      'An error occurred while deleting the expense book: {error}';
+  static const String deletingExpenseBook = 'Deleting expense book...';
+  static const String update = 'Update';
+  static const String foodAndDrinks = 'Food & Drinks';
+  static const String transportation = 'Transportation';
+  static const String shopping = 'Shopping';
+  static const String entertainment = 'Entertainment';
+  static const String education = 'Education';
+  static const String beauty = 'Beauty';
+  static const String household = 'Household';
+  static const String salary = 'Salary';
+  static const String bonus = 'Bonus';
+  static const String investment = 'Investment';
 
   // // Welcome Screen
   // static const String welcome = 'Welcome';
@@ -271,7 +303,7 @@ class EnglishStrings {
   static const String enterValidNumber = 'Enter valid number';
   static const String clearFilter = 'Clear Filter';
   static const String paid = 'Paid';
-  static const String pendingPayment = 'Pending Payment';
+  static const String pendingPayment = 'Pending';
   static const String createPeriodicInvoice = 'Create Periodic Invoice';
   static const String pleaseEnterInvoiceName = 'Please enter invoice name';
   static const String createInvoice = 'Create Invoice';
@@ -298,7 +330,7 @@ class EnglishStrings {
   static const String depositBeforeNextPeriod = 'Deposit before next period?';
   static const String youAreDepositingBeforeNextPeriod =
       'You are depositing before the next period:';
-  static const String continueDeposit = 'Continue';
+  static const String continueDeposit = 'Deposit';
   static const String frequencyDaily = 'daily';
   static const String frequencyWeekly = 'weekly';
   static const String frequencyMonthly = 'monthly';
@@ -307,8 +339,6 @@ class EnglishStrings {
   static const String flexibleSavings = 'Flexible Savings';
   static const String noFlexibleSavings = 'No flexible savings books yet';
   static const String createNewSavings = 'Create New Savings';
-  static const String savingsOverdue = 'This savings book is overdue.';
-  static const String savingsClosed = 'This savings book is closed.';
 
   // Periodic Savings Screen
   static const String periodicSavings = 'Periodic Savings';
@@ -323,4 +353,28 @@ class EnglishStrings {
   // Add Amount Dialog
   static const String enterAmountToDeposit = 'Enter amount to deposit';
   static const String amountHint = 'Amount';
+
+  // Notification Screen
+  static const String noNotifications = 'No notifications!';
+  static const String refresh = 'Refresh';
+  static const String markAllAsRead = 'Mark all as read';
+  static const String deleteAllRead = 'Delete all read';
+  static const String justNow = 'Just now';
+  static const String daysAgo = '{days} days ago';
+  static const String hoursAgo = '{hours} hours ago';
+  static const String minutesAgo = '{minutes} minutes ago';
+
+  // Weekdays
+  static const String monday = 'Mon';
+  static const String tuesday = 'Tue';
+  static const String wednesday = 'Wed';
+  static const String thursday = 'Thu';
+  static const String friday = 'Fri';
+  static const String saturday = 'Sat';
+  static const String sunday = 'Sun';
+
+  // Time ago with parameters
+  static const String daysAgoWith = '{days} days ago';
+  static const String hoursAgoWith = '{hours} hours ago';
+  static const String minutesAgoWith = '{minutes} minutes ago';
 }

@@ -4,7 +4,7 @@ class Transaction {
   final String note;
   final DateTime date;
   final String type;
-  final int categoryId;
+  final int? categoryId;
   final int bookId;
   final int userId;
 
@@ -17,7 +17,7 @@ class Transaction {
     required this.categoryId,
     required this.bookId,
     required this.userId,
-  }) : this.date = date ?? DateTime.now();
+  }) : date = date ?? DateTime.now();
 
   Transaction copyWith({
     int? id,

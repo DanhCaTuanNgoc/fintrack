@@ -57,13 +57,13 @@ class NumberPad extends StatelessWidget {
                 child: _buildNumberButton('0', () => onNumberTap('0'), primary,
                     isWide: true),
               ),
-              SizedBox(width: 16.w),
+              SizedBox(width: 10.w),
               Expanded(
-                flex: 2,
+                flex: 1,
                 child: _buildNumberButton(
                     '000', () => onNumberTap('000'), primary),
               ),
-              SizedBox(width: 16.w),
+              SizedBox(width: 5.w),
               _buildBackspaceButton(onBackspaceTap),
             ],
           ),

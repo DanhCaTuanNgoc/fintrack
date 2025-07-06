@@ -2,6 +2,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:logging/logging.dart';
+import '../../utils/category_helper.dart';
+import '../../utils/localization.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -18,7 +20,8 @@ class DatabaseHelper {
   Future<Database> _initDB(String filePath) async {
     final appDocDir = await getApplicationDocumentsDirectory();
     final path = join(appDocDir.path, filePath);
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path,
+        version: 2, onCreate: _createDB, onUpgrade: _upgradeDB);
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -106,13 +109,15 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS notifications (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        message TEXT NOT NULL,
+        type TEXT NOT NULL,
         time TEXT NOT NULL,
         is_read INTEGER NOT NULL,
         invoice_id TEXT,
         invoice_due_date TEXT,
-        goal_id TEXT
+        goal_id TEXT,
+        item_name TEXT,
+        amount TEXT,
+        remaining_days INTEGER
       )
     ''');
 
@@ -166,19 +171,30 @@ class DatabaseHelper {
     await _insertDefaultCategories(db);
   }
 
+  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Nâng cấp từ version 1 lên version 2
+      // Tạo bảng notifications mới với schema mới
+      await db.execute('DROP TABLE IF EXISTS notifications');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS notifications (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          type TEXT NOT NULL,
+          time TEXT NOT NULL,
+          is_read INTEGER NOT NULL,
+          invoice_id TEXT,
+          invoice_due_date TEXT,
+          goal_id TEXT,
+          item_name TEXT,
+          amount TEXT,
+          remaining_days INTEGER
+        )
+      ''');
+    }
+  }
+
   Future<void> _insertDefaultCategories(Database db) async {
-    final defaultCategories = [
-      {'name': 'Ăn uống', 'type': 'expense', 'icon': '🍔'},
-      {'name': 'Di chuyển', 'type': 'expense', 'icon': '🚗'},
-      {'name': 'Mua sắm', 'type': 'expense', 'icon': '🛍'},
-      {'name': 'Giải trí', 'type': 'expense', 'icon': '🎮'},
-      {'name': 'Học tập', 'type': 'expense', 'icon': '📚'},
-      {'name': 'Làm đẹp', 'type': 'expense', 'icon': '💅'},
-      {'name': 'Sinh hoạt', 'type': 'expense', 'icon': '🏠'},
-      {'name': 'Lương', 'type': 'income', 'icon': '💰'},
-      {'name': 'Thưởng', 'type': 'income', 'icon': '🎁'},
-      {'name': 'Đầu tư', 'type': 'income', 'icon': '📈'},
-    ];
+    final defaultCategories = CategoryHelper.getDefaultCategoriesForDatabase();
 
     for (var category in defaultCategories) {
       await db.insert('categories', category);
@@ -340,5 +356,20 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  /// Cập nhật tên categories khi ngôn ngữ thay đổi
+  Future<void> updateCategoriesOnLanguageChange(AppLocalizations l10n) async {
+    final db = await database;
+    final defaultCategories = CategoryHelper.getDefaultCategories(l10n);
+
+    for (var category in defaultCategories) {
+      await db.update(
+        'categories',
+        {'name': category['name']},
+        where: 'icon = ? AND type = ?',
+        whereArgs: [category['icon'], category['type']],
+      );
+    }
   }
 }

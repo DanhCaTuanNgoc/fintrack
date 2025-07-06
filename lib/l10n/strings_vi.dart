@@ -18,9 +18,8 @@ class VietnameseStrings {
 
   // Messages
   static const String switchedToVietnamese = 'Đã chuyển sang Tiếng Việt';
-  static const String switchedToEnglish = 'Đã chuyển sang English';
-  static const String currencyChanged =
-      'Đã chuyển sang {currency} và cập nhật tất cả giao dịch';
+  static const String switchedToEnglish = 'Switched to English';
+  static const String currencyChanged = 'Đã chuyển sang {currency}';
   static const String themeColorChanged = 'Đã đổi màu nền thành {color}';
 
   // Common
@@ -40,6 +39,7 @@ class VietnameseStrings {
   static const String success = 'Thành công';
   static const String warning = 'Cảnh báo';
   static const String info = 'Thông tin';
+  static const String total = 'Tổng';
 
   // Home
   static const String home = 'Trang chủ';
@@ -60,7 +60,7 @@ class VietnameseStrings {
   static const String note = 'Ghi chú';
 
   // Books/Wallets
-  static const String books = 'Sổ sách';
+  static const String books = 'Sổ';
   static const String wallets = 'Ví';
   static const String createBook = 'Tạo sổ mới';
   static const String createWallet = 'Tạo ví mới';
@@ -90,6 +90,8 @@ class VietnameseStrings {
   static const String currentAmount = 'Số tiền hiện tại';
   static const String progress = 'Tiến độ';
   static const String deadline = 'Hạn chót';
+  static const String savingsOverdue = 'Sổ tiết kiệm này đã quá hạn.';
+  static const String savingsClosed = 'Sổ tiết kiệm này đã được đóng.';
 
   // Charts
   static const String charts = 'Biểu đồ';
@@ -140,6 +142,7 @@ class VietnameseStrings {
   static const String ten = 'Mười';
 
   // Colors
+  static const String black = 'Đen';
   static const String purple = 'Tím';
   static const String blue = 'Xanh dương';
   static const String green = 'Xanh lá';
@@ -194,6 +197,11 @@ class VietnameseStrings {
   static const String chooseDate = 'Chọn ngày';
   static const String targetDate = 'Ngày mục tiêu';
   static const String chooseDateOptional = 'Chọn ngày (tùy chọn)';
+
+  // Daily Reminder
+  static const String dailyReminderTitle = 'Hôm nay bạn đã ghi chú chưa? 📝';
+  static const String dailyReminderMessage =
+      'Hãy ghi lại những khoản chi tiêu và thu nhập của bạn hôm nay!';
   static const String pleaseSelectStartDate = 'Vui lòng chọn ngày bắt đầu';
   static const String targetAmountCannotBeLessThanSaved =
       'Số tiền mục tiêu không được nhỏ hơn số tiền đã tiết kiệm ({savedAmount})';
@@ -207,13 +215,35 @@ class VietnameseStrings {
   static const String deleteSavingsGoal = 'Xóa sổ tiết kiệm';
   static const String confirmDelete = 'Xác nhận xóa';
   static const String confirmDeleteMessage =
-      'Bạn có chắc chắn muốn xóa sổ tiết kiệm "{goalName}"?\n\nHành động này không thể hoàn tác và sẽ xóa tất cả lịch sử giao dịch liên quan.';
-  static const String deleteSuccess = 'Đã xóa sổ tiết kiệm!';
+      'Bạn có chắc chắn muốn xóa sổ tiết kiệm "{goalName}"?.';
+  static const String deleteSuccess = 'Đã xóa thành công!';
   static const String updateSuccess = 'Cập nhật thành công!';
   static const String currentInformation = 'Thông tin hiện tại:';
   static const String savedAmount = 'Đã tiết kiệm:';
   static const String progressLabel = 'Tiến độ:';
   static const String dataLoadError = 'Lỗi tải dữ liệu';
+  static const String targetAmountLabel = 'Số tiền mục tiêu';
+  static const String startDateLabel = 'Ngày bắt đầu';
+  static const String chooseDateLabel = 'Chọn ngày';
+  static const String deleteSavingsBook = 'Xóa sổ tiết kiệm';
+  static const String deleteExpenseBook = 'Xóa sổ chi tiêu';
+  static const String confirmDeleteExpenseBook =
+      'Bạn có chắc chắn muốn xóa sổ "{bookName}"?';
+  static const String deleteExpenseBookSuccess = 'Xóa sổ thành công';
+  static const String deleteExpenseBookError =
+      'Có lỗi xảy ra khi xóa sổ: {error}';
+  static const String deletingExpenseBook = 'Đang xóa sổ...';
+  static const String update = 'Cập nhật';
+  static const String foodAndDrinks = 'Ăn uống';
+  static const String transportation = 'Di chuyển';
+  static const String shopping = 'Mua sắm';
+  static const String entertainment = 'Giải trí';
+  static const String education = 'Học tập';
+  static const String beauty = 'Làm đẹp';
+  static const String household = 'Sinh hoạt';
+  static const String salary = 'Lương';
+  static const String bonus = 'Thưởng';
+  static const String investment = 'Đầu tư';
 
   // // Welcome Screen
   // static const String welcome = 'Chào mừng';
@@ -301,7 +331,7 @@ class VietnameseStrings {
   static const String depositBeforeNextPeriod = 'Nạp trước kỳ tiếp theo?';
   static const String youAreDepositingBeforeNextPeriod =
       'Bạn đang nạp trước kỳ tiếp theo:';
-  static const String continueDeposit = 'Tiếp tục';
+  static const String continueDeposit = 'Bỏ tiết kiệm';
   static const String frequencyDaily = 'hàng ngày';
   static const String frequencyWeekly = 'hàng tuần';
   static const String frequencyMonthly = 'hàng tháng';
@@ -310,8 +340,6 @@ class VietnameseStrings {
   static const String flexibleSavings = 'Tiết kiệm linh hoạt';
   static const String noFlexibleSavings = 'Không có sổ tiết kiệm linh hoạt nào';
   static const String createNewSavings = 'Tạo tiết kiệm mới';
-  static const String savingsOverdue = 'Sổ tiết kiệm này đã quá hạn.';
-  static const String savingsClosed = 'Sổ tiết kiệm này đã được đóng.';
 
   // Periodic Savings Screen
   static const String periodicSavings = 'Tiết kiệm định kỳ';
@@ -324,6 +352,30 @@ class VietnameseStrings {
   static const String periodicSavingsDescription = 'Gửi tiền theo định kỳ';
 
   // Add Amount Dialog
-  static const String enterAmountToDeposit = 'Nhập số tiền muốn nộp';
+  static const String enterAmountToDeposit = 'Nhập số tiền để gửi';
   static const String amountHint = 'Số tiền';
+
+  // Notification Screen
+  static const String noNotifications = 'Không có thông báo nào!';
+  static const String refresh = 'Làm mới';
+  static const String markAllAsRead = 'Đánh dấu tất cả đã đọc';
+  static const String deleteAllRead = 'Xóa tất cả đã đọc';
+  static const String justNow = 'Vừa xong';
+  static const String daysAgo = '{days} ngày trước';
+  static const String hoursAgo = '{hours} giờ trước';
+  static const String minutesAgo = '{minutes} phút trước';
+
+  // Weekdays
+  static const String monday = 'Th 2';
+  static const String tuesday = 'Th 3';
+  static const String wednesday = 'Th 4';
+  static const String thursday = 'Th 5';
+  static const String friday = 'Th 6';
+  static const String saturday = 'Th 7';
+  static const String sunday = 'CN';
+
+  // Time ago with parameters
+  static const String daysAgoWith = '{days} ngày trước';
+  static const String hoursAgoWith = '{hours} giờ trước';
+  static const String minutesAgoWith = '{minutes} phút trước';
 }

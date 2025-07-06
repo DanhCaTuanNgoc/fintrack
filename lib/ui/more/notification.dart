@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../data/models/more/notification_item.dart';
 import '../../providers/more/notifications_provider.dart';
+import '../../utils/localization.dart';
+import '../widget/loadingWidget/notification_skeleton.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -20,11 +22,11 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     super.initState();
     // Tự động refresh khi vào màn hình
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.invalidate(notificationsProvider);
+      ref.read(notificationsProvider.notifier).invalidate();
     });
     // Tự động refresh mỗi 30 giây
     _autoRefreshTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      ref.invalidate(notificationsProvider);
+      ref.read(notificationsProvider.notifier).invalidate();
     });
   }
 
@@ -37,14 +39,17 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     final notifications = ref.watch(notificationsProvider);
+    final isLoading = ref.watch(notificationsLoadingProvider);
     final notifier = ref.read(notificationsProvider.notifier);
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
-          'Thông báo',
+          l10n.notifications,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20.sp,
@@ -53,50 +58,55 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: const Color(0xFF2D3142), size: 24.sp),
+            icon: Icon(Icons.refresh,
+                color: const Color(0xFF2D3142), size: 24.sp),
             onPressed: () {
-              ref.invalidate(notificationsProvider);
+              notifier.invalidate();
             },
-            tooltip: 'Làm mới',
+            tooltip: l10n.refresh,
           ),
           IconButton(
-            icon: Icon(Icons.done_all, color: const Color(0xFF2D3142), size: 24.sp),
+            icon: Icon(Icons.done_all,
+                color: const Color(0xFF2D3142), size: 24.sp),
             onPressed: () => notifier.markAllAsRead(),
-            tooltip: 'Đánh dấu tất cả đã đọc',
+            tooltip: l10n.markAllAsRead,
           ),
           IconButton(
-            icon: Icon(Icons.delete_sweep, color: const Color(0xFFE57373), size: 24.sp),
+            icon: Icon(Icons.delete_sweep,
+                color: const Color(0xFFE57373), size: 24.sp),
             onPressed: () => notifier.deleteAllReadNotifications(),
-            tooltip: 'Xóa tất cả đã đọc',
+            tooltip: l10n.deleteAllRead,
           ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(notificationsProvider);
+          notifier.invalidate();
         },
-        child: notifications.isEmpty
-            ? Center(
-                child: Text(
-                  'Không có thông báo nào !',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: const Color(0xFF2D3142),
+        child: isLoading
+            ? const NotificationSkeleton()
+            : notifications.isEmpty
+                ? Center(
+                    child: Text(
+                      l10n.noNotifications,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: const Color(0xFF2D3142),
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: EdgeInsets.all(16.w),
+                    itemCount: notifications.length,
+                    itemBuilder: (context, index) {
+                      final notification = notifications[index];
+                      return NotificationTile(
+                        notification: notification,
+                        onTap: () => notifier.markAsRead(index),
+                        onDelete: () => notifier.deleteNotification(index),
+                      );
+                    },
                   ),
-                ),
-              )
-            : ListView.builder(
-                padding: EdgeInsets.all(16.w),
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  final notification = notifications[index];
-                  return NotificationTile(
-                    notification: notification,
-                    onTap: () => notifier.markAsRead(index),
-                    onDelete: () => notifier.deleteNotification(index),
-                  );
-                },
-              ),
       ),
     );
   }
@@ -114,23 +124,26 @@ class NotificationTile extends StatelessWidget {
     required this.onDelete,
   }) : super(key: key);
 
-  String _getTimeAgo() {
+  String _getTimeAgo(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final difference = DateTime.now().difference(notification.time);
     if (difference.inDays > 0) {
-      return '${difference.inDays} ngày trước';
+      return l10n.daysAgoWith(difference.inDays);
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} giờ trước';
+      return l10n.hoursAgoWith(difference.inHours);
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} phút trước';
+      return l10n.minutesAgoWith(difference.inMinutes);
     } else {
-      return 'Vừa xong';
+      return l10n.justNow;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dismissible(
-      key: Key(notification.title + notification.time.toString()),
+      key: Key(
+          '${notification.type}_${notification.time.millisecondsSinceEpoch}'),
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
@@ -180,7 +193,7 @@ class NotificationTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        notification.title,
+                        notification.getTitle(l10n),
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: notification.isRead
@@ -191,7 +204,7 @@ class NotificationTile extends StatelessWidget {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        notification.message,
+                        notification.getMessage(l10n),
                         style: TextStyle(
                           fontSize: 14.sp,
                           color: const Color(0xFF9E9E9E),
@@ -199,7 +212,7 @@ class NotificationTile extends StatelessWidget {
                       ),
                       SizedBox(height: 8.h),
                       Text(
-                        _getTimeAgo(),
+                        _getTimeAgo(context),
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: const Color(0xFF9E9E9E),

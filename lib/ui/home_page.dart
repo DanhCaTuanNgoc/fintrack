@@ -34,7 +34,7 @@ class _MyHomePageState extends ConsumerState<HomePage> {
 
   Future<void> checkFirsTime() async {
     final prefs = await SharedPreferences.getInstance();
-    final hasVisited = await prefs.getBool('hasVisited') ?? false;
+    final hasVisited = prefs.getBool('hasVisited') ?? false;
 
     if (!hasVisited) {
       await prefs.setBool('hasVisited', true);

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../l10n/strings_barrel.dart';
 import 'languages.dart';
 
 /// Class quản lý localization cho ứng dụng
@@ -24,6 +23,7 @@ class AppLocalizations {
   String get loading => _getString('loading');
   String get error => _getString('error');
   String get success => _getString('success');
+  String get total => _getString('total');
 
   // Books/Wallets
   String get editBookName => _getString('editBookName');
@@ -35,6 +35,18 @@ class AppLocalizations {
   String get updateBookError => _getString('updateBookError');
   String get pleaseEnterBookName => _getString('pleaseEnterBookName');
   String get saveChanges => _getString('saveChanges');
+
+  // Savings
+  String get savings => _getString('savings');
+  String get savingsGoals => _getString('savingsGoals');
+  String get createSavingsGoal => _getString('createSavingsGoal');
+  String get goalName => _getString('goalName');
+  String get targetAmount => _getString('targetAmount');
+  String get currentAmount => _getString('currentAmount');
+  String get progress => _getString('progress');
+  String get deadline => _getString('deadline');
+  String get savingsOverdue => _getString('savingsOverdue');
+  String get savingsClosed => _getString('savingsClosed');
 
   // Saving Goals
   String get editSavingsGoal => _getString('editSavingsGoal');
@@ -63,6 +75,8 @@ class AppLocalizations {
   String get targetDate => _getString('targetDate');
   String get chooseDateOptional => _getString('chooseDateOptional');
   String get pleaseSelectStartDate => _getString('pleaseSelectStartDate');
+  String get targetAmountCannotBeLessThanSaved =>
+      _getString('targetAmountCannotBeLessThanSaved');
 
   // New additions
   String get noBook => _getString('noBook');
@@ -80,6 +94,7 @@ class AppLocalizations {
   String get currency => _getString('currency');
   String get themeColor => _getString('themeColor');
   String get notifications => _getString('notifications');
+  String get black => _getString('black');
   String get purple => _getString('purple');
   String get blue => _getString('blue');
   String get green => _getString('green');
@@ -94,13 +109,11 @@ class AppLocalizations {
   String get chooseLanguage => _getString('chooseLanguage');
   String get chooseThemeColor => _getString('chooseThemeColor');
   String get extraFeatures => _getString('extraFeatures');
-  String get savingsGoals => _getString('savingsGoals');
   String get setupAndTrack => _getString('setupAndTrack');
   String get periodicInvoices => _getString('periodicInvoices');
   String get managePeriodicBills => _getString('managePeriodicBills');
   String get books => _getString('books');
   String get createBook => _getString('createBook');
-  String get progress => _getString('progress');
   String get editTransaction => _getString('editTransaction');
   String get note => _getString('note');
   String get selectExpenseCategory => _getString('selectExpenseCategory');
@@ -112,7 +125,6 @@ class AppLocalizations {
       _getString('createFlexibleSavingsGoal');
   String get createPeriodicSavingsGoal =>
       _getString('createPeriodicSavingsGoal');
-  String get targetAmount => _getString('targetAmount');
   String get expenseBookList => _getString('expenseBookList');
   String get charts => _getString('charts');
   String get more => _getString('more');
@@ -185,6 +197,10 @@ class AppLocalizations {
   String errorCreatingInvoiceWith(String error) =>
       _getString('errorCreatingInvoice').replaceFirst('{error}', error);
 
+  // Daily Reminder
+  String get dailyReminderTitle => _getString('dailyReminderTitle');
+  String get dailyReminderMessage => _getString('dailyReminderMessage');
+
   // Deposit Savings Screen
   String get flexibleSavingsBook => _getString('flexibleSavingsBook');
   String get periodicSavingsBook => _getString('periodicSavingsBook');
@@ -209,8 +225,6 @@ class AppLocalizations {
   String get flexibleSavings => _getString('flexibleSavings');
   String get noFlexibleSavings => _getString('noFlexibleSavings');
   String get createNewSavings => _getString('createNewSavings');
-  String get savingsOverdue => _getString('savingsOverdue');
-  String get savingsClosed => _getString('savingsClosed');
 
   // Periodic Savings Screen
   String get periodicSavings => _getString('periodicSavings');
@@ -227,734 +241,46 @@ class AppLocalizations {
   String get enterAmountToDeposit => _getString('enterAmountToDeposit');
   String get amountHint => _getString('amountHint');
 
-  // Helper functions for dynamic strings
-  String depositSuccessWith(String amount) =>
-      _getString('depositSuccess').replaceFirst('{amount}', amount);
+  // Notification Screen
+  String get noNotifications => _getString('noNotifications');
+  String get refresh => _getString('refresh');
+  String get markAllAsRead => _getString('markAllAsRead');
+  String get deleteAllRead => _getString('deleteAllRead');
+  String get justNow => _getString('justNow');
+  String daysAgoWith(int days) =>
+      _getString('daysAgoWith').replaceFirst('{days}', days.toString());
+  String hoursAgoWith(int hours) =>
+      _getString('hoursAgoWith').replaceFirst('{hours}', hours.toString());
+  String minutesAgoWith(int minutes) => _getString('minutesAgoWith')
+      .replaceFirst('{minutes}', minutes.toString());
 
-  /// Lấy chuỗi theo ngôn ngữ hiện tại
-  String _getString(String key) {
-    switch (locale.languageCode) {
-      case 'vi':
-        return _getVietnameseString(key);
-      case 'en':
-        return _getEnglishString(key);
-      default:
-        return _getEnglishString(key);
-    }
-  }
+  // Weekdays
+  String get monday => _getString('monday');
+  String get tuesday => _getString('tuesday');
+  String get wednesday => _getString('wednesday');
+  String get thursday => _getString('thursday');
+  String get friday => _getString('friday');
+  String get saturday => _getString('saturday');
 
-  /// Lấy chuỗi tiếng Việt
-  String _getVietnameseString(String key) {
-    switch (key) {
-      case 'cancel':
-        return VietnameseStrings.cancel;
-      case 'confirm':
-        return VietnameseStrings.confirm;
-      case 'save':
-        return VietnameseStrings.save;
-      case 'delete':
-        return VietnameseStrings.delete;
-      case 'edit':
-        return VietnameseStrings.edit;
-      case 'add':
-        return VietnameseStrings.add;
-      case 'close':
-        return VietnameseStrings.close;
-      case 'loading':
-        return VietnameseStrings.loading;
-      case 'error':
-        return VietnameseStrings.error;
-      case 'success':
-        return VietnameseStrings.success;
-      case 'editBookName':
-        return VietnameseStrings.editBookName;
-      case 'newBookName':
-        return VietnameseStrings.newBookName;
-      case 'bookNameExists':
-        return VietnameseStrings.bookNameExists;
-      case 'pleaseChooseDifferentName':
-        return VietnameseStrings.pleaseChooseDifferentName;
-      case 'updateBookNameSuccess':
-        return VietnameseStrings.updateBookNameSuccess;
-      case 'updateBookError':
-        return VietnameseStrings.updateBookError;
-      case 'pleaseEnterBookName':
-        return VietnameseStrings.pleaseEnterBookName;
-      case 'saveChanges':
-        return VietnameseStrings.saveChanges;
-      case 'editSavingsGoal':
-        return VietnameseStrings.editSavingsGoal;
-      case 'deleteSavingsGoal':
-        return VietnameseStrings.deleteSavingsGoal;
-      case 'confirmDelete':
-        return VietnameseStrings.confirmDelete;
-      case 'confirmDeleteMessage':
-        return VietnameseStrings.confirmDeleteMessage;
-      case 'deleteSuccess':
-        return VietnameseStrings.deleteSuccess;
-      case 'updateSuccess':
-        return VietnameseStrings.updateSuccess;
-      case 'currentInformation':
-        return VietnameseStrings.currentInformation;
-      case 'savedAmount':
-        return VietnameseStrings.savedAmount;
-      case 'progressLabel':
-        return VietnameseStrings.progressLabel;
-      case 'dataLoadError':
-        return VietnameseStrings.dataLoadError;
-      case 'completed':
-        return VietnameseStrings.completed;
-      case 'overdue':
-        return VietnameseStrings.overdue;
-      case 'closed':
-        return VietnameseStrings.closed;
-      case 'inProgress':
-        return VietnameseStrings.inProgress;
-      case 'target':
-        return VietnameseStrings.target;
-      case 'targetCompletionDate':
-        return VietnameseStrings.targetCompletionDate;
-      case 'savingsBookName':
-        return VietnameseStrings.savingsBookName;
-      case 'enterName':
-        return VietnameseStrings.enterName;
-      case 'enterAmount':
-        return VietnameseStrings.enterAmount;
-      case 'amountMustBeGreaterThanZero':
-        return VietnameseStrings.amountMustBeGreaterThanZero;
-      case 'startDate':
-        return VietnameseStrings.startDate;
-      case 'chooseDate':
-        return VietnameseStrings.chooseDate;
-      case 'targetDate':
-        return VietnameseStrings.targetDate;
-      case 'chooseDateOptional':
-        return VietnameseStrings.chooseDateOptional;
-      case 'pleaseSelectStartDate':
-        return VietnameseStrings.pleaseSelectStartDate;
-      case 'targetAmountCannotBeLessThanSaved':
-        return VietnameseStrings.targetAmountCannotBeLessThanSaved;
-      case 'noBook':
-        return VietnameseStrings.noBook;
-      case 'createFirstBook':
-        return VietnameseStrings.createFirstBook;
-      case 'expense':
-        return VietnameseStrings.expense;
-      case 'income':
-        return VietnameseStrings.income;
-      case 'noExpenseThisMonth':
-        return VietnameseStrings.noExpenseThisMonth;
-      case 'totalExpense':
-        return VietnameseStrings.totalExpense;
-      case 'totalIncome':
-        return VietnameseStrings.totalIncome;
-      case 'noIncomeThisMonth':
-        return VietnameseStrings.noIncomeThisMonth;
-      case 'analysis':
-        return VietnameseStrings.analysis;
-      case 'settings':
-        return VietnameseStrings.settings;
-      case 'language':
-        return VietnameseStrings.language;
-      case 'currency':
-        return VietnameseStrings.currency;
-      case 'themeColor':
-        return VietnameseStrings.themeColor;
-      case 'notifications':
-        return VietnameseStrings.notifications;
-      case 'purple':
-        return VietnameseStrings.purple;
-      case 'blue':
-        return VietnameseStrings.blue;
-      case 'green':
-        return VietnameseStrings.green;
-      case 'orange':
-        return VietnameseStrings.orange;
-      case 'pink':
-        return VietnameseStrings.pink;
-      case 'darkPurple':
-        return VietnameseStrings.darkPurple;
-      case 'indigo':
-        return VietnameseStrings.indigo;
-      case 'cyan':
-        return VietnameseStrings.cyan;
-      case 'brightOrange':
-        return VietnameseStrings.brightOrange;
-      case 'brown':
-        return VietnameseStrings.brown;
-      case 'blueGrey':
-        return VietnameseStrings.blueGrey;
-      case 'chooseLanguage':
-        return VietnameseStrings.chooseLanguage;
-      case 'chooseThemeColor':
-        return VietnameseStrings.chooseThemeColor;
-      case 'extraFeatures':
-        return VietnameseStrings.extraFeatures;
-      case 'savingsGoals':
-        return VietnameseStrings.savingsGoals;
-      case 'setupAndTrack':
-        return VietnameseStrings.setupAndTrack;
-      case 'periodicInvoices':
-        return VietnameseStrings.periodicInvoices;
-      case 'managePeriodicBills':
-        return VietnameseStrings.managePeriodicBills;
-      case 'books':
-        return VietnameseStrings.books;
-      case 'createBook':
-        return VietnameseStrings.createBook;
-      case 'progress':
-        return VietnameseStrings.progress;
-      case 'editTransaction':
-        return VietnameseStrings.editTransaction;
-      case 'note':
-        return VietnameseStrings.note;
-      case 'selectExpenseCategory':
-        return VietnameseStrings.selectExpenseCategory;
-      case 'selectIncomeCategory':
-        return VietnameseStrings.selectIncomeCategory;
-      case 'category':
-        return VietnameseStrings.category;
-      case 'chooseCategory':
-        return VietnameseStrings.chooseCategory;
-      case 'addTransaction':
-        return VietnameseStrings.addTransaction;
-      case 'createFlexibleSavingsGoal':
-        return VietnameseStrings.createFlexibleSavingsGoal;
-      case 'createPeriodicSavingsGoal':
-        return VietnameseStrings.createPeriodicSavingsGoal;
-      case 'targetAmount':
-        return VietnameseStrings.targetAmount;
-      case 'expenseBookList':
-        return VietnameseStrings.expenseBookList;
-      case 'switchedToVietnamese':
-        return VietnameseStrings.switchedToVietnamese;
-      case 'switchedToEnglish':
-        return VietnameseStrings.switchedToEnglish;
-      case 'charts':
-        return VietnameseStrings.charts;
-      case 'more':
-        return VietnameseStrings.more;
-      case 'pleaseSelectFrequency':
-        return VietnameseStrings.pleaseSelectFrequency;
-      case 'tryAgain':
-        return VietnameseStrings.tryAgain;
-      case 'confirmDeleteInvoice':
-        return VietnameseStrings.confirmDeleteInvoice;
-      case 'minimumAmount':
-        return VietnameseStrings.minimumAmount;
-      case 'maximumAmount':
-        return VietnameseStrings.maximumAmount;
-      case 'invoiceName':
-        return VietnameseStrings.invoiceName;
-      case 'expenseBook':
-        return VietnameseStrings.expenseBook;
-      case 'paymentAmount':
-        return VietnameseStrings.paymentAmount;
-      case 'details':
-        return VietnameseStrings.details;
-      case 'noteOptional':
-        return VietnameseStrings.noteOptional;
-      case 'periodicDeposit':
-        return VietnameseStrings.periodicDeposit;
-      case 'paidSuccessfully':
-        return VietnameseStrings.paidSuccessfully;
-      case 'paymentError':
-        return VietnameseStrings.paymentError;
-      case 'errorOccurred':
-        return VietnameseStrings.errorOccurred;
-      case 'reminderFrequency':
-        return VietnameseStrings.reminderFrequency;
-      case 'editPeriodicSavingsGoal':
-        return VietnameseStrings.editPeriodicSavingsGoal;
-      case 'periodicAmount':
-        return VietnameseStrings.periodicAmount;
-      case 'chooseFrequency':
-        return VietnameseStrings.chooseFrequency;
-      case 'daily':
-        return VietnameseStrings.daily;
-      case 'weekly':
-        return VietnameseStrings.weekly;
-      case 'monthly':
-        return VietnameseStrings.monthly;
-      case 'enterPeriodicAmount':
-        return VietnameseStrings.enterPeriodicAmount;
-      case 'periodicAmountMustBeGreaterThanZero':
-        return VietnameseStrings.periodicAmountMustBeGreaterThanZero;
-      case 'updateBook':
-        return VietnameseStrings.updateBook;
-      case 'invoice':
-        return VietnameseStrings.invoice;
-      case 'calendar':
-        return VietnameseStrings.calendar;
-      case 'all':
-        return VietnameseStrings.all;
-      case 'noExpenseYet':
-        return VietnameseStrings.noExpenseYet;
-      case 'noPeriodicInvoicesYet':
-        return VietnameseStrings.noPeriodicInvoicesYet;
-      case 'createNewInvoice':
-        return VietnameseStrings.createNewInvoice;
-      case 'filter':
-        return VietnameseStrings.filter;
-      case 'allBooks':
-        return VietnameseStrings.allBooks;
-      case 'allCategories':
-        return VietnameseStrings.allCategories;
-      case 'enterValidNumber':
-        return VietnameseStrings.enterValidNumber;
-      case 'clearFilter':
-        return VietnameseStrings.clearFilter;
-      case 'paid':
-        return VietnameseStrings.paid;
-      case 'pendingPayment':
-        return VietnameseStrings.pendingPayment;
-      case 'frequency':
-        return VietnameseStrings.frequency;
-      case 'createPeriodicInvoice':
-        return VietnameseStrings.createPeriodicInvoice;
-      case 'pleaseEnterInvoiceName':
-        return VietnameseStrings.pleaseEnterInvoiceName;
-      case 'createInvoice':
-        return VietnameseStrings.createInvoice;
-      case 'bookNotExists':
-        return VietnameseStrings.bookNotExists;
-      case 'pay':
-        return VietnameseStrings.pay;
-      case 'payNow':
-        return VietnameseStrings.payNow;
-      case 'invoiceAddedSuccessfully':
-        return VietnameseStrings.invoiceAddedSuccessfully;
-      case 'errorCreatingInvoice':
-        return VietnameseStrings.errorCreatingInvoice;
-      case 'yearly':
-        return VietnameseStrings.yearly;
-      case 'themeColorChanged':
-        return VietnameseStrings.themeColorChanged;
-      case 'currencyChanged':
-        return VietnameseStrings.currencyChanged;
-      case 'flexibleSavingsBook':
-        return VietnameseStrings.flexibleSavingsBook;
-      case 'periodicSavingsBook':
-        return VietnameseStrings.periodicSavingsBook;
-      case 'saved':
-        return VietnameseStrings.saved;
-      case 'remaining':
-        return VietnameseStrings.remaining;
-      case 'targetDateLabel':
-        return VietnameseStrings.targetDateLabel;
-      case 'periodicDepositLabel':
-        return VietnameseStrings.periodicDepositLabel;
-      case 'depositHistory':
-        return VietnameseStrings.depositHistory;
-      case 'noDepositHistory':
-        return VietnameseStrings.noDepositHistory;
-      case 'deposit':
-        return VietnameseStrings.deposit;
-      case 'depositMoney':
-        return VietnameseStrings.depositMoney;
-      case 'confirmDeposit':
-        return VietnameseStrings.confirmDeposit;
-      case 'depositBeforeNextPeriod':
-        return VietnameseStrings.depositBeforeNextPeriod;
-      case 'youAreDepositingBeforeNextPeriod':
-        return VietnameseStrings.youAreDepositingBeforeNextPeriod;
-      case 'continueDeposit':
-        return VietnameseStrings.continueDeposit;
-      case 'frequencyDaily':
-        return VietnameseStrings.frequencyDaily;
-      case 'frequencyWeekly':
-        return VietnameseStrings.frequencyWeekly;
-      case 'frequencyMonthly':
-        return VietnameseStrings.frequencyMonthly;
-      case 'flexibleSavings':
-        return VietnameseStrings.flexibleSavings;
-      case 'noFlexibleSavings':
-        return VietnameseStrings.noFlexibleSavings;
-      case 'createNewSavings':
-        return VietnameseStrings.createNewSavings;
-      case 'savingsOverdue':
-        return VietnameseStrings.savingsOverdue;
-      case 'savingsClosed':
-        return VietnameseStrings.savingsClosed;
-      case 'periodicSavings':
-        return VietnameseStrings.periodicSavings;
-      case 'noPeriodicSavings':
-        return VietnameseStrings.noPeriodicSavings;
-      case 'savingsGoalsTitle':
-        return VietnameseStrings.savingsGoalsTitle;
-      case 'flexibleSavingsDescription':
-        return VietnameseStrings.flexibleSavingsDescription;
-      case 'periodicSavingsDescription':
-        return VietnameseStrings.periodicSavingsDescription;
-      case 'enterAmountToDeposit':
-        return VietnameseStrings.enterAmountToDeposit;
-      case 'amountHint':
-        return VietnameseStrings.amountHint;
-      case 'depositSuccess':
-        return VietnameseStrings.depositSuccess;
-      default:
-        return key;
-    }
-  }
-
-  /// Lấy chuỗi tiếng Anh
-  String _getEnglishString(String key) {
-    switch (key) {
-      case 'cancel':
-        return EnglishStrings.cancel;
-      case 'confirm':
-        return EnglishStrings.confirm;
-      case 'save':
-        return EnglishStrings.save;
-      case 'delete':
-        return EnglishStrings.delete;
-      case 'edit':
-        return EnglishStrings.edit;
-      case 'add':
-        return EnglishStrings.add;
-      case 'close':
-        return EnglishStrings.close;
-      case 'loading':
-        return EnglishStrings.loading;
-      case 'error':
-        return EnglishStrings.error;
-      case 'success':
-        return EnglishStrings.success;
-      case 'editBookName':
-        return EnglishStrings.editBookName;
-      case 'newBookName':
-        return EnglishStrings.newBookName;
-      case 'bookNameExists':
-        return EnglishStrings.bookNameExists;
-      case 'pleaseChooseDifferentName':
-        return EnglishStrings.pleaseChooseDifferentName;
-      case 'updateBookNameSuccess':
-        return EnglishStrings.updateBookNameSuccess;
-      case 'updateBookError':
-        return EnglishStrings.updateBookError;
-      case 'pleaseEnterBookName':
-        return EnglishStrings.pleaseEnterBookName;
-      case 'saveChanges':
-        return EnglishStrings.saveChanges;
-      case 'editSavingsGoal':
-        return EnglishStrings.editSavingsGoal;
-      case 'deleteSavingsGoal':
-        return EnglishStrings.deleteSavingsGoal;
-      case 'confirmDelete':
-        return EnglishStrings.confirmDelete;
-      case 'confirmDeleteMessage':
-        return EnglishStrings.confirmDeleteMessage;
-      case 'deleteSuccess':
-        return EnglishStrings.deleteSuccess;
-      case 'updateSuccess':
-        return EnglishStrings.updateSuccess;
-      case 'currentInformation':
-        return EnglishStrings.currentInformation;
-      case 'savedAmount':
-        return EnglishStrings.savedAmount;
-      case 'progressLabel':
-        return EnglishStrings.progressLabel;
-      case 'dataLoadError':
-        return EnglishStrings.dataLoadError;
-      case 'completed':
-        return EnglishStrings.completed;
-      case 'overdue':
-        return EnglishStrings.overdue;
-      case 'closed':
-        return EnglishStrings.closed;
-      case 'inProgress':
-        return EnglishStrings.inProgress;
-      case 'target':
-        return EnglishStrings.target;
-      case 'targetCompletionDate':
-        return EnglishStrings.targetCompletionDate;
-      case 'savingsBookName':
-        return EnglishStrings.savingsBookName;
-      case 'enterName':
-        return EnglishStrings.enterName;
-      case 'enterAmount':
-        return EnglishStrings.enterAmount;
-      case 'amountMustBeGreaterThanZero':
-        return EnglishStrings.amountMustBeGreaterThanZero;
-      case 'startDate':
-        return EnglishStrings.startDate;
-      case 'chooseDate':
-        return EnglishStrings.chooseDate;
-      case 'targetDate':
-        return EnglishStrings.targetDate;
-      case 'chooseDateOptional':
-        return EnglishStrings.chooseDateOptional;
-      case 'pleaseSelectStartDate':
-        return EnglishStrings.pleaseSelectStartDate;
-      case 'targetAmountCannotBeLessThanSaved':
-        return EnglishStrings.targetAmountCannotBeLessThanSaved;
-      case 'noBook':
-        return EnglishStrings.noBook;
-      case 'createFirstBook':
-        return EnglishStrings.createFirstBook;
-      case 'expense':
-        return EnglishStrings.expense;
-      case 'income':
-        return EnglishStrings.income;
-      case 'noExpenseThisMonth':
-        return EnglishStrings.noExpenseThisMonth;
-      case 'totalExpense':
-        return EnglishStrings.totalExpense;
-      case 'totalIncome':
-        return EnglishStrings.totalIncome;
-      case 'noIncomeThisMonth':
-        return EnglishStrings.noIncomeThisMonth;
-      case 'analysis':
-        return EnglishStrings.analysis;
-      case 'settings':
-        return EnglishStrings.settings;
-      case 'language':
-        return EnglishStrings.language;
-      case 'currency':
-        return EnglishStrings.currency;
-      case 'themeColor':
-        return EnglishStrings.themeColor;
-      case 'notifications':
-        return EnglishStrings.notifications;
-      case 'purple':
-        return EnglishStrings.purple;
-      case 'blue':
-        return EnglishStrings.blue;
-      case 'green':
-        return EnglishStrings.green;
-      case 'orange':
-        return EnglishStrings.orange;
-      case 'pink':
-        return EnglishStrings.pink;
-      case 'darkPurple':
-        return EnglishStrings.darkPurple;
-      case 'indigo':
-        return EnglishStrings.indigo;
-      case 'cyan':
-        return EnglishStrings.cyan;
-      case 'brightOrange':
-        return EnglishStrings.brightOrange;
-      case 'brown':
-        return EnglishStrings.brown;
-      case 'blueGrey':
-        return EnglishStrings.blueGrey;
-      case 'chooseLanguage':
-        return EnglishStrings.chooseLanguage;
-      case 'chooseThemeColor':
-        return EnglishStrings.chooseThemeColor;
-      case 'extraFeatures':
-        return EnglishStrings.extraFeatures;
-      case 'savingsGoals':
-        return EnglishStrings.savingsGoals;
-      case 'setupAndTrack':
-        return EnglishStrings.setupAndTrack;
-      case 'periodicInvoices':
-        return EnglishStrings.periodicInvoices;
-      case 'managePeriodicBills':
-        return EnglishStrings.managePeriodicBills;
-      case 'books':
-        return EnglishStrings.books;
-      case 'createBook':
-        return EnglishStrings.createBook;
-      case 'progress':
-        return EnglishStrings.progress;
-      case 'editTransaction':
-        return EnglishStrings.editTransaction;
-      case 'note':
-        return EnglishStrings.note;
-      case 'selectExpenseCategory':
-        return EnglishStrings.selectExpenseCategory;
-      case 'selectIncomeCategory':
-        return EnglishStrings.selectIncomeCategory;
-      case 'category':
-        return EnglishStrings.category;
-      case 'chooseCategory':
-        return EnglishStrings.chooseCategory;
-      case 'addTransaction':
-        return EnglishStrings.addTransaction;
-      case 'createFlexibleSavingsGoal':
-        return EnglishStrings.createFlexibleSavingsGoal;
-      case 'createPeriodicSavingsGoal':
-        return EnglishStrings.createPeriodicSavingsGoal;
-      case 'targetAmount':
-        return EnglishStrings.targetAmount;
-      case 'expenseBookList':
-        return EnglishStrings.expenseBookList;
-      case 'switchedToVietnamese':
-        return EnglishStrings.switchedToVietnamese;
-      case 'switchedToEnglish':
-        return EnglishStrings.switchedToEnglish;
-      case 'charts':
-        return EnglishStrings.charts;
-      case 'more':
-        return EnglishStrings.more;
-      case 'pleaseSelectFrequency':
-        return EnglishStrings.pleaseSelectFrequency;
-      case 'tryAgain':
-        return EnglishStrings.tryAgain;
-      case 'confirmDeleteInvoice':
-        return EnglishStrings.confirmDeleteInvoice;
-      case 'minimumAmount':
-        return EnglishStrings.minimumAmount;
-      case 'maximumAmount':
-        return EnglishStrings.maximumAmount;
-      case 'invoiceName':
-        return EnglishStrings.invoiceName;
-      case 'expenseBook':
-        return EnglishStrings.expenseBook;
-      case 'paymentAmount':
-        return EnglishStrings.paymentAmount;
-      case 'details':
-        return EnglishStrings.details;
-      case 'noteOptional':
-        return EnglishStrings.noteOptional;
-      case 'periodicDeposit':
-        return EnglishStrings.periodicDeposit;
-      case 'paidSuccessfully':
-        return EnglishStrings.paidSuccessfully;
-      case 'paymentError':
-        return EnglishStrings.paymentError;
-      case 'errorOccurred':
-        return EnglishStrings.errorOccurred;
-      case 'reminderFrequency':
-        return EnglishStrings.reminderFrequency;
-      case 'editPeriodicSavingsGoal':
-        return EnglishStrings.editPeriodicSavingsGoal;
-      case 'periodicAmount':
-        return EnglishStrings.periodicAmount;
-      case 'chooseFrequency':
-        return EnglishStrings.chooseFrequency;
-      case 'daily':
-        return EnglishStrings.daily;
-      case 'weekly':
-        return EnglishStrings.weekly;
-      case 'monthly':
-        return EnglishStrings.monthly;
-      case 'enterPeriodicAmount':
-        return EnglishStrings.enterPeriodicAmount;
-      case 'periodicAmountMustBeGreaterThanZero':
-        return EnglishStrings.periodicAmountMustBeGreaterThanZero;
-      case 'updateBook':
-        return EnglishStrings.updateBook;
-      case 'invoice':
-        return EnglishStrings.invoice;
-      case 'calendar':
-        return EnglishStrings.calendar;
-      case 'all':
-        return EnglishStrings.all;
-      case 'noExpenseYet':
-        return EnglishStrings.noExpenseYet;
-      case 'noPeriodicInvoicesYet':
-        return EnglishStrings.noPeriodicInvoicesYet;
-      case 'createNewInvoice':
-        return EnglishStrings.createNewInvoice;
-      case 'filter':
-        return EnglishStrings.filter;
-      case 'allBooks':
-        return EnglishStrings.allBooks;
-      case 'allCategories':
-        return EnglishStrings.allCategories;
-      case 'enterValidNumber':
-        return EnglishStrings.enterValidNumber;
-      case 'clearFilter':
-        return EnglishStrings.clearFilter;
-      case 'paid':
-        return EnglishStrings.paid;
-      case 'pendingPayment':
-        return EnglishStrings.pendingPayment;
-      case 'frequency':
-        return EnglishStrings.frequency;
-      case 'createPeriodicInvoice':
-        return EnglishStrings.createPeriodicInvoice;
-      case 'pleaseEnterInvoiceName':
-        return EnglishStrings.pleaseEnterInvoiceName;
-      case 'createInvoice':
-        return EnglishStrings.createInvoice;
-      case 'bookNotExists':
-        return EnglishStrings.bookNotExists;
-      case 'pay':
-        return EnglishStrings.pay;
-      case 'payNow':
-        return EnglishStrings.payNow;
-      case 'invoiceAddedSuccessfully':
-        return EnglishStrings.invoiceAddedSuccessfully;
-      case 'errorCreatingInvoice':
-        return EnglishStrings.errorCreatingInvoice;
-      case 'yearly':
-        return EnglishStrings.yearly;
-      case 'themeColorChanged':
-        return EnglishStrings.themeColorChanged;
-      case 'currencyChanged':
-        return EnglishStrings.currencyChanged;
-      case 'flexibleSavingsBook':
-        return EnglishStrings.flexibleSavingsBook;
-      case 'periodicSavingsBook':
-        return EnglishStrings.periodicSavingsBook;
-      case 'saved':
-        return EnglishStrings.saved;
-      case 'remaining':
-        return EnglishStrings.remaining;
-      case 'targetDateLabel':
-        return EnglishStrings.targetDateLabel;
-      case 'periodicDepositLabel':
-        return EnglishStrings.periodicDepositLabel;
-      case 'depositHistory':
-        return EnglishStrings.depositHistory;
-      case 'noDepositHistory':
-        return EnglishStrings.noDepositHistory;
-      case 'deposit':
-        return EnglishStrings.deposit;
-      case 'depositMoney':
-        return EnglishStrings.depositMoney;
-      case 'confirmDeposit':
-        return EnglishStrings.confirmDeposit;
-      case 'depositBeforeNextPeriod':
-        return EnglishStrings.depositBeforeNextPeriod;
-      case 'youAreDepositingBeforeNextPeriod':
-        return EnglishStrings.youAreDepositingBeforeNextPeriod;
-      case 'continueDeposit':
-        return EnglishStrings.continueDeposit;
-      case 'frequencyDaily':
-        return EnglishStrings.frequencyDaily;
-      case 'frequencyWeekly':
-        return EnglishStrings.frequencyWeekly;
-      case 'frequencyMonthly':
-        return EnglishStrings.frequencyMonthly;
-      case 'flexibleSavings':
-        return EnglishStrings.flexibleSavings;
-      case 'noFlexibleSavings':
-        return EnglishStrings.noFlexibleSavings;
-      case 'createNewSavings':
-        return EnglishStrings.createNewSavings;
-      case 'savingsOverdue':
-        return EnglishStrings.savingsOverdue;
-      case 'savingsClosed':
-        return EnglishStrings.savingsClosed;
-      case 'periodicSavings':
-        return EnglishStrings.periodicSavings;
-      case 'noPeriodicSavings':
-        return EnglishStrings.noPeriodicSavings;
-      case 'savingsGoalsTitle':
-        return EnglishStrings.savingsGoalsTitle;
-      case 'flexibleSavingsDescription':
-        return EnglishStrings.flexibleSavingsDescription;
-      case 'periodicSavingsDescription':
-        return EnglishStrings.periodicSavingsDescription;
-      case 'enterAmountToDeposit':
-        return EnglishStrings.enterAmountToDeposit;
-      case 'amountHint':
-        return EnglishStrings.amountHint;
-      case 'depositSuccess':
-        return EnglishStrings.depositSuccess;
-      default:
-        return key;
-    }
-  }
-
-  /// Danh sách Locale được hỗ trợ
-  static List<Locale> get supportedLocales =>
-      SupportedLanguages.supportedLocales;
-
+  String get targetAmountLabel => _getString('targetAmountLabel');
+  String get startDateLabel => _getString('startDateLabel');
+  String get chooseDateLabel => _getString('chooseDateLabel');
+  String get deleteSavingsBook => _getString('deleteSavingsBook');
+  String get deleteExpenseBook => _getString('deleteExpenseBook');
+  String get deleteExpenseBookSuccess => _getString('deleteExpenseBookSuccess');
+  String get deletingExpenseBook => _getString('deletingExpenseBook');
+  String get update => _getString('update');
+  String get foodAndDrinks => _getString('foodAndDrinks');
+  String get transportation => _getString('transportation');
+  String get shopping => _getString('shopping');
+  String get entertainment => _getString('entertainment');
+  String get education => _getString('education');
+  String get beauty => _getString('beauty');
+  String get household => _getString('household');
+  String get salary => _getString('salary');
+  String get bonus => _getString('bonus');
+  String get investment => _getString('investment');
+  String get nextDueDate => _getString('nextDueDate');
   // Methods for placeholders
   String themeColorChanged(String color) {
     final template = _getString('themeColorChanged');
@@ -983,6 +309,490 @@ class AppLocalizations {
 
   String errorOccurredWith(String error) =>
       _getString('errorOccurred').replaceFirst('{error}', error);
+
+  String confirmDeleteExpenseBook(String bookName) {
+    final template = _getString('confirmDeleteExpenseBook');
+    return template.replaceAll('{bookName}', bookName);
+  }
+
+  String deleteExpenseBookError(String error) {
+    final template = _getString('deleteExpenseBookError');
+    return template.replaceAll('{error}', error);
+  }
+
+  String get sunday => _getString('sunday');
+  // Helper functions for dynamic strings
+  String depositSuccessWith(String amount) =>
+      _getString('depositSuccess').replaceFirst('{amount}', amount);
+
+  /// Lấy chuỗi theo ngôn ngữ hiện tại
+  String _getString(String key) {
+    switch (locale.languageCode) {
+      case 'vi':
+        return _getVietnameseString(key);
+      case 'en':
+        return _getEnglishString(key);
+      default:
+        return _getEnglishString(key);
+    }
+  }
+
+  /// Lấy chuỗi tiếng Việt
+  String _getVietnameseString(String key) {
+    // This is a temporary map to hold translations.
+    // Ideally, these should come from a proper localization management system.
+    final Map<String, String> translations = {
+      'cancel': 'Hủy',
+      'confirm': 'Xác nhận',
+      'save': 'Lưu',
+      'delete': 'Xóa',
+      'edit': 'Chỉnh sửa',
+      'add': 'Thêm',
+      'close': 'Đóng',
+      'loading': 'Đang tải...',
+      'error': 'Lỗi',
+      'success': 'Thành công',
+      'total': 'Tổng',
+      'editBookName': 'Chỉnh sửa tên sổ chi tiêu',
+      'newBookName': 'Tên sổ chi tiêu mới',
+      'bookNameExists': 'Tên sổ đã tồn tại',
+      'pleaseChooseDifferentName':
+          'Vui lòng chọn một tên khác cho sổ chi tiêu của bạn.',
+      'updateBookNameSuccess': 'Cập nhật tên sổ chi tiêu thành công',
+      'updateBookError': 'Đã xảy ra lỗi khi cập nhật sổ. Vui lòng thử lại.',
+      'pleaseEnterBookName': 'Vui lòng nhập tên sổ chi tiêu',
+      'saveChanges': 'Lưu thay đổi',
+      'editSavingsGoal': 'Chỉnh sửa sổ tiết kiệm',
+      'deleteSavingsGoal': 'Xóa sổ tiết kiệm',
+      'confirmDelete': 'Xác nhận xóa',
+      'confirmDeleteMessage':
+          'Bạn có chắc chắn muốn xóa sổ tiết kiệm "{goalName}"?.',
+      'deleteSuccess': 'Đã xóa thành công!',
+      'updateSuccess': 'Cập nhật thành công!',
+      'currentInformation': 'Thông tin hiện tại:',
+      'savedAmount': 'Đã tiết kiệm:',
+      'progressLabel': 'Tiến độ:',
+      'dataLoadError': 'Lỗi tải dữ liệu',
+      'completed': 'Đã hoàn thành',
+      'overdue': 'Đã quá hạn',
+      'closed': 'Đã đóng',
+      'inProgress': 'Đang tiến hành',
+      'target': 'Mục tiêu',
+      'targetCompletionDate': 'Ngày hoàn thành mục tiêu',
+      'savingsBookName': 'Tên sổ tiết kiệm',
+      'enterName': 'Nhập tên',
+      'enterAmount': 'Nhập số tiền',
+      'amountMustBeGreaterThanZero': 'Số tiền phải lớn hơn 0',
+      'startDate': 'Ngày bắt đầu',
+      'chooseDate': 'Chọn ngày',
+      'targetDate': 'Ngày mục tiêu',
+      'chooseDateOptional': 'Chọn ngày (tùy chọn)',
+      'pleaseSelectStartDate': 'Vui lòng chọn ngày bắt đầu',
+      'targetAmountCannotBeLessThanSaved':
+          'Số tiền mục tiêu không được nhỏ hơn số tiền đã tiết kiệm ({savedAmount})',
+      'noBook': 'Chưa có sổ chi tiêu nào',
+      'createFirstBook': 'Hãy tạo sổ chi tiêu đầu tiên của bạn',
+      'expense': 'Chi tiêu',
+      'income': 'Thu nhập',
+      'noExpenseThisMonth': 'Không có chi tiêu trong tháng này',
+      'totalExpense': 'Tổng chi tiêu',
+      'totalIncome': 'Tổng thu nhập',
+      'noIncomeThisMonth': 'Không có thu nhập trong tháng này',
+      'analysis': 'Phân tích chi tiêu',
+      'settings': 'Cài đặt',
+      'language': 'Ngôn ngữ',
+      'currency': 'Tiền tệ',
+      'themeColor': 'Màu chủ đạo',
+      'notifications': 'Thông báo',
+      'black': 'Đen',
+      'purple': 'Tím',
+      'blue': 'Xanh dương',
+      'green': 'Xanh lá',
+      'orange': 'Cam',
+      'pink': 'Hồng',
+      'darkPurple': 'Tím đậm',
+      'indigo': 'Indigo',
+      'cyan': 'Cyan',
+      'brightOrange': 'Cam sáng',
+      'brown': 'Nâu',
+      'blueGrey': 'Xám xanh',
+      'chooseLanguage': 'Chọn ngôn ngữ',
+      'chooseThemeColor': 'Chọn màu chủ đạo',
+      'extraFeatures': 'Tiện ích bổ sung',
+      'savingsGoals': 'Mục tiêu tiết kiệm',
+      'setupAndTrack': 'Thiết lập và theo dõi mục tiêu tiết kiệm',
+      'periodicInvoices': 'Hóa đơn định kỳ',
+      'managePeriodicBills': 'Quản lý hóa đơn định kỳ',
+      'books': 'Sổ',
+      'createBook': 'Tạo sổ chi tiêu mới',
+      'progress': 'Tiến độ',
+      'editTransaction': 'Chỉnh sửa giao dịch',
+      'note': 'Ghi chú',
+      'selectExpenseCategory': 'Chọn danh mục chi tiêu',
+      'selectIncomeCategory': 'Chọn danh mục thu nhập',
+      'category': 'Danh mục',
+      'chooseCategory': 'Chọn danh mục',
+      'addTransaction': 'Thêm giao dịch',
+      'createFlexibleSavingsGoal': 'Tạo sổ tiết kiệm linh hoạt',
+      'createPeriodicSavingsGoal': 'Tạo sổ tiết kiệm định kỳ',
+      'targetAmount': 'Số tiền mục tiêu',
+      'expenseBookList': 'Danh sách sổ chi tiêu',
+      'switchedToVietnamese': 'Đã chuyển sang Tiếng Việt',
+      'switchedToEnglish': 'Switched to English',
+      'charts': 'Biểu đồ',
+      'more': 'Thêm',
+      'pleaseSelectFrequency': 'Vui lòng chọn tần suất',
+      'tryAgain': 'Thử lại',
+      'confirmDeleteInvoice': 'Xác nhận xóa',
+      'minimumAmount': 'Số tiền tối thiểu',
+      'maximumAmount': 'Số tiền tối đa',
+      'invoiceName': 'Tên hóa đơn',
+      'expenseBook': 'Sổ chi tiêu',
+      'paymentAmount': 'Số tiền thanh toán',
+      'details': 'Chi tiết',
+      'noteOptional': 'Ghi chú (tùy chọn)',
+      'periodicDeposit': 'Nạp định kỳ',
+      'paidSuccessfully': 'Đã thanh toán {invoiceName}',
+      'paymentError': 'Lỗi khi thanh toán: {error}',
+      'errorOccurred': 'Có lỗi xảy ra: {error}',
+      'reminderFrequency': 'Tần suất nhắc nhở',
+      'editPeriodicSavingsGoal': 'Chỉnh sửa sổ tiết kiệm định kỳ',
+      'periodicAmount': 'Số tiền định kỳ',
+      'chooseFrequency': 'Chọn tần suất',
+      'daily': 'Hàng ngày',
+      'weekly': 'Hàng tuần',
+      'monthly': 'Hàng tháng',
+      'enterPeriodicAmount': 'Nhập số tiền định kỳ',
+      'periodicAmountMustBeGreaterThanZero': 'Số tiền định kỳ phải lớn hơn 0',
+      'updateBook': 'Cập nhật sổ',
+      'invoice': 'Hóa đơn',
+      'calendar': 'Lịch',
+      'all': 'Toàn bộ',
+      'noExpenseYet': 'Hiện chưa có chi tiêu',
+      'noPeriodicInvoicesYet': 'Chưa có hóa đơn định kỳ nào',
+      'createNewInvoice': 'Tạo hóa đơn mới',
+      'filter': 'Bộ lọc',
+      'allBooks': 'Tất cả sổ',
+      'allCategories': 'Tất cả danh mục',
+      'enterValidNumber': 'Nhập số hợp lệ',
+      'clearFilter': 'Xóa bộ lọc',
+      'paid': 'Đã thanh toán',
+      'pendingPayment': 'Chờ thanh toán',
+      'frequency': 'Tần suất',
+      'createPeriodicInvoice': 'Tạo hóa đơn định kỳ',
+      'pleaseEnterInvoiceName': 'Vui lòng nhập tên hóa đơn',
+      'createInvoice': 'Tạo hóa đơn',
+      'bookNotExists': 'Sổ không tồn tại',
+      'pay': 'Thanh toán',
+      'payNow': 'Thanh toán ngay',
+      'invoiceAddedSuccessfully':
+          'Đã thêm hóa đơn định kỳ thành công vào sổ {bookName}',
+      'errorCreatingInvoice': 'Lỗi khi tạo hóa đơn: {error}',
+      'yearly': 'Hàng năm',
+      'themeColorChanged': 'Đã đổi màu nền thành {color}',
+      'currencyChanged': 'Đã chuyển sang {currency}',
+      'flexibleSavingsBook': 'Sổ tiết kiệm linh hoạt',
+      'periodicSavingsBook': 'Sổ tiết kiệm định kỳ',
+      'saved': 'Đã tiết kiệm',
+      'remaining': 'Còn lại',
+      'targetDateLabel': 'Ngày mục tiêu:',
+      'periodicDepositLabel': 'Nạp định kỳ:',
+      'depositHistory': 'Lịch sử nạp tiền',
+      'noDepositHistory': 'Chưa có lịch sử nạp tiền',
+      'deposit': 'Nạp tiền',
+      'depositMoney': 'Bỏ tiền tiết kiệm',
+      'confirmDeposit': 'Xác nhận nạp tiền',
+      'depositBeforeNextPeriod': 'Nạp trước kỳ tiếp theo?',
+      'youAreDepositingBeforeNextPeriod': 'Bạn đang nạp trước kỳ tiếp theo:',
+      'continueDeposit': 'Bỏ tiết kiệm',
+      'frequencyDaily': 'hàng ngày',
+      'frequencyWeekly': 'hàng tuần',
+      'frequencyMonthly': 'hàng tháng',
+      'flexibleSavings': 'Tiết kiệm linh hoạt',
+      'noFlexibleSavings': 'Không có sổ tiết kiệm linh hoạt nào',
+      'createNewSavings': 'Tạo tiết kiệm mới',
+      'savingsOverdue': 'Sổ tiết kiệm này đã quá hạn.',
+      'savingsClosed': 'Sổ tiết kiệm này đã được đóng.',
+      'periodicSavings': 'Tiết kiệm định kỳ',
+      'noPeriodicSavings': 'Không có sổ tiết kiệm định kỳ nào',
+      'savingsGoalsTitle': 'Mục tiêu tiết kiệm',
+      'flexibleSavingsDescription':
+          'Không có kế hoạch, gửi tiền theo tâm trạng của bạn',
+      'periodicSavingsDescription': 'Gửi tiền theo định kỳ',
+      'enterAmountToDeposit': 'Nhập số tiền để gửi',
+      'amountHint': 'Số tiền',
+      'depositSuccess': 'Đã nạp {amount} vào sổ tiết kiệm!',
+      'noNotifications': 'Không có thông báo nào!',
+      'refresh': 'Làm mới',
+      'markAllAsRead': 'Đánh dấu tất cả đã đọc',
+      'deleteAllRead': 'Xóa tất cả đã đọc',
+      'justNow': 'Vừa xong',
+      'daysAgoWith': '{days} ngày trước',
+      'hoursAgoWith': '{hours} giờ trước',
+      'minutesAgoWith': '{minutes} phút trước',
+      'daysAgo': '{days} ngày trước',
+      'hoursAgo': '{hours} giờ trước',
+      'minutesAgo': '{minutes} phút trước',
+      'monday': 'Th 2',
+      'tuesday': 'Th 3',
+      'wednesday': 'Th 4',
+      'thursday': 'Th 5',
+      'friday': 'Th 6',
+      'saturday': 'Th 7',
+      'sunday': 'CN',
+      'deleteSavingsBook': 'Xóa sổ tiết kiệm',
+      'deleteExpenseBook': 'Xóa sổ chi tiêu',
+      'confirmDeleteExpenseBook': 'Bạn có chắc chắn muốn xóa sổ "{bookName}"?',
+      'deleteExpenseBookSuccess': 'Xóa sổ thành công',
+      'deleteExpenseBookError': 'Có lỗi xảy ra khi xóa sổ: {error}',
+      'deletingExpenseBook': 'Đang xóa sổ...',
+      'update': 'Cập nhật',
+      'foodAndDrinks': 'Ăn uống',
+      'transportation': 'Di chuyển',
+      'shopping': 'Mua sắm',
+      'entertainment': 'Giải trí',
+      'education': 'Học tập',
+      'beauty': 'Làm đẹp',
+      'household': 'Sinh hoạt',
+      'salary': 'Lương',
+      'bonus': 'Thưởng',
+      'investment': 'Đầu tư',
+      'amount': 'Số tiền',
+      'nextDueDate': 'Ngày đến hạn'
+    };
+    return translations[key] ?? key;
+  }
+
+  /// Lấy chuỗi tiếng Anh
+  String _getEnglishString(String key) {
+    final Map<String, String> translations = {
+      'cancel': 'Cancel',
+      'confirm': 'Confirm',
+      'save': 'Save',
+      'delete': 'Delete',
+      'edit': 'Edit',
+      'add': 'Add',
+      'close': 'Close',
+      'loading': 'Loading...',
+      'error': 'Error',
+      'success': 'Success',
+      'total': 'Total',
+      'editBookName': 'Edit Expense Book Name',
+      'newBookName': 'New Expense Book Name',
+      'bookNameExists': 'Book name already exists',
+      'pleaseChooseDifferentName':
+          'Please choose a different name for your expense book.',
+      'updateBookNameSuccess': 'Expense book name updated successfully',
+      'updateBookError':
+          'An error occurred while updating the book. Please try again.',
+      'pleaseEnterBookName': 'Please enter the expense book name',
+      'saveChanges': 'Save Changes',
+      'editSavingsGoal': 'Edit Savings Goal',
+      'deleteSavingsGoal': 'Delete Savings Goal',
+      'confirmDelete': 'Confirm Delete',
+      'confirmDeleteMessage':
+          'Are you sure you want to delete the savings goal "{goalName}"?.',
+      'deleteSuccess': 'Deleted successfully!',
+      'updateSuccess': 'Updated successfully!',
+      'currentInformation': 'Current Information:',
+      'savedAmount': 'Saved Amount:',
+      'progressLabel': 'Progress:',
+      'dataLoadError': 'Error loading data',
+      'completed': 'Completed',
+      'overdue': 'Overdue',
+      'closed': 'Closed',
+      'inProgress': 'In Progress',
+      'target': 'Target',
+      'targetCompletionDate': 'Target Completion Date',
+      'savingsBookName': 'Savings Book Name',
+      'enterName': 'Enter Name',
+      'enterAmount': 'Enter Amount',
+      'amountMustBeGreaterThanZero': 'Amount must be greater than 0',
+      'startDate': 'Start Date',
+      'chooseDate': 'Choose Date',
+      'targetDate': 'Target Date',
+      'chooseDateOptional': 'Choose Date (optional)',
+      'pleaseSelectStartDate': 'Please select a start date',
+      'targetAmountCannotBeLessThanSaved':
+          'Target amount cannot be less than the saved amount ({savedAmount})',
+      'noBook': 'No expense book found',
+      'createFirstBook': 'Let\'s create your first expense book',
+      'expense': 'Expense',
+      'income': 'Income',
+      'noExpenseThisMonth': 'No expenses this month',
+      'totalExpense': 'Total Expense',
+      'totalIncome': 'Total Income',
+      'noIncomeThisMonth': 'No income this month',
+      'analysis': 'Expense Analysis',
+      'settings': 'Settings',
+      'language': 'Language',
+      'currency': 'Currency',
+      'themeColor': 'Theme Color',
+      'notifications': 'Notifications',
+      'black': 'Black',
+      'purple': 'Purple',
+      'blue': 'Blue',
+      'green': 'Green',
+      'orange': 'Orange',
+      'pink': 'Pink',
+      'darkPurple': 'Dark Purple',
+      'indigo': 'Indigo',
+      'cyan': 'Cyan',
+      'brightOrange': 'Bright Orange',
+      'brown': 'Brown',
+      'blueGrey': 'Blue Grey',
+      'chooseLanguage': 'Choose Language',
+      'chooseThemeColor': 'Choose Theme Color',
+      'extraFeatures': 'Extra Features',
+      'savingsGoals': 'Savings Goals',
+      'setupAndTrack': 'Set up and track savings goals',
+      'periodicInvoices': 'Recurring Invoices',
+      'managePeriodicBills': 'Manage periodic bills',
+      'books': 'Books',
+      'createBook': 'Create New Book',
+      'progress': 'Progress',
+      'editTransaction': 'Edit Transaction',
+      'note': 'Note',
+      'selectExpenseCategory': 'Select Expense Category',
+      'selectIncomeCategory': 'Select Income Category',
+      'category': 'Category',
+      'chooseCategory': 'Choose Category',
+      'addTransaction': 'Add Transaction',
+      'createFlexibleSavingsGoal': 'Create Flexible Savings Goal',
+      'createPeriodicSavingsGoal': 'Create Periodic Savings Goal',
+      'targetAmount': 'Target Amount',
+      'expenseBookList': 'Expense Book List',
+      'switchedToVietnamese': 'Đã chuyển sang Tiếng Việt',
+      'switchedToEnglish': 'Switched to English',
+      'charts': 'Charts',
+      'more': 'More',
+      'pleaseSelectFrequency': 'Please select frequency',
+      'tryAgain': 'Try Again',
+      'confirmDeleteInvoice': 'Confirm Delete',
+      'minimumAmount': 'Minimum Amount',
+      'maximumAmount': 'Maximum Amount',
+      'invoiceName': 'Invoice Name',
+      'expenseBook': 'Expense Book',
+      'paymentAmount': 'Payment Amount',
+      'details': 'Details',
+      'noteOptional': 'Note (optional)',
+      'periodicDeposit': 'Periodic Deposit',
+      'paidSuccessfully': 'Paid {invoiceName} successfully',
+      'paymentError': 'Error during payment: {error}',
+      'errorOccurred': 'An error occurred: {error}',
+      'reminderFrequency': 'Reminder Frequency',
+      'editPeriodicSavingsGoal': 'Edit Periodic Savings Goal',
+      'periodicAmount': 'Periodic Amount',
+      'chooseFrequency': 'Choose Frequency',
+      'daily': 'Daily',
+      'weekly': 'Weekly',
+      'monthly': 'Monthly',
+      'enterPeriodicAmount': 'Enter periodic amount',
+      'periodicAmountMustBeGreaterThanZero':
+          'Periodic amount must be greater than 0',
+      'updateBook': 'Update Book',
+      'invoice': 'Invoice',
+      'calendar': 'Calendar',
+      'all': 'All',
+      'noExpenseYet': 'No expenses yet',
+      'noPeriodicInvoicesYet': 'No periodic invoices yet',
+      'createNewInvoice': 'Create New Invoice',
+      'filter': 'Filter',
+      'allBooks': 'All Books',
+      'allCategories': 'All Categories',
+      'enterValidNumber': 'Enter a valid number',
+      'clearFilter': 'Clear Filter',
+      'paid': 'Paid',
+      'pendingPayment': 'Pending',
+      'frequency': 'Frequency',
+      'createPeriodicInvoice': 'Create Periodic Invoice',
+      'pleaseEnterInvoiceName': 'Please enter invoice name',
+      'createInvoice': 'Create Invoice',
+      'bookNotExists': 'Book does not exist',
+      'pay': 'Pay',
+      'payNow': 'Pay Now',
+      'invoiceAddedSuccessfully':
+          'Successfully added periodic invoice to book {bookName}',
+      'errorCreatingInvoice': 'Error creating invoice: {error}',
+      'yearly': 'Yearly',
+      'themeColorChanged': 'Theme color changed to {color}',
+      'currencyChanged': 'Currency changed to {currency}',
+      'flexibleSavingsBook': 'Flexible Savings Book',
+      'periodicSavingsBook': 'Periodic Savings Book',
+      'saved': 'Saved',
+      'remaining': 'Remaining',
+      'targetDateLabel': 'Target Date:',
+      'periodicDepositLabel': 'Periodic Deposit:',
+      'depositHistory': 'Deposit History',
+      'noDepositHistory': 'No deposit history',
+      'deposit': 'Deposit',
+      'depositMoney': 'Deposit Money',
+      'confirmDeposit': 'Confirm Deposit',
+      'depositBeforeNextPeriod': 'Deposit before next period?',
+      'youAreDepositingBeforeNextPeriod':
+          'You are depositing before the next period:',
+      'continueDeposit': 'Deposit',
+      'frequencyDaily': 'daily',
+      'frequencyWeekly': 'weekly',
+      'frequencyMonthly': 'monthly',
+      'flexibleSavings': 'Flexible Savings',
+      'noFlexibleSavings': 'No flexible savings goals',
+      'createNewSavings': 'Create New Savings',
+      'savingsOverdue': 'This savings goal is overdue.',
+      'savingsClosed': 'This savings goal is closed.',
+      'periodicSavings': 'Periodic Savings',
+      'noPeriodicSavings': 'No periodic savings goals',
+      'savingsGoalsTitle': 'Savings Goals',
+      'flexibleSavingsDescription': 'No plan, deposit based on your mood',
+      'periodicSavingsDescription': 'Deposit periodically',
+      'enterAmountToDeposit': 'Enter amount to deposit',
+      'amountHint': 'Amount',
+      'depositSuccess': 'Deposited {amount} to savings goal!',
+      'noNotifications': 'No notifications!',
+      'refresh': 'Refresh',
+      'markAllAsRead': 'Mark all as read',
+      'deleteAllRead': 'Delete all read',
+      'justNow': 'Just now',
+      'daysAgoWith': '{days} days ago',
+      'hoursAgoWith': '{hours} hours ago',
+      'minutesAgoWith': '{minutes} minutes ago',
+      'daysAgo': '{days}d ago',
+      'hoursAgo': '{hours}h ago',
+      'minutesAgo': '{minutes}m ago',
+      'monday': 'Mon',
+      'tuesday': 'Tue',
+      'wednesday': 'Wed',
+      'thursday': 'Thu',
+      'friday': 'Fri',
+      'saturday': 'Sat',
+      'sunday': 'Sun',
+      'deleteSavingsBook': 'Delete Savings Book',
+      'deleteExpenseBook': 'Delete Expense Book',
+      'confirmDeleteExpenseBook':
+          'Are you sure you want to delete the book "{bookName}"?',
+      'deleteExpenseBookSuccess': 'Book deleted successfully',
+      'deleteExpenseBookError': 'Error deleting book: {error}',
+      'deletingExpenseBook': 'Deleting book...',
+      'update': 'Update',
+      'foodAndDrinks': 'Food & Drinks',
+      'transportation': 'Transportation',
+      'shopping': 'Shopping',
+      'entertainment': 'Entertainment',
+      'education': 'Education',
+      'beauty': 'Beauty',
+      'household': 'Household',
+      'salary': 'Salary',
+      'bonus': 'Bonus',
+      'investment': 'Investment',
+      'amount': 'Amount',
+      'nextDueDate': 'Next Due Date'
+    };
+    return translations[key] ?? key;
+  }
+
+  /// Danh sách Locale được hỗ trợ
+  static List<Locale> get supportedLocales =>
+      SupportedLanguages.supportedLocales;
 }
 
 /// Delegate cho AppLocalizations

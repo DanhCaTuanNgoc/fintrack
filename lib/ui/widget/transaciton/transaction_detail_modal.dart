@@ -1,9 +1,12 @@
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../data/models/models_barrel.dart';
-import '../../providers/providers_barrel.dart';
+import '../../../data/models/models_barrel.dart';
+import '../../../providers/providers_barrel.dart';
+import '../../../utils/localization.dart';
+import '../components/custom_snackbar.dart';
 
 class TransactionDetailModal extends ConsumerWidget {
   final Transaction transaction;
@@ -25,13 +28,13 @@ class TransactionDetailModal extends ConsumerWidget {
       (cat) => cat['id'] == transaction.categoryId,
       orElse: () => {'icon': '🏷️', 'name': 'Không xác định'},
     );
-
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.r)),
       insetPadding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
       child: Padding(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -63,8 +66,8 @@ class TransactionDetailModal extends ConsumerWidget {
                         ),
                         child: Text(
                           transaction.type == 'expense'
-                              ? 'Chi tiêu'
-                              : 'Thu nhập',
+                              ? l10n.expense
+                              : l10n.income,
                           style: TextStyle(
                             color: transaction.type == 'expense'
                                 ? Colors.red
@@ -119,7 +122,7 @@ class TransactionDetailModal extends ConsumerWidget {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Ghi chú',
+                        l10n.note,
                         style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                       ),
                     ),
@@ -146,7 +149,7 @@ class TransactionDetailModal extends ConsumerWidget {
                           size: 20.w, color: Colors.grey[600]),
                       SizedBox(width: 8.w),
                       Text(
-                        DateFormat('dd/MM/yyyy').format(transaction.date!),
+                        DateFormat('dd/MM/yyyy').format(transaction.date),
                         style:
                             TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
                       ),
@@ -163,17 +166,13 @@ class TransactionDetailModal extends ConsumerWidget {
                             final notifier =
                                 ref.read(transactionsProvider.notifier);
                             await notifier.deleteTransaction(transaction.id!);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Xóa thành công',
-                                  style: TextStyle(fontSize: 15.sp),
-                                ),
-                                backgroundColor: const Color(0xFF4CAF50),
-                                duration: const Duration(seconds: 2),
-                              ),
+                            CustomSnackBar.showSuccess(
+                              context,
+                              message: l10n.success,
                             );
-                            Navigator.pop(context);
+                            Future.delayed(Duration.zero, () {
+                              Navigator.pop(context);
+                            });
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
@@ -184,7 +183,7 @@ class TransactionDetailModal extends ConsumerWidget {
                             elevation: 0,
                           ),
                           child: Text(
-                            'Xóa',
+                            l10n.delete,
                             style: TextStyle(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.bold,
@@ -208,7 +207,7 @@ class TransactionDetailModal extends ConsumerWidget {
                             elevation: 0,
                           ),
                           child: Text(
-                            'Chỉnh sửa',
+                            l10n.edit,
                             style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.bold,

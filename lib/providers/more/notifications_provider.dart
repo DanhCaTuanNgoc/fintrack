@@ -2,26 +2,42 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/more/notification_item.dart';
 import '../../data/repositories/more/notification_repository.dart';
 import '../../data/database/database_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+// Provider để quản lý trạng thái loading
+final notificationsLoadingProvider = StateProvider<bool>((ref) => true);
 
 // Provider để quản lý trạng thái thông báo
 final notificationsProvider =
     StateNotifierProvider<NotificationsNotifier, List<NotificationItem>>((ref) {
-  return NotificationsNotifier();
+  return NotificationsNotifier(ref);
 });
 
 class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
-  NotificationsNotifier() : super([]) {
+  final Ref ref;
+
+  NotificationsNotifier(this.ref) : super([]) {
     _loadFromDb();
   }
 
   Future<void> _loadFromDb() async {
-    final data = await NotificationRepository(DatabaseHelper.instance)
-        .getAllNotifications();
-    state = data;
+    ref.read(notificationsLoadingProvider.notifier).state = true;
+    try {
+      final data = await NotificationRepository(DatabaseHelper.instance)
+          .getAllNotifications();
+      state = data;
+    } finally {
+      ref.read(notificationsLoadingProvider.notifier).state = false;
+    }
   }
 
   // Phương thức để làm mới dữ liệu
   Future<void> refresh() async {
+    await _loadFromDb();
+  }
+
+  // Phương thức để invalidate và reload
+  Future<void> invalidate() async {
     await _loadFromDb();
   }
 
@@ -44,13 +60,12 @@ class NotificationsNotifier extends StateNotifier<List<NotificationItem>> {
       return; // Do not add duplicate notification
     }
     final notification = NotificationItem(
-      title: 'Hóa đơn đến hạn',
-      message:
-          'Hóa đơn "$invoiceName" với số tiền ${amount.toStringAsFixed(0)}đ đã đến hạn thanh toán',
+      type: NotificationType.periodicInvoice,
       time: DateTime.now(),
       isRead: false,
       invoiceId: invoiceId,
       invoiceDueDate: dueDate,
+      itemName: invoiceName,
     );
     await NotificationRepository(DatabaseHelper.instance)
         .addNotification(notification);

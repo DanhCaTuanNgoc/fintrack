@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/models/models_barrel.dart';
-import '../../providers/providers_barrel.dart';
-import '../../utils/localization.dart';
-import '../widget/type_button.dart';
-import '../widget/number_pad.dart';
+import '../../../data/models/models_barrel.dart';
+import '../../../providers/providers_barrel.dart';
+import '../../../utils/localization.dart';
+import '../components/type_button.dart';
+import '../components/number_pad.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../utils/category_helper.dart';
+import '../components/custom_snackbar.dart';
+import '../components/category_selection_modal.dart';
 
 class AddTransactionModal extends ConsumerStatefulWidget {
   final Book currentBook;
@@ -33,6 +36,8 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
   String _amount = '';
   String _note = '';
   String? _selectedCategory;
+  String? _noteError;
+  String? _amountError;
 
   @override
   void initState() {
@@ -115,7 +120,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                   TextField(
                     decoration: InputDecoration(
                       labelText: l10n.note,
-                      labelStyle: const TextStyle(color: Colors.black),
+                      labelStyle: TextStyle(color: widget.themeColor),
                       prefixIcon: Icon(
                         Icons.note,
                         color: widget.themeColor,
@@ -130,12 +135,52 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                           width: 2,
                         ),
                       ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                        ),
+                      ),
                     ),
-                    onChanged: (value) => _note = value,
+                    onChanged: (value) {
+                      _note = value;
+                      // Clear error when user starts typing
+                      if (_noteError != null) {
+                        setState(() {
+                          _noteError = null;
+                        });
+                      }
+                    },
                   ),
+                  if (_noteError != null) ...[
+                    SizedBox(height: 8.h),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 8.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(
+                          color: Colors.red.shade200,
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        _noteError!,
+                        style: TextStyle(
+                          color: Colors.red.shade600,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ),
+                  ],
                   SizedBox(height: 16.h),
                   Container(
-                    padding: EdgeInsets.fromLTRB(0, 9.h, 0, 0),
+                    padding: EdgeInsets.only(top: 9.h),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(12.r),
@@ -145,7 +190,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                         Text(
                           _amount.isEmpty
                               ? '0 ${currency.symbol}'
-                              : '${formatCurrency(double.tryParse(_amount) ?? 0, currency)}',
+                              : formatCurrency(double.tryParse(_amount) ?? 0, currency),
                           style: TextStyle(
                             fontSize: 32.sp,
                             fontWeight: FontWeight.bold,
@@ -157,6 +202,10 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                           onNumberTap: (number) {
                             setState(() {
                               _amount += number;
+                              // Clear error when user starts typing
+                              if (_amountError != null) {
+                                _amountError = null;
+                              }
                             });
                           },
                           onBackspaceTap: () {
@@ -165,111 +214,57 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                                 _amount =
                                     _amount.substring(0, _amount.length - 1);
                               }
+                              // Clear error when user starts typing
+                              if (_amountError != null) {
+                                _amountError = null;
+                              }
                             });
                           },
                         ),
                       ],
                     ),
                   ),
+                  if (_amountError != null) ...[
+                    SizedBox(height: 8.h),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 8.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(
+                          color: Colors.red.shade200,
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        _amountError!,
+                        style: TextStyle(
+                          color: Colors.red.shade600,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    ),
+                  ],
                   SizedBox(height: 16.h),
                   GestureDetector(
                     onTap: () {
                       showModalBottomSheet(
                         context: context,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20.r),
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 40.w,
-                                height: 4.h,
-                                margin:
-                                    EdgeInsets.only(top: 12.h, bottom: 20.h),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius: BorderRadius.circular(2.r),
-                                ),
-                              ),
-                              Text(
-                                _isExpense
-                                    ? l10n.selectExpenseCategory
-                                    : l10n.selectIncomeCategory,
-                                style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF2D3142),
-                                ),
-                              ),
-                              SizedBox(height: 10.h),
-                              SingleChildScrollView(
-                                child: Column(
-                                  children: categories.map((category) {
-                                    return ListTile(
-                                      leading: Container(
-                                        padding: EdgeInsets.all(8.w),
-                                        decoration: BoxDecoration(
-                                          color: _selectedCategory ==
-                                                  category['name']
-                                              ? widget.themeColor
-                                                  .withOpacity(0.1)
-                                              : Colors.grey[100],
-                                          borderRadius:
-                                              BorderRadius.circular(8.r),
-                                        ),
-                                        child: Text(
-                                          category['icon'],
-                                          style: TextStyle(
-                                            fontSize: 20.sp,
-                                            color: _selectedCategory ==
-                                                    category['name']
-                                                ? widget.themeColor
-                                                : Colors.grey[600],
-                                          ),
-                                        ),
-                                      ),
-                                      title: Text(
-                                        category['name'],
-                                        style: TextStyle(
-                                          fontWeight: _selectedCategory ==
-                                                  category['name']
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                          color: _selectedCategory ==
-                                                  category['name']
-                                              ? widget.themeColor
-                                              : const Color(0xFF2D3142),
-                                        ),
-                                      ),
-                                      trailing:
-                                          _selectedCategory == category['name']
-                                              ? Icon(
-                                                  Icons.check_circle,
-                                                  color: widget.themeColor,
-                                                )
-                                              : null,
-                                      onTap: () {
-                                        setState(() {
-                                          _selectedCategory = category['name'];
-                                        });
-                                        Future.delayed(Duration.zero,
-                                            () => {Navigator.pop(context)});
-                                      },
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10.h,
-                              )
-                            ],
-                          ),
+                        builder: (context) => CategorySelectionModal(
+                          categories: categories,
+                          selectedCategory: _selectedCategory,
+                          themeColor: widget.themeColor,
+                          isExpense: _isExpense,
+                          onCategoryTap: (category) {
+                            setState(() {
+                              _selectedCategory = category;
+                            });
+                          },
                         ),
                       );
                     },
@@ -301,13 +296,18 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                               children: [
                                 Text(
                                   categories.firstWhere(
-                                    (cat) => cat['name'] == _selectedCategory,
+                                    (cat) => cat['icon'] == _selectedCategory,
                                   )['icon'],
                                   style: TextStyle(fontSize: 20.sp),
                                 ),
                                 SizedBox(width: 8.w),
                                 Text(
-                                  _selectedCategory!,
+                                  CategoryHelper.getLocalizedCategoryName(
+                                    categories.firstWhere((cat) =>
+                                        cat['icon'] ==
+                                        _selectedCategory)['icon'],
+                                    l10n,
+                                  ),
                                   style: TextStyle(
                                     fontSize: 16.sp,
                                     color: const Color(0xFF2D3142),
@@ -322,19 +322,46 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (_amount.isNotEmpty && _selectedCategory != null) {
+                        // Validate note field
+                        if (_note.trim().isEmpty) {
+                          setState(() {
+                            _noteError =
+                                'Vui lòng nhập chú thích cho giao dịch';
+                          });
+                          return;
+                        }
+
+                        // Validate amount
+                        if (_amount.isEmpty) {
+                          setState(() {
+                            _amountError = 'Vui lòng nhập số tiền';
+                          });
+                          return;
+                        }
+
+                        try {
                           final notifier =
                               ref.read(transactionsProvider.notifier);
 
-                          final selected = categories.firstWhere(
-                            (cat) => cat['name'] == _selectedCategory,
-                          );
+                          // Handle category - can be null
+                          int? categoryId;
+                          if (_selectedCategory != null) {
+                            try {
+                              final selected = categories.firstWhere(
+                                (cat) => cat['icon'] == _selectedCategory,
+                              );
+                              categoryId = selected['id'];
+                            } catch (e) {
+                              // Category not found, use null
+                              categoryId = null;
+                            }
+                          }
 
                           await notifier.createTransaction(
                             amount: double.parse(_amount),
                             note: _note,
                             type: _isExpense ? 'expense' : 'income',
-                            categoryId: selected['id'],
+                            categoryId: categoryId,
                             bookId: widget.currentBook.id ?? 0,
                             userId: 1,
                           );
@@ -343,9 +370,27 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
                             _amount = '';
                             _note = '';
                             _selectedCategory = null;
+                            _noteError = null;
+                            _amountError = null;
                           });
 
-                          if (mounted) Navigator.pop(context);
+                          if (!mounted) return;
+                          Navigator.pop(context);
+
+                          // Hiển thị thông báo cho người dùng
+                          Future.delayed(
+                            const Duration(milliseconds: 100),
+                            () {
+                              if (mounted) {
+                                CustomSnackBar.showSuccess(
+                                  context,
+                                  message: AppLocalizations.of(context).success,
+                                );
+                              }
+                            },
+                          );
+                        } catch (e) {
+                          print('Error creating transaction: $e');
                         }
                       },
                       style: ElevatedButton.styleFrom(

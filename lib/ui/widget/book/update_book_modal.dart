@@ -1,25 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../data/models/book.dart';
-import '../../providers/book_provider.dart';
-import '../../utils/localization.dart';
+import '../../../data/models/book.dart';
+import '../../../providers/book_provider.dart';
+import '../../../utils/localization.dart';
+import '../components/custom_snackbar.dart';
 
-class CreateBookModal extends ConsumerStatefulWidget {
+class UpdateBookModal extends ConsumerStatefulWidget {
   final Color themeColor;
+  final Book book;
 
-  const CreateBookModal({
+  const UpdateBookModal({
     super.key,
     required this.themeColor,
+    required this.book,
   });
 
   @override
-  ConsumerState<CreateBookModal> createState() => _CreateBookModalState();
+  ConsumerState<UpdateBookModal> createState() => _UpdateBookModalState();
 }
 
-class _CreateBookModalState extends ConsumerState<CreateBookModal> {
+class _UpdateBookModalState extends ConsumerState<UpdateBookModal> {
   final _formKey = GlobalKey<FormState>();
-  final _bookNameController = TextEditingController();
+  late final TextEditingController _bookNameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _bookNameController = TextEditingController(text: widget.book.name);
+  }
 
   @override
   void dispose() {
@@ -27,12 +36,13 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
     super.dispose();
   }
 
-  Future<void> _handleCreateBook() async {
+  Future<void> _handleUpdateBook() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Kiểm tra xem tên sổ đã tồn tại chưa
+        // Kiểm tra xem tên sổ đã tồn tại chưa (trừ book hiện tại)
         final books = ref.read(booksProvider).value ?? [];
         final isNameExists = books.any((book) =>
+            book.id != widget.book.id &&
             book.name.toLowerCase() == _bookNameController.text.toLowerCase());
 
         if (isNameExists) {
@@ -72,37 +82,35 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
           return;
         }
 
-        final book = Book(
-          name: _bookNameController.text,
-          balance: 0.0,
-          userId: 1,
-        );
+        // Kiểm tra xem tên có thay đổi không
+        if (_bookNameController.text.trim() == widget.book.name) {
+          Navigator.pop(context);
+          return;
+        }
 
-        await ref.read(booksProvider.notifier).createBook(book.name);
+        // Cập nhật tên book
+        await ref.read(booksProvider.notifier).updateBook(
+              widget.book,
+              _bookNameController.text.trim(),
+            );
 
         if (!mounted) return;
         Navigator.pop(context);
 
         // Hiển thị thông báo cho người dùng
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).updateSuccess,
-              style: TextStyle(fontSize: 15.sp),
-            ),
-            backgroundColor: const Color(0xFF4CAF50),
-          ),
-        );
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted) {
+            CustomSnackBar.showSuccess(
+              context,
+              message: AppLocalizations.of(context).updateSuccess,
+            );
+          }
+        });
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).updateBookError,
-              style: TextStyle(fontSize: 15.sp),
-            ),
-            backgroundColor: Colors.red,
-          ),
+        CustomSnackBar.showError(
+          context,
+          message: AppLocalizations.of(context).updateBookError,
         );
       }
     }
@@ -110,6 +118,8 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -135,7 +145,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                   ),
                 ),
                 Text(
-                  AppLocalizations.of(context).createBook,
+                  l10n.editBookName,
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
@@ -150,7 +160,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                       TextFormField(
                         controller: _bookNameController,
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context).newBookName,
+                          labelText: l10n.newBookName,
                           labelStyle: TextStyle(
                             color: widget.themeColor,
                             fontSize: 14.sp,
@@ -166,7 +176,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                             ),
                           ),
                           prefixIcon: Icon(
-                            Icons.book,
+                            Icons.edit,
                             size: 20.w,
                             color: widget.themeColor,
                           ),
@@ -180,12 +190,8 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppLocalizations.of(context)
-                                .pleaseEnterBookName;
+                            return l10n.pleaseEnterBookName;
                           }
-                          // if (value.trim().length < 3) {
-                          //   return 'Tên sổ phải có ít nhất 3 ký tự';
-                          // }
                           return null;
                         },
                       ),
@@ -197,7 +203,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                   width: double.infinity,
                   height: 52.h,
                   child: ElevatedButton(
-                    onPressed: _handleCreateBook,
+                    onPressed: _handleUpdateBook,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: widget.themeColor,
                       padding: EdgeInsets.symmetric(vertical: 16.h),
@@ -206,7 +212,7 @@ class _CreateBookModalState extends ConsumerState<CreateBookModal> {
                       ),
                     ),
                     child: Text(
-                      AppLocalizations.of(context).createBook,
+                      l10n.saveChanges,
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,

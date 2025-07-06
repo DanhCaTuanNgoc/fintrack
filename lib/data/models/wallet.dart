@@ -14,7 +14,7 @@ class Wallet {
     required this.type,
     required this.userId,
     DateTime? createdAt,
-  }) : this.createdAt = createdAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   Wallet copyWith({
     int? id,
@@ -27,7 +27,7 @@ class Wallet {
     return Wallet(
       id: id ?? this.id,
       nameBalance: nameBalance ?? this.nameBalance,
-      walletBalance: balance ?? this.walletBalance,
+      walletBalance: balance ?? walletBalance,
       type: type ?? this.type,
       userId: userId ?? this.userId,
       createdAt: createdAt ?? this.createdAt,

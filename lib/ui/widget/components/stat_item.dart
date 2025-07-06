@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../providers/currency_provider.dart';
+import '../../../providers/currency_provider.dart';
 
 class StatItem extends ConsumerWidget {
   final String title;
@@ -33,7 +33,7 @@ class StatItem extends ConsumerWidget {
         children: [
           Text(
             isAmountVisible
-                ? '${formatCurrency(amountValue, currencyType)}'
+                ? formatCurrency(amountValue, currencyType)
                 : '•••••',
             style: TextStyle(
               color: textColor,

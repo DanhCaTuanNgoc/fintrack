@@ -1,11 +1,11 @@
 import 'package:Fintrack/providers/providers_barrel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../data/models/savings_goal.dart';
-import '../../../utils/localization.dart';
-import './add_flexible_saving_goal.dart';
+import '../../../../data/models/savings_goal.dart';
+import '../../../../utils/localization.dart';
+import '../flexibleSaving/add_flexible_saving_goal.dart';
+import '../components/frequency_selection_modal.dart';
 
 class AddPeriodicSavingGoalDialog extends ConsumerStatefulWidget {
   final Color themeColor;
@@ -22,9 +22,9 @@ class _AddPeriodicSavingGoalDialogState
   final _nameController = TextEditingController();
   final _targetAmountController = TextEditingController();
   final _periodicAmountController = TextEditingController();
-  String? _periodicFrequency; // daily, weekly, monthly
   DateTime? _targetDate;
   DateTime? _startedDate;
+  String _periodicFrequency = 'monthly';
 
   @override
   void dispose() {
@@ -102,8 +102,9 @@ class _AddPeriodicSavingGoalDialogState
                         prefixIcon: Icon(Icons.book,
                             color: widget.themeColor, size: 24.sp),
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Nhập tên' : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? l10n.enterName
+                          : null,
                     ),
                     SizedBox(height: 16.h),
                     TextFormField(
@@ -130,10 +131,13 @@ class _AddPeriodicSavingGoalDialogState
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter(currencyType)],
                       validator: (value) {
-                        if (value == null || value.isEmpty)
-                          return 'Nhập số tiền';
+                        if (value == null || value.isEmpty) {
+                          return l10n.enterAmount;
+                        }
                         final amount = getNumericValueFromFormattedText(value);
-                        if (amount <= 0) return 'Số tiền phải lớn hơn 0';
+                        if (amount <= 0) {
+                          return l10n.amountMustBeGreaterThanZero;
+                        }
                         return null;
                       },
                     ),
@@ -167,12 +171,14 @@ class _AddPeriodicSavingGoalDialogState
                               CurrencyInputFormatter(currencyType)
                             ],
                             validator: (value) {
-                              if (value == null || value.isEmpty)
-                                return 'Nhập số tiền định kỳ';
+                              if (value == null || value.isEmpty) {
+                                return l10n.enterPeriodicAmount;
+                              }
                               final amount =
                                   getNumericValueFromFormattedText(value);
-                              if (amount <= 0)
-                                return 'Số tiền định kỳ phải lớn hơn 0';
+                              if (amount <= 0) {
+                                return l10n.periodicAmountMustBeGreaterThanZero;
+                              }
                               return null;
                             },
                           ),
@@ -181,107 +187,15 @@ class _AddPeriodicSavingGoalDialogState
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              showModalBottomSheet(
+                              showFrequencySelectionModal(
                                 context: context,
-                                backgroundColor: Colors.transparent,
-                                builder: (context) => Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(20.r),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        width: 40.w,
-                                        height: 4.h,
-                                        margin: EdgeInsets.only(
-                                            top: 12.h, bottom: 20.h),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[300],
-                                          borderRadius:
-                                              BorderRadius.circular(2.r),
-                                        ),
-                                      ),
-                                      Text(
-                                        'Chọn tần suất',
-                                        style: TextStyle(
-                                          fontSize: 18.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: const Color(0xFF2D3142),
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      ...['daily', 'weekly', 'monthly']
-                                          .map((frequency) {
-                                        final labels = {
-                                          'daily': 'Hàng ngày',
-                                          'weekly': 'Hàng tuần',
-                                          'monthly': 'Hàng tháng',
-                                        };
-                                        final icons = {
-                                          'daily': Icons.today,
-                                          'weekly': Icons.view_week,
-                                          'monthly': Icons.calendar_month,
-                                        };
-
-                                        return ListTile(
-                                          leading: Container(
-                                            padding: EdgeInsets.all(8.w),
-                                            decoration: BoxDecoration(
-                                              color: _periodicFrequency ==
-                                                      frequency
-                                                  ? widget.themeColor
-                                                      .withOpacity(0.1)
-                                                  : Colors.grey[100],
-                                              borderRadius:
-                                                  BorderRadius.circular(8.r),
-                                            ),
-                                            child: Icon(
-                                              icons[frequency],
-                                              color: _periodicFrequency ==
-                                                      frequency
-                                                  ? widget.themeColor
-                                                  : Colors.grey[600],
-                                              size: 20.sp,
-                                            ),
-                                          ),
-                                          title: Text(
-                                            labels[frequency]!,
-                                            style: TextStyle(
-                                              fontWeight: _periodicFrequency ==
-                                                      frequency
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                              color: _periodicFrequency ==
-                                                      frequency
-                                                  ? widget.themeColor
-                                                  : const Color(0xFF2D3142),
-                                              fontSize: 14.sp,
-                                            ),
-                                          ),
-                                          trailing:
-                                              _periodicFrequency == frequency
-                                                  ? Icon(
-                                                      Icons.check_circle,
-                                                      color: widget.themeColor,
-                                                      size: 20.sp,
-                                                    )
-                                                  : null,
-                                          onTap: () {
-                                            setState(() {
-                                              _periodicFrequency = frequency;
-                                            });
-                                            Navigator.pop(context);
-                                          },
-                                        );
-                                      }).toList(),
-                                      SizedBox(height: 20.h),
-                                    ],
-                                  ),
-                                ),
+                                currentFrequency: _periodicFrequency,
+                                onFrequencySelected: (frequency) {
+                                  setState(() {
+                                    _periodicFrequency = frequency;
+                                  });
+                                },
+                                themeColor: widget.themeColor,
                               );
                             },
                             child: InputDecorator(
@@ -306,11 +220,11 @@ class _AddPeriodicSavingGoalDialogState
                               ),
                               child: Text(
                                 _periodicFrequency == null
-                                    ? 'Tần suất'
+                                    ? l10n.frequency
                                     : {
-                                        'daily': 'Hàng ngày',
-                                        'weekly': 'Hàng tuần',
-                                        'monthly': 'Hàng tháng',
+                                        'daily': l10n.daily,
+                                        'weekly': l10n.weekly,
+                                        'monthly': l10n.monthly,
                                       }[_periodicFrequency]!,
                                 style: TextStyle(
                                   color: _periodicFrequency == null
@@ -462,13 +376,6 @@ class _AddPeriodicSavingGoalDialogState
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                   content: Text(l10n.pleaseSelectStartDate)),
-                            );
-                            return;
-                          }
-                          if (periodicFrequency == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(l10n.pleaseSelectFrequency)),
                             );
                             return;
                           }

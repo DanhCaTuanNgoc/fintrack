@@ -21,7 +21,7 @@ class RecurringBill {
     required this.bookId,
     DateTime? createdAt,
     this.lastPaidDate,
-  }) : this.createdAt = createdAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   RecurringBill copyWith({
     int? id,

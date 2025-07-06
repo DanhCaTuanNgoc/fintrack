@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/book.dart';
 import '../../providers/more/transaction_provider.dart';
 import '../../providers/currency_provider.dart';
-import '../more.dart'; // Import để lấy backgroundColorProvider
+// Import để lấy backgroundColorProvider
 
 // Định nghĩa enum cho các loại giao dịch
 enum TransactionType { income, expense }
