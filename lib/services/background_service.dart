@@ -517,7 +517,7 @@ class BackgroundService {
     await Workmanager().registerPeriodicTask(
       'checkSavingsGoals', // Tên task
       'checkSavingsGoals', // Tên task (phải giống nhau)
-      frequency: const Duration(hours: 6), // Tần suất chạy task (6 giờ/lần)
+      frequency: const Duration(hours: 24), // Tần suất chạy task (24 giờ/lần)
       initialDelay: const Duration(minutes: 5),
       constraints: Constraints(
         // Các điều kiện để chạy task
