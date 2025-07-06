@@ -505,8 +505,8 @@ class BackgroundService {
     await Workmanager().registerPeriodicTask(
       'checkPeriodicInvoices', // Tên  task
       'checkPeriodicInvoices', // Tên task (phảigiống nhau)
-      frequency: const Duration(days: 1), // Tần suất chạy task
-      initialDelay: const Duration(hours: 1),
+      frequency: const Duration(hours: 24), // Tần suất chạy task (24 giờ/lần)
+      initialDelay: const Duration(minutes: 5),
       constraints: Constraints(
         // Các điều kiện để chạy task
         networkType: NetworkType.not_required, // Không yêu cầu kết nối mạng
@@ -517,20 +517,8 @@ class BackgroundService {
     await Workmanager().registerPeriodicTask(
       'checkSavingsGoals', // Tên task
       'checkSavingsGoals', // Tên task (phải giống nhau)
-      frequency: const Duration(days: 1),
-      initialDelay: const Duration(hours: 1),
-      constraints: Constraints(
-        // Các điều kiện để chạy task
-        networkType: NetworkType.not_required, // Không yêu cầu kết nối mạng
-      ),
-    );
-
-    // Đăng ký task nhắc nhở hàng ngày
-    await Workmanager().registerPeriodicTask(
-      'dailyReminder', // Tên task
-      'dailyReminder', // Tên task (phải giống nhau)
-      frequency: const Duration(days: 1),
-      initialDelay: const Duration(hours: 1), // Bắt đầu sau 1 giờ
+      frequency: const Duration(hours: 6), // Tần suất chạy task (6 giờ/lần)
+      initialDelay: const Duration(minutes: 5),
       constraints: Constraints(
         // Các điều kiện để chạy task
         networkType: NetworkType.not_required, // Không yêu cầu kết nối mạng
